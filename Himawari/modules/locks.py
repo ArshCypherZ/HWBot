@@ -82,7 +82,6 @@ LOCK_CHAT_RESTRICTION = {
         "can_invite_users": False,
         "can_pin_messages": False,
     },
-    "messages": {"can_send_messages": False},
     "media": {"can_send_media_messages": False},
     "sticker": {"can_send_other_messages": False},
     "gif": {"can_send_other_messages": False},
@@ -103,7 +102,6 @@ UNLOCK_CHAT_RESTRICTION = {
         "can_add_web_page_previews": True,
         "can_invite_users": True,
     },
-    "messages": {"can_send_messages": True},
     "media": {"can_send_media_messages": True},
     "sticker": {"can_send_other_messages": True},
     "gif": {"can_send_other_messages": True},
@@ -500,7 +498,6 @@ def build_lock_message(chat_id):
             locklist.append("egame = `{}`".format(locks.egame))
             locklist.append("inline = `{}`".format(locks.inline))
     permissions = dispatcher.bot.get_chat(chat_id).permissions
-    permslist.append("messages = `{}`".format(permissions.can_send_messages))
     permslist.append("media = `{}`".format(permissions.can_send_media_messages))
     permslist.append("poll = `{}`".format(permissions.can_send_polls))
     permslist.append("other = `{}`".format(permissions.can_send_other_messages))

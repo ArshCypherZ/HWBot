@@ -31,7 +31,7 @@ from pyrogram.types import (InlineKeyboardMarkup,
                             InputTextMessageContent
                             )
 
-from Himawari import pgram, telegraph
+from Himawari import pgram, telegraph, BOT_USERNAME
 from Himawari.utils.errors import capture_err
 
 
@@ -92,6 +92,6 @@ def nhentai_data(noombers):
         f"{title}",
         html_content=post_content,
         author_name="HimawariRobot", 
-        author_url="https://t.me/{BOT_USERNAME}"
+        author_url=f"https://t.me/{BOT_USERNAME}"
     )
     return title,tags,artist,total_pages,post['url'],links[0]
