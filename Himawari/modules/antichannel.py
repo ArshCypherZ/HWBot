@@ -42,14 +42,16 @@ def set_antichannel(update: Update, context: CallbackContext):
         s = args[0].lower()
         if s in ["yes", "on"]:
             enable_antichannel(chat.id)
-            message.reply_html("Enabled Antichannel in {}".format(html.escape(chat.title)))
+            message.reply_html(f"Enabled Antichannel in {html.escape(chat.title)}")
         elif s in ["off", "no"]:
             disable_antichannel(chat.id)
-            message.reply_html("Disabled Antichannel in {}".format(html.escape(chat.title)))
+            message.reply_html(f"Disabled Antichannel in {html.escape(chat.title)}")
         else:
-            message.reply_text("Unrecognized arguments {}".format(s))
+            message.reply_text(f"Unrecognized arguments {s}")
         return
-    message.reply_html("Antichannel setting is currently {} in {}".format(antichannel_status(chat.id), html.escape(chat.title)))
+    message.reply_html(
+        f"Antichannel setting is currently {antichannel_status(chat.id)} in {html.escape(chat.title)}"
+    )
 
 @Himawarimsg(Filters.chat_type.groups, group=110)
 def eliminate_channel(update: Update, context: CallbackContext):

@@ -56,7 +56,7 @@ def get_readable_time(time: int) -> str:
     t = f"{timedelta(seconds=time)}".split(":")
     if time == 86400:
         return "1 day"
-    return "{} hour(s)".format(t[0]) if time >= 3600 else "{} minutes".format(t[1])
+    return f"{t[0]} hour(s)" if time >= 3600 else f"{t[1]} minutes"
 
 
 @Himawaricmd(command="raid", pass_args=True)
@@ -77,17 +77,33 @@ def setRaid(update: Update, context: CallbackContext) -> Optional[str]:
     if len(args) == 0:
         if stat:
             text = 'Raid mode is currently <code>Enabled</code>\nWould you like to <code>Disable</code> raid?'
-            keyboard = [[
-                InlineKeyboardButton("Disable Raid Mode", callback_data="disable_raid={}={}".format(chat.id, time)),
-                InlineKeyboardButton("Cancel Action", callback_data="cancel_raid=1"),
-            ]]
+            keyboard = [
+                [
+                    InlineKeyboardButton(
+                        "Disable Raid Mode",
+                        callback_data=f"disable_raid={chat.id}={time}",
+                    ),
+                    InlineKeyboardButton(
+                        "Cancel Action", callback_data="cancel_raid=1"
+                    ),
+                ]
+            ]
+
         else:
             text = f"Raid mode is currently <code>Disabled</code>\nWould you like to <code>Enable</code> " \
                    f"raid for {readable_time}?"
-            keyboard = [[
-                InlineKeyboardButton("Enable Raid Mode", callback_data="enable_raid={}={}".format(chat.id, time)),
-                InlineKeyboardButton("Cancel Action", callback_data="cancel_raid=0"),
-            ]]
+            keyboard = [
+                [
+                    InlineKeyboardButton(
+                        "Enable Raid Mode",
+                        callback_data=f"enable_raid={chat.id}={time}",
+                    ),
+                    InlineKeyboardButton(
+                        "Cancel Action", callback_data="cancel_raid=0"
+                    ),
+                ]
+            ]
+
         reply_markup = InlineKeyboardMarkup(keyboard)
         msg.reply_text(text, parse_mode=ParseMode.HTML, reply_markup=reply_markup)
 
@@ -110,10 +126,18 @@ def setRaid(update: Update, context: CallbackContext) -> Optional[str]:
             if 300 <= time < 86400:
                 text = f"Raid mode is currently <code>Disabled</code>\nWould you like to <code>Enable</code> " \
                        f"raid for {readable_time}? "
-                keyboard = [[
-                    InlineKeyboardButton("Enable Raid", callback_data="enable_raid={}={}".format(chat.id, time)),
-                    InlineKeyboardButton("Cancel Action", callback_data="cancel_raid=0"),
-                ]]
+                keyboard = [
+                    [
+                        InlineKeyboardButton(
+                            "Enable Raid",
+                            callback_data=f"enable_raid={chat.id}={time}",
+                        ),
+                        InlineKeyboardButton(
+                            "Cancel Action", callback_data="cancel_raid=0"
+                        ),
+                    ]
+                ]
+
                 reply_markup = InlineKeyboardMarkup(keyboard)
                 msg.reply_text(text, parse_mode=ParseMode.HTML, reply_markup=reply_markup)
             else:

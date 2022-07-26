@@ -495,22 +495,14 @@ LOGO_LINKS            = ["https://telegra.ph/file/d1838efdafce9fe611d0c.jpg",
                          ]
 
 @register(pattern="^/logo ?(.*)")
-
 async def lego(event):
 
  quew = event.pattern_match.group(1)
 
- if event.sender_id == OWNER_ID:
+ if event.sender_id != OWNER_ID and not quew:
+  await event.reply('Please Gimmie A Text For The Logo.')
 
-     pass
-
- else:
-
-  if not quew:
-
-     await event.reply('Please Gimmie A Text For The Logo.')
-
-     return
+  return
 
  pesan = await event.reply('Logo In A Process. Please Wait.')
 

@@ -53,8 +53,7 @@ def reverse(update: Update, context: CallbackContext):
     rtmid = msg.message_id
     imagename = "okgoogle.png"
 
-    reply = msg.reply_to_message
-    if reply:
+    if reply := msg.reply_to_message:
         if reply.sticker:
             file_id = reply.sticker.file_id
         elif reply.photo:
@@ -134,7 +133,7 @@ def reverse(update: Update, context: CallbackContext):
             return
 
         os.remove(imagename)
-        match = ParseSauce(fetchUrl + "&hl=en")
+        match = ParseSauce(f"{fetchUrl}&hl=en")
         guess = match["best_guess"]
         if match["override"] and match["override"] != "":
             imgspage = match["override"]
