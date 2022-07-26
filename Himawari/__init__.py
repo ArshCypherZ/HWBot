@@ -143,7 +143,7 @@ if ENV:
     MONGO_DB = "Himawari"
     GOOGLE_CHROME_BIN = "/usr/bin/google-chrome"
     CHROME_DRIVER = "/usr/bin/chromedriver"
-    
+
     try:
         BL_CHATS = {int(x) for x in os.environ.get("BL_CHATS", "").split()}
     except ValueError:
@@ -226,7 +226,7 @@ else:
         BL_CHATS = {int(x) for x in Config.BL_CHATS or []}
     except ValueError:
         raise Exception("Your blacklisted chats list does not contain valid integers.")
-        
+
 
 DRAGONS.add(OWNER_ID)
 DEV_USERS.add(OWNER_ID)

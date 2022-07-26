@@ -41,7 +41,7 @@ async def getid(client, message):
 
     if not message.command:
         message.command = message.text.split()
-        
+
     if not message.command:
         message.command = message.text.split()
 
@@ -65,7 +65,7 @@ async def getid(client, message):
     if reply and reply.forward_from_chat:
         text += f"The forwarded channel, {reply.forward_from_chat.title}, has an id of `{reply.forward_from_chat.id}`\n\n"
         print(reply.forward_from_chat)
-    
+
     if reply and reply.sender_chat:
         text += f"ID of the replied chat/channel, is `{reply.sender_chat.id}`"
         print(reply.sender_chat)

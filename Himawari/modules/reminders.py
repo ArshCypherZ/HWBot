@@ -60,11 +60,11 @@ def reminders(update: Update, context: CallbackContext):
     user = update.effective_user
     msg = update.effective_message
     jobs = list(job_queue.jobs())
-    user_reminders = []
-    for job in jobs:
-        if job.name.endswith(str(user.id)):
-            user_reminders.append(job.name[1:])
-    if len(user_reminders) == 0:
+    user_reminders = [
+        job.name[1:] for job in jobs if job.name.endswith(str(user.id))
+    ]
+
+    if not user_reminders:
         msg.reply_text(
             text = "You don't have any reminders set or all the reminders you have set have been completed",
             reply_to_message_id = msg.message_id
@@ -149,8 +149,8 @@ def clear_reminder(update: Update, context: CallbackContext):
             reply_to_message_id = msg.message_id
         )
         return
-    jobs = list(job_queue.get_jobs_by_name("t" + text[1]))
-    if len(jobs) == 0:
+    jobs = list(job_queue.get_jobs_by_name(f"t{text[1]}"))
+    if not jobs:
         msg.reply_text(
             text = "This reminder is already completed or either not set",
             reply_to_message_id = msg.message_id
@@ -179,7 +179,7 @@ def clear_all_reminders(update: Update, context: CallbackContext):
         except Exception:
             unremoved_reminders.append(job.name[1:])
     reply_text = "Done cleared all the reminders!\n\n"
-    if len(unremoved_reminders) > 0:
+    if unremoved_reminders:
         reply_text += "Except (<i>Time stamps have been mentioned</i>):"
         for i, u in enumerate(unremoved_reminders):
             reply_text += f"\n{i+1}. <code>{u}</code>"
@@ -193,7 +193,7 @@ def clear_all_my_reminders(update: Update, context: CallbackContext):
     user = update.effective_user
     msg = update.effective_message
     jobs = list(job_queue.jobs())
-    if len(jobs) == 0:
+    if not jobs:
         msg.reply_text(
             text = "You don't have any reminders!",
             reply_to_message_id = msg.message_id
@@ -207,7 +207,7 @@ def clear_all_my_reminders(update: Update, context: CallbackContext):
             except Exception:
                 unremoved_reminders.append(job.name[1:])
     reply_text = "Done cleared all your reminders!\n\n"
-    if len(unremoved_reminders) > 0:
+    if unremoved_reminders:
         reply_text += "Except (<i>Time stamps have been mentioned</i>):"
         for i, u in enumerate(unremoved_reminders):
             reply_text += f"\n{i+1}. <code>{u}</code>"

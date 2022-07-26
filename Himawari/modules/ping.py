@@ -59,7 +59,7 @@ def get_readable_time(seconds: int) -> str:
     for x in range(len(time_list)):
         time_list[x] = str(time_list[x]) + time_suffix_list[x]
     if len(time_list) == 4:
-        ping_time += time_list.pop() + ", "
+        ping_time += f"{time_list.pop()}, "
 
     time_list.reverse()
     ping_time += ":".join(time_list)
@@ -76,7 +76,7 @@ def ping_func(to_ping: List[str]) -> List[str]:
         site_to_ping = sites_list[each_ping]
         r = requests.get(site_to_ping)
         end_time = time.time()
-        ping_time = str(round((end_time - start_time), 2)) + "s"
+        ping_time = f"{str(round((end_time - start_time), 2))}s"
 
         pinged_site = f"<b>{each_ping}</b>"
 
@@ -96,13 +96,11 @@ def ping(update: Update, context: CallbackContext):
     start_time = time.time()
     message = msg.reply_text("Pinging...")
     end_time = time.time()
-    telegram_ping = str(round((end_time - start_time) * 1000, 3)) + " ms"
+    telegram_ping = f"{str(round((end_time - start_time) * 1000, 3))} ms"
     uptime = get_readable_time((time.time() - StartTime))
 
     message.edit_text(
-        "PONG!!\n"
-        "<b>Time Taken:</b> <code>{}</code>\n"
-        "<b>Service uptime:</b> <code>{}</code>".format(telegram_ping, uptime),
+        f"PONG!!\n<b>Time Taken:</b> <code>{telegram_ping}</code>\n<b>Service uptime:</b> <code>{uptime}</code>",
         parse_mode=ParseMode.HTML,
     )
 
@@ -114,9 +112,8 @@ def pingall(update: Update, context: CallbackContext):
     pinged_list.insert(2, "")
     uptime = get_readable_time((time.time() - StartTime))
 
-    reply_msg = "⏱Ping results are:\n"
-    reply_msg += "\n".join(pinged_list)
-    reply_msg += "\n<b>Service uptime:</b> <code>{}</code>".format(uptime)
+    reply_msg = "⏱Ping results are:\n" + "\n".join(pinged_list)
+    reply_msg += f"\n<b>Service uptime:</b> <code>{uptime}</code>"
 
     update.effective_message.reply_text(
         reply_msg, parse_mode=ParseMode.HTML, disable_web_page_preview=True,

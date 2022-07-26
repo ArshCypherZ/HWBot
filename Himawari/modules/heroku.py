@@ -40,9 +40,7 @@ Heroku = heroku3.from_key(HEROKU_API_KEY)
 async def dyno_usage(dyno):
     if dyno.fwd_from:
         return
-    if dyno.sender_id == OWNER_ID:
-        pass
-    else:
+    if dyno.sender_id != OWNER_ID:
         return
     """
     Get your account Dyno Usage
@@ -59,7 +57,7 @@ async def dyno_usage(dyno):
         "Authorization": f"Bearer {HEROKU_API_KEY}",
         "Accept": "application/vnd.heroku+json; version=3.account-quotas",
     }
-    path = "/accounts/" + user_id + "/actions/get-quota"
+    path = f"/accounts/{user_id}/actions/get-quota"
     r = requests.get(heroku_api + path, headers=headers)
     if r.status_code != 200:
         return await die.edit("`Error: something bad happened`\n\n" f">.`{r.reason}`\n")
@@ -106,9 +104,7 @@ async def dyno_usage(dyno):
 async def _(dyno):
     if dyno.fwd_from:
         return
-    if dyno.sender_id == OWNER_ID:
-        pass
-    else:
+    if dyno.sender_id != OWNER_ID:
         return
     try:
         Heroku = heroku3.from_key(HEROKU_API_KEY)
