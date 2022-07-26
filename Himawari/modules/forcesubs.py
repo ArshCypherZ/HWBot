@@ -49,8 +49,7 @@ static_data_filter = filters.create(
 def _onUnMuteRequest(client, cb):
     user_id = cb.from_user.id
     chat_id = cb.message.chat.id
-    chat_db = sql.fs_settings(chat_id)
-    if chat_db:
+    if chat_db := sql.fs_settings(chat_id):
         channel = chat_db.channel
         chat_member = client.get_chat_member(chat_id, user_id)
         if chat_member.restricted_by:
@@ -73,30 +72,32 @@ def _onUnMuteRequest(client, cb):
                     text="❗ You have been muted by admins due to some other reason.",
                     show_alert=True,
                 )
-        else:
-            if (not client.get_chat_member(chat_id, (client.get_me()).id).status == "administrator"
-            ):
-                client.send_message(
-                    chat_id,
-                    f"❗ **{cb.from_user.mention} is trying to unmute him/her-self but i can't unmute him/her because i am not an admin in this chat add me as admin again.\n",
-                )
+        elif (
+            client.get_chat_member(chat_id, (client.get_me()).id).status
+            == "administrator"
+        ):
+            client.answer_callback_query(
+                cb.id,
+                text="❗ Warning! Don't press the button when you can talk.",
+                show_alert=True,
+            )
 
-            else:
-                client.answer_callback_query(
-                    cb.id,
-                    text="❗ Warning! Don't press the button when you can talk.",
-                    show_alert=True,
-                )
+        else:
+            client.send_message(
+                chat_id,
+                f"❗ **{cb.from_user.mention} is trying to unmute him/her-self but i can't unmute him/her because i am not an admin in this chat add me as admin again.\n",
+            )
 
 
 @pbot.on_message(filters.text & ~filters.private, group=1)
 def _check_member(client, message):
     chat_id = message.chat.id
-    chat_db = sql.fs_settings(chat_id)
-    if chat_db:
+    if chat_db := sql.fs_settings(chat_id):
         user_id = message.from_user.id
-        if (not client.get_chat_member(chat_id, user_id).status in ("administrator", "creator")
-            and not user_id in SUDO_USERS
+        if (
+            client.get_chat_member(chat_id, user_id).status
+            not in ("administrator", "creator")
+            and user_id not in SUDO_USERS
         ):
             channel = chat_db.channel
             try:
@@ -104,26 +105,26 @@ def _check_member(client, message):
             except UserNotParticipant:
                 try:
                     sent_message = message.reply_text(
-                        "Welcome {} 🙏 \n **You haven't joined our @{} Channel yet**👷 \n \nPlease join [our channel](https://t.me/{}) and hit the **UNMUTE ME** button. \n \n ".format(
-                            message.from_user.mention, channel, channel
-                        ),
+                        f"Welcome {message.from_user.mention} 🙏 \n **You haven't joined our @{channel} Channel yet**👷 \n \nPlease join [our channel](https://t.me/{channel}) and hit the **UNMUTE ME** button. \n \n ",
                         disable_web_page_preview=True,
                         reply_markup=InlineKeyboardMarkup(
                             [
                                 [
                                     InlineKeyboardButton(
                                         "Join Channel",
-                                        url="https://t.me/{}".format(channel),
+                                        url=f"https://t.me/{channel}",
                                     )
                                 ],
                                 [
                                     InlineKeyboardButton(
-                                        "Unmute Me", callback_data="onUnMuteRequest"
+                                        "Unmute Me",
+                                        callback_data="onUnMuteRequest",
                                     )
                                 ],
                             ]
                         ),
                     )
+
                     client.restrict_chat_member(
                         chat_id, user_id, ChatPermissions(can_send_messages=False)
                     )
@@ -180,17 +181,16 @@ def config(client, message):
                         disable_web_page_preview=True,
                     )
                 except (UsernameNotOccupied, PeerIdInvalid):
-                    message.reply_text(f"❗ **Invalid Channel Username.**")
+                    message.reply_text("❗ **Invalid Channel Username.**")
                 except Exception as err:
                     message.reply_text(f"❗ **ERROR:** ```{err}```")
+        elif sql.fs_settings(chat_id):
+            message.reply_text(
+                f"✅ **Force Subscribe is enabled in this chat.**\n__For this [Channel](https://t.me/{sql.fs_settings(chat_id).channel})__",
+                disable_web_page_preview=True,
+            )
         else:
-            if sql.fs_settings(chat_id):
-                message.reply_text(
-                    f"✅ **Force Subscribe is enabled in this chat.**\n__For this [Channel](https://t.me/{sql.fs_settings(chat_id).channel})__",
-                    disable_web_page_preview=True,
-                )
-            else:
-                message.reply_text("❌ **Force Subscribe is disabled in this chat.**")
+            message.reply_text("❌ **Force Subscribe is disabled in this chat.**")
     else:
         message.reply_text(
             "❗ **Group Creator Required**\n__You have to be the group creator to do that.__"

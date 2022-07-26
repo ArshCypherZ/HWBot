@@ -92,18 +92,14 @@ if is_module_loaded(FILENAME):
                     user_id = chat.id if user.id == 1087968824 else user.id
                     if SpamChecker.check_user(user_id):
                         return None
-                    filter_result = self.filters(update)
-                    if filter_result:
+                    if filter_result := self.filters(update):
                         # disabled, admincmd, user admin
                         if sql.is_command_disabled(chat.id, command[0].lower()):
                             # check if command was disabled
                             is_disabled = command[
                                 0
                             ] in ADMIN_CMDS and is_user_admin(chat, user.id)
-                            if not is_disabled:
-                                return None
-                            return args, filter_result
-
+                            return (args, filter_result) if is_disabled else None
                         return args, filter_result
                     return False
 
@@ -313,8 +309,8 @@ if is_module_loaded(FILENAME):
         if not disabled:
             return "No commands are disabled!"
 
-        result = "".join(" - `{}`\n".format(escape_markdown(cmd)) for cmd in disabled)
-        return "The following commands are currently restricted:\n{}".format(result)
+        result = "".join(f" - `{escape_markdown(cmd)}`\n" for cmd in disabled)
+        return f"The following commands are currently restricted:\n{result}"
     
     @connection_status
     def commands(update: Update, context: CallbackContext):

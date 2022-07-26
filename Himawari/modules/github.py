@@ -69,5 +69,5 @@ async def github(_, message):
 **Followers:** `{followers}`
 **Following:** `{following}`"""
         except Exception as e:
-            print(str(e))
+            print(e)
     await message.reply_photo(photo=avatar_url, caption=caption)

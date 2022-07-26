@@ -68,9 +68,6 @@ def get_muted_chats(bot: Bot, update: Update, leave: bool = False):
         except (BadRequest, Unauthorized):
             muted_chats += +1
             chat_list.append(cid)
-        except:
-            pass
-
     try:
         progress_message.delete()
     except:
@@ -117,9 +114,6 @@ def get_invalid_chats(update: Update, context: CallbackContext, remove: bool = F
         except (BadRequest, Unauthorized):
             kicked_chats += 1
             chat_list.append(cid)
-        except:
-            pass
-
     try:
         progress_message.delete()
     except:
@@ -147,9 +141,6 @@ def get_invalid_gban(update: Update, context: CallbackContext, remove: bool = Fa
         except BadRequest:
             ungbanned_users += 1
             ungban_list.append(user_id)
-        except:
-            pass
-
     if not remove:
         return ungbanned_users
     for user_id in ungban_list:
@@ -205,9 +196,8 @@ def callback_button(update: Update, context: CallbackContext):
         bot.editMessageText("Cleaning up DB ...", chat_id, message.message_id)
         invalid_chat_count = get_invalid_chats(update, context, True)
         invalid_gban_count = get_invalid_gban(update, context, True)
-        reply = "Cleaned up {} chats and {} gbanned users from db.".format(
-            invalid_chat_count, invalid_gban_count,
-        )
+        reply = f"Cleaned up {invalid_chat_count} chats and {invalid_gban_count} gbanned users from db."
+
         bot.sendMessage(chat_id, reply)
 
 

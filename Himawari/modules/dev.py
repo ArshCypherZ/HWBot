@@ -48,7 +48,7 @@ def leave_cb(update: Update, context: CallbackContext):
         return
 
     match = re.match(r"leavechat_cb_\((.+?)\)", callback.data)
-    chat = int(match.group(1))
+    chat = int(match[1])
     bot.leave_chat(chat_id=chat)
     callback.answer(text="Left chat")
 
@@ -56,7 +56,7 @@ def leave_cb(update: Update, context: CallbackContext):
 def allow_groups(update: Update, context: CallbackContext):
     args = context.args
     if not args:
-        state = "Lockdown is " + "on" if not Himawari.ALLOW_CHATS else "off"
+        state = "off" if Himawari.ALLOW_CHATS else "Lockdown is " + "on"
         update.effective_message.reply_text(f"Current state: {state}")
         return
     if args[0].lower() in ["off", "no"]:
@@ -122,15 +122,14 @@ def pip_install(update: Update, context: CallbackContext):
         message.reply_text("Enter a package name.")
         return
     if len(args) >= 1:
-        cmd = "py -m pip install {}".format(' '.join(args))
+        cmd = f"py -m pip install {' '.join(args)}"
         process = subprocess.Popen(
             cmd.split(" "), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True,
         )
         stdout, stderr = process.communicate()
         reply = ""
         stderr = stderr.decode()
-        stdout = stdout.decode()
-        if stdout:
+        if stdout := stdout.decode():
             reply += f"*Stdout*\n`{stdout}`\n"
         if stderr:
             reply += f"*Stderr*\n`{stderr}`\n"
@@ -141,8 +140,7 @@ def pip_install(update: Update, context: CallbackContext):
 @dev_plus
 def leave(update: Update, context: CallbackContext):
     bot = context.bot
-    args = context.args
-    if args:
+    if args := context.args:
         chat_id = str(args[0])
         leave_msg = " ".join(args[1:])
         try:
@@ -154,10 +152,19 @@ def leave(update: Update, context: CallbackContext):
     else:
         chat = update.effective_chat
         # user = update.effective_user
-        himawari_leave_bt = [[
-            InlineKeyboardButton(text="I am sure of this action.", callback_data="leavechat_cb_({})".format(chat.id))
-        ]]
-        update.effective_message.reply_text("I'm going to leave {}, press the button below to confirm".format(chat.title), reply_markup=InlineKeyboardMarkup(himawari_leave_bt))
+        himawari_leave_bt = [
+            [
+                InlineKeyboardButton(
+                    text="I am sure of this action.",
+                    callback_data=f"leavechat_cb_({chat.id})",
+                )
+            ]
+        ]
+
+        update.effective_message.reply_text(
+            f"I'm going to leave {chat.title}, press the button below to confirm",
+            reply_markup=InlineKeyboardMarkup(himawari_leave_bt),
+        )
 
 	
 @dev_plus
