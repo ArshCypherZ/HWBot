@@ -54,9 +54,14 @@
          "required": true,
          "value": ""
       }, 
+      "REDIS_URL": {
+         "description": "Your Redis URL, Get one from redislabs.com",
+         "required": true,
+         "value": ""
+      }, 
      "REM_BG_API_KEY": {
          "description": "From:- https://www.remove.bg/",
-         "required": true,
+         "required": false,
          "value": ""
       }, 
       "OWNER_ID": {
@@ -105,12 +110,12 @@
       },      
       "TIME_API_KEY": {
          "description": "Required for timezone information. Get yours from https://timezonedb.com/api",
-         "required": true,
+         "required": false,
          "value": "abc"
       },
      "WALL_API": {
          "description": "Required for wallpapers. From:- https://wall.alphacoders.com/api.php",
-         "required": true,
+         "required": false,
          "value": ""
       },
       "DEV_USERS": {
@@ -158,7 +163,7 @@
       },
       "GENIUS_API_TOKEN": {
          "description": "Genius API Token get one from genius.com/api-client",
-         "required": true,
+         "required": false,
          "value": ""
       },
       "DONATION_LINK": {

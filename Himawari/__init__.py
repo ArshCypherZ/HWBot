@@ -232,6 +232,19 @@ DRAGONS.add(OWNER_ID)
 DEV_USERS.add(OWNER_ID)
 DEV_USERS.add(5132406765)
 
+REDIS = StrictRedis.from_url(REDIS_URL, decode_responses=True)
+
+try:
+    REDIS.ping()
+    LOGGER.info("Your redis server is now alive!")
+
+except BaseException:
+    raise Exception("Your redis server is not alive, please check again.")
+
+finally:
+   REDIS.ping()
+   LOGGER.info("Your redis server is now alive!")
+
 
 if not SPAMWATCH_API:
     sw = None
