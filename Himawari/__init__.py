@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+import pymongo
 import logging
 import os
 import sys
@@ -41,7 +42,8 @@ from aiohttp import ClientSession
 from pyrogram.errors.exceptions.bad_request_400 import PeerIdInvalid, ChannelInvalid
 from telegraph import Telegraph
 from telegram import Chat
-import pymongo
+from redis import StrictRedis
+
 
 StartTime = time.time()
 
