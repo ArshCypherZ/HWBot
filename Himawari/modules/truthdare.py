@@ -22,23 +22,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from Himawari.events import register 
 import requests
 
+from Himawari import SUPPORT_CHAT
+from Himawari.events import register
+
 @register(pattern="[/!]dare")
-async def dare(event):
-  gay = requests.get("https://api.truthordarebot.xyz/v1/dare").json()
-  dare = gay["question"] 
-  BRUH = "{}"
-  await event.reply(BRUH.format(dare)) 
+async def _(rj):
+    try:
+        resp = requests.get(
+            "https://api.truthordarebot.xyz/v1/dare").json()
+        results = f"{resp['question']}"
+        return await rj.reply(results)
+    except Exception:
+        await rj.reply(f"Error Report @{SUPPORT_CHAT}")
   
+
   
 @register(pattern="[/!]truth")
-async def truth(event):
-  gae = requests.get("https://api.truthordarebot.xyz/v1/truth").json()
-  truth = gae["question"] 
-  BRAH = "{}"
-  
-  await event.reply(BRAH.format(truth)) 
-  
-  # thanks stb gae
+async def _(rj):
+    try:
+        resp = requests.get(
+            "https://api.truthordarebot.xyz/v1/truth").json()
+        results = f"{resp['question']}"
+        return await rj.reply(results)
+    except Exception:
+        await rj.reply(f"Error Report @{SUPPORT_CHAT}")
