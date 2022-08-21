@@ -129,16 +129,14 @@ import requests
 @telethn.on(events.NewMessage(pattern="^[!/]gif"))
 async def some(event):
     try:
-        query = event.text.split(' ',maxsplit=1)[1]
+        inpt = event.text.split(' ',maxsplit=1)[1]
     except IndexError:
         return await event.reply('Usage: /gif <query>')
     """Sends random gifs of your query"""
     reply_to_id = await reply_id(event)
-    if not inpt:
-        await edit_delete(event, "`Give an input to search...`")
     count = 1
     if ";" in inpt:
-        inpt, count = inpt.split(";")
+        inpt, count = inpt.split(";") 
     if int(count) < 0 and int(count) > 20:
         await edit_delete(event, "`Give value in range 1-20`")
     himaevent = await edit_or_reply(event, "`Sending gif....`")

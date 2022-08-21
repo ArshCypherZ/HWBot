@@ -92,7 +92,6 @@ DEFAULT_WELCOME_MESSAGES = [
     "{first} Just teleported into the chat!",
     "Hi, {first}, show me your Hunter License!",
     "Welcome {first}, Leaving is not an option!",
-    "Run Forest! ..I mean...{first}.",
     "Hey, {first}, Empty your pockets.",
     "Hey, {first}!, Are you strong?",
     "Call the Avengers! - {first} just joined the chat.",
