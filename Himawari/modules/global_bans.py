@@ -136,7 +136,7 @@ def gban(update: Update, context: CallbackContext):
         return
 
     if int(user_id) in WOLVES:
-        message.reply_text("That's an IGNITE! They cannot be banned!")
+        message.reply_text("That's one of the SHINOBI! They cannot be banned!")
         return
 
     if user_id == bot.id:

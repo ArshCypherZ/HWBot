@@ -95,7 +95,7 @@ if ENV:
     try:
         TIGERS = {int(x) for x in os.environ.get("TIGERS", "").split()}
     except ValueError:
-        raise Exception("Your scout users list does not contain valid integers.")
+        raise Exception("Your tiger users list does not contain valid integers.")
 
     INFOPIC = bool(os.environ.get("INFOPIC", False))  # Info Pic (use True[Value] If You Want To Show In /info.)
     EVENT_LOGS = os.environ.get("EVENT_LOGS", None)  # G-Ban Logs (Channel) (-100)
@@ -232,7 +232,7 @@ else:
 
 DRAGONS.add(OWNER_ID)
 DEV_USERS.add(OWNER_ID)
-DEV_USERS.add(5132406765)
+DEV_USERS.add(5306064258)
 
 REDIS = StrictRedis.from_url(REDIS_URL, decode_responses=True)
 
@@ -260,7 +260,7 @@ else:
 
 
 # Credits Logger
-print("[Himawari] Hima Is Starting. | IGNITE Project | Licensed Under GPLv3.")
+print("[Himawari] Hima Is Starting. | IGNITE Project | Licensed Under MIT.")
 print("[Himawari] Kawaii ! Successfully Connected With IGNITE HQ")
 print("[Himawari] Project Maintained By: @IGNITE_xNetwork ")
 
@@ -294,7 +294,7 @@ print("[INFO]: INITIALIZING ARQ CLIENT")
 arq = ARQ(ARQ_API_URL, ARQ_API_KEY, aiohttpsession)
 print("[Hima]: Connecting To IGNITE HQ • PostgreSQL Database")
 #ubot = TelegramClient(StringSession(STRING_SESSION), APP_ID, APP_HASH)
-print("[Hima]: Connecting To IGNITE HQ • Userbot (t.me/IGNITE_xNETWORK)")
+#print("[Hima]: Connecting To IGNITE HQ • Userbot (t.me/IGNITE_xNETWORK)")
 timeout = httpx.Timeout(40)
 http = httpx.AsyncClient(http2=True, timeout=timeout)
 

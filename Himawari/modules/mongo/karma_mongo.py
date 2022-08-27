@@ -23,8 +23,7 @@ SOFTWARE.
 """
 
 from Himawari import db
-from typing import Dict, Union
-
+from typing import Dict, List, Union
 
 karmadb = db.karma
 karmaonoffdb = db.karmaonoff
@@ -83,7 +82,7 @@ async def update_karma(chat_id: int, name: str, karma: dict):
 
 
 async def is_karma_on(chat_id: int) -> bool:
-    chat = await karmaonoffdb.find_one({"chat_id_toggle": chat_id})
+    chat = await karmadb.find_one({"chat_id_toggle": chat_id})
     return not chat
 
 
@@ -91,14 +90,14 @@ async def karma_on(chat_id: int):
     is_karma = await is_karma_on(chat_id)
     if is_karma:
         return
-    return await karmaonoffdb.delete_one({"chat_id_toggle": chat_id})
+    return await karmadb.delete_one({"chat_id_toggle": chat_id})
 
 
 async def karma_off(chat_id: int):
     is_karma = await is_karma_on(chat_id)
     if not is_karma:
         return
-    return await karmaonoffdb.insert_one({"chat_id_toggle": chat_id})
+    return await karmadb.insert_one({"chat_id_toggle": chat_id})
 
 async def int_to_alpha(user_id: int) -> str:
     alphabet = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]
