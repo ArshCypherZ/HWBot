@@ -4,7 +4,7 @@ Example: "xyz joined via invite link"
 
 Usage:
 
-/antiservice [enable|disable]
+/antiservice [on|off]
 """
 
 __mod_name__ = "AntiService"
