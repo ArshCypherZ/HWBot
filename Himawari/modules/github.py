@@ -22,42 +22,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import aiohttp
+import requests
+from Himawari import dispatcher
+from Himawari.modules.disable import DisableAbleCommandHandler
+from telegram import Update, ParseMode
+from telegram.ext import CallbackContext, run_async
 
-from pyrogram import filters
-from Himawari import pgram
-from Himawari.utils.errors import capture_err
-
-
-__mod_name__ = "Github"
-
-
-@pgram.on_message(filters.command('github'))
-@capture_err
-async def github(_, message):
-    if len(message.command) != 2:
-        await message.reply_text("/git Username")
+def github(update: Update, context: CallbackContext):
+    bot = context.bot
+    message = update.effective_message
+    args = message.text.split(" ", 1)
+    
+    if len(args) == 1:
+        message.reply_text('Provide me Username, Ex - /github ArshCypherZ')
         return
-    username = message.text.split(None, 1)[1]
+    else:
+        pass
+    username = args[1]
     URL = f'https://api.github.com/users/{username}'
-    async with aiohttp.ClientSession() as session, session.get(URL) as request:
-        if request.status == 404:
-            return await message.reply_text("404")
+    with requests.get(URL) as request:
+            if request.status_code == 404:
+                return message.reply_text("404")
 
-        result = await request.json()
-        try:
-            url = result['html_url']
-            name = result['name']
-            company = result['company']
-            bio = result['bio']
-            created_at = result['created_at']
-            avatar_url = result['avatar_url']
-            blog = result['blog']
-            location = result['location']
-            repositories = result['public_repos']
-            followers = result['followers']
-            following = result['following']
-            caption = f"""**Info Of {name}**
+            result = request.json()
+            try:
+                url = result['html_url']
+                name = result['name']
+                company = result['company']
+                bio = result['bio']
+                created_at = result['created_at']
+                avatar_url = result['avatar_url']
+                blog = result['blog']
+                location = result['location']
+                repositories = result['public_repos']
+                followers = result['followers']
+                following = result['following']
+                caption = f"""**Info Of {name}**
 **Username:** `{username}`
 **Bio:** `{bio}`
 **Profile Link:** [Here]({url})
@@ -68,6 +68,11 @@ async def github(_, message):
 **Location:** `{location}`
 **Followers:** `{followers}`
 **Following:** `{following}`"""
-        except Exception as e:
-            print(e)
-    await message.reply_photo(photo=avatar_url, caption=caption)
+            except Exception as e:
+                print(str(e))
+                pass
+    message.reply_photo(photo=avatar_url, caption=caption, parse_mode=ParseMode.MARKDOWN)
+
+
+GIT_HANDLER = DisableAbleCommandHandler("github", github, run_async=True)
+dispatcher.add_handler(GIT_HANDLER)

@@ -55,7 +55,7 @@ async def isPreviewUp(preview: str) -> bool:
     return False
 
 
-@pgram.on_message(filters.command("paste") & ~filters.edited)
+@pgram.on_message(filters.command("paste"))
 @capture_err
 async def paste_func(_, message):
     if not message.reply_to_message:
@@ -78,7 +78,7 @@ async def paste_func(_, message):
             content = await f.read()
         os.remove(doc)
     link = await paste(content)
-    preview = f"{link}/preview.png"
+    preview = link + "/preview.png"
     button = InlineKeyboard(row_width=1)
     button.add(InlineKeyboardButton(text="Paste Link", url=link))
 

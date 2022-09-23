@@ -55,21 +55,21 @@ async def get_chat_info(chat, already=False):
         "DC:": dc_id,
         "Type:": type_,
         "Name:": [title],
-        "Username:": [f"@{username}" if username else "Null"],
+        "Username:": [("@" + username) if username else "Null"],
         "Mention:": [link],
         "Members:": members,
         "Scam:": is_scam,
         "Restricted:": is_restricted,
         "\nDescription:\n\n": [description],
-        "\nAdmins List:\n": [total],
+        "\nAdmins List:\n" : [total],
+        
     }
-
     caption = section("Chat Info:\n", body)
     return [caption, photo_id]
 
 
 
-@pgram.on_message(filters.command("ginfo") & ~filters.edited)
+@pgram.on_message(filters.command("ginfo"))
 async def chat_info_func(_, message: Message):
     try:
         if len(message.command) > 2:

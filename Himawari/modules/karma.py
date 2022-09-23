@@ -22,7 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 ## thanks to Moezilla (Pranav) for this awesome code
-
 import asyncio
 from Himawari.utils.permissions import adminsOnly
 from Himawari import pgram as app, OWNER_ID, db
@@ -60,7 +59,7 @@ k = worddb["Himalol"]["karma_status"]
 async def is_admins(chat_id: int):
     return [
         member.user.id
-        async for member in app.iter_chat_members(
+        async for member in app.get_chat_members(
             chat_id, filter="administrators"
         )
     ]

@@ -1,9 +1,28 @@
-![Himawari](https://wallpapercave.com/wp/wp2070233.png)
+</h1>
+</details> 
+
+<h1 align="center"> 
+    ✨ Himawari ✨ 
+</h1>
+
+![](https://wallpapercave.com/wp/wp2070233.png)
 # Himawari
 
 An advanced scary looking :p telegram botto running on python3 with sqlalchemy, Redis, mongodb database.
 
 Reach out support at [Tech Division](https://t.me/IgniteTechDivision), where you can ask for help setting up your bot, discover/request new features, report bugs, and stay in the loop whenever a new update is available. 
+
+<p align="center">
+    <a href="https://python.org">
+        <img src="http://forthebadge.com/images/badges/made-with-python.svg" alt="made-with-python">
+    </a>
+    <a href="https://github.com/ArshCypherZ">
+        <img src="http://ForTheBadge.com/images/badges/built-with-love.svg" alt="built-with-love">
+    </a> <br>
+    <img src="https://img.shields.io/github/license/ArshCypherZ/HWBot?style=for-the-badge&logo=appveyor" alt="LICENSE">
+    <img src="https://img.shields.io/github/forks/ArshCypherZ/HWBot?style=for-the-badge&logo=appveyor" alt="Forks">
+    <img src="https://img.shields.io/github/stars/ArshCypherZ/HWBot?style=for-the-badge&logo=appveyor" alt="Stars">
+</p>
 
 ## Credits
 
@@ -24,18 +43,35 @@ Reach out support at [Tech Division](https://t.me/IgniteTechDivision), where you
 
 Should any credit be missing, kindly let us know at [Tech Division](https://t.me/IgniteTechDivision) or simply submit a pull request on the readme.
 
-<details>
-	<summary>Deploy on Heroku</summary>
-	<br>
-	<b>
-The Easiest Way to Deploy This Bot is Via Heroku.
-		In Order To deploy, You Just Have Fill The Necessary Environment Variables and Done!</b>
-	
-  <h1>
+
+<h2 align="center"> 
+   ⇝ Install Locally Or On A VPS ⇜
+</h2>
+
+```console
+$ git clone https://github.com/ArshCypherZ/HWBot
+$ cd HWBot
+$ pip3 install -U -r requirements.txt
+$ cd Himawari
+$ cp config.py
+```
+ 
+<h3 align="center"> 
+    Edit <b>config.py</b> with your own values
+</h3>
+
+<h2 align="center"> 
+   ⇝ Run Directly ⇜
+</h2>
+
+```console
+$ python3 -m Himawari
+```
+
+<h1>
     <p align="center">
-        <a href="https://heroku.com/deploy?template=https://github.com/ArshCypherZ/HWBot/stable">
+        <a href="https://heroku.com/deploy?template=https://github.com/ArshCypherZ/HWBot">
             <img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy">
         </a>
+    </p>
 </h1>
-</details> 
-

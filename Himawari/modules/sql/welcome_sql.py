@@ -35,13 +35,10 @@ DEFAULT_WELCOME = "Hey {first}, how are you?"
 DEFAULT_GOODBYE = "Nice knowing ya!"
 
 DEFAULT_WELCOME_MESSAGES = [
-    "{first} is here!",  # Discord welcome messages copied
-    "Ready player {first}",
-    "Armin, {first} is here.",
+    "{first} is here!",  # Discord welcome messages copied    
     "Dattebayo? Dattebanye? Dattebasa? Well nevermind.",
     "Onichan!!! {first} has arrived!",
- "Damn, right on time, huh?",
-    "Welcum to {chatname} user-kun.",
+    "Damn, right on time, huh?",
     "Welcome UwU my beloved friendo!",
     "Genos, {first} is here.",
     "A wild {first} appeared.",
@@ -66,7 +63,7 @@ DEFAULT_WELCOME_MESSAGES = [
     "{first} just showed up. Hold my beer.",
     "Challenger approaching! {first} has appeared!",
     "It's a bird! It's a plane! Nevermind, it's just {first}.",
-    "It's {first}! Praise the sun! \o/",
+    "It's {first}! Praise the catto lord! \o/",
     "Never gonna give {first} up. Never gonna let {first} down.",
     "Ha! {first} has joined! You activated my trap card!",
     "Hey! Listen! {first} has joined!",

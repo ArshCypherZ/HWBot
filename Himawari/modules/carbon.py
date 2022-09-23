@@ -44,8 +44,6 @@ async def make_carbon(code):
 async def carbon_func(_, message):
     if not message.reply_to_message:
         return await message.reply_text("`Reply to a text to generate carbon`")
-    if not message.reply_to_message.text:
-        return await message.reply_text("`Reply to a text to generate carbon`")
     m = await message.reply_text("`Generating Carbon...`")
     carbon = await make_carbon(message.reply_to_message.text)
     await m.edit("`waitoo...`")

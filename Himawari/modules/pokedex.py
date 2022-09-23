@@ -2,6 +2,7 @@
 
 from Himawari import pgram
 from pyrogram import filters
+import aiohttp
 
 @pgram.on_message(filters.command("pokedex"))
 async def PokeDex(_, message):
@@ -41,5 +42,6 @@ async def PokeDex(_, message):
 
 **Description:** `{description}`"""
             except Exception as e:
-                print(e)
+                print(str(e))
+                pass
     await message.reply_photo(photo=poke_img, caption=caption)

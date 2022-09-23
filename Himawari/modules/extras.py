@@ -30,6 +30,7 @@ import asyncio
 from markdown import markdown
 from bs4 import BeautifulSoup
 import jikanpy
+from datetime import datetime
 
 def md_to_text(md):
     html = markdown(md)
@@ -188,7 +189,7 @@ async def get_anime_schedule(weekid):
 @telethn.on(events.NewMessage(pattern="^[!/]schedule ?(.*)"))
 async def aschedule_fetch(event):
     "To get list of animes scheduled on that day"
-    input_str = event.pattern_match.group(1) or datetime.now().weekday()
+    input_str = event.pattern_match.group(1).lower() or datetime.now().weekday()
     if input_str in weekdays:
         input_str = weekdays[input_str]
     try:

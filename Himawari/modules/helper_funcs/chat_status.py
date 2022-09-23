@@ -280,13 +280,13 @@ def user_not_admin(func):
     def is_not_admin(update: Update, context: CallbackContext, *args, **kwargs):
         message = update.effective_message
         user = update.effective_user
-        #chat = update.effective_chat
+        chat = update.effective_chat
 
         if message.is_automatic_forward:
             return
         if message.sender_chat and message.sender_chat.type != "channel":
             return
-        elif user and not is_user_admin(update.message.chat, user.id):
+        elif user and not is_user_admin(chat, user.id):
             return func(update, context, *args, **kwargs)
 
         elif not user:
@@ -450,15 +450,14 @@ def user_can_ban(func):
 def connection_status(func):
     @wraps(func)
     def connected_status(update: Update, context: CallbackContext, *args, **kwargs):
-        conn = connected(
+        if update.effective_chat is None or update.effective_user is None:
+            return
+        if conn:= connected(
             context.bot,
             update,
             update.effective_chat,
             update.effective_user.id,
-            need_admin=False,
-        )
-
-        if conn:
+            need_admin=False):
             chat = dispatcher.bot.getChat(conn)
             update.__setattr__("_effective_chat", chat)
         elif update.effective_message.chat.type == "private":

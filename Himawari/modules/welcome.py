@@ -644,7 +644,7 @@ def left_member(update: Update, context: CallbackContext):  # sourcery no-metric
             # Give the devs a special goodbye
             elif left_mem.id in DEV_USERS:
                 update.effective_message.reply_text(
-                    "See you later at the Eagle Union!",
+                    "See you later at Tech Division!",
                     reply_to_message_id=reply,
                 )
                 return
@@ -1010,6 +1010,39 @@ def clean_welcome(update: Update, context: CallbackContext) -> str:
     else:
         update.effective_message.reply_text("I understand 'on/yes' or 'off/no' only!")
         return ""
+    
+@user_admin(AdminPerms.CAN_CHANGE_INFO)
+def cleanservice(update: Update, context: CallbackContext) -> str:
+    args = context.args
+    chat = update.effective_chat  # type: Optional[Chat]
+    if chat.type == chat.PRIVATE:
+        curr = sql.clean_service(chat.id)
+        if curr:
+            update.effective_message.reply_text(
+                "Welcome clean service is : on", parse_mode=ParseMode.MARKDOWN
+            )
+        else:
+            update.effective_message.reply_text(
+                "Welcome clean service is : off", parse_mode=ParseMode.MARKDOWN
+            )
+
+    elif len(args) >= 1:
+        var = args[0]
+        if var in ("no", "off"):
+            sql.set_clean_service(chat.id, False)
+            update.effective_message.reply_text("Welcome clean service is : off")
+        elif var in ("yes", "on"):
+            sql.set_clean_service(chat.id, True)
+            update.effective_message.reply_text("Welcome clean service is : on")
+        else:
+            update.effective_message.reply_text(
+                "Invalid option", parse_mode=ParseMode.MARKDOWN
+            )
+    else:
+        update.effective_message.reply_text(
+            "Usage is on/yes or off/no", parse_mode=ParseMode.MARKDOWN
+        )
+    
 
 
 def user_button(update: Update, context: CallbackContext):
@@ -1278,9 +1311,9 @@ RESET_GOODBYE = CommandHandler(
 WELCOMEMUTE_HANDLER = CommandHandler(
     "welcomemute", welcomemute, filters=Filters.chat_type.groups, run_async=True
 )
-#CLEAN_SERVICE_HANDLER = CommandHandler(
-    # "cleanservice", cleanservice, filters=Filters.chat_type.groups, run_async=True
-#)
+CLEAN_SERVICE_HANDLER = CommandHandler(
+     "antiservice", cleanservice, filters=Filters.chat_type.groups, run_async=True
+)
 CLEAN_WELCOME = CommandHandler(
     "cleanwelcome", clean_welcome, filters=Filters.chat_type.groups, run_async=True
 )
@@ -1304,7 +1337,7 @@ dispatcher.add_handler(RESET_GOODBYE)
 dispatcher.add_handler(CLEAN_WELCOME)
 dispatcher.add_handler(WELCOME_HELP)
 dispatcher.add_handler(WELCOMEMUTE_HANDLER)
-#dispatcher.add_handler(CLEAN_SERVICE_HANDLER)
+dispatcher.add_handler(CLEAN_SERVICE_HANDLER)
 dispatcher.add_handler(BUTTON_VERIFY_HANDLER)
 dispatcher.add_handler(WELCOME_MUTE_HELP)
 dispatcher.add_handler(CAPTCHA_BUTTON_VERIFY_HANDLER)
@@ -1323,7 +1356,7 @@ __handlers__ = [
     CLEAN_WELCOME,
     WELCOME_HELP,
     WELCOMEMUTE_HANDLER,
-    #CLEAN_SERVICE_HANDLER,
+    CLEAN_SERVICE_HANDLER,
     BUTTON_VERIFY_HANDLER,
     CAPTCHA_BUTTON_VERIFY_HANDLER,
     WELCOME_MUTE_HELP,

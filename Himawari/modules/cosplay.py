@@ -22,39 +22,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from Himawari.events import register
-from io import BytesIO
-from requests import get
+import requests
 from telethon import events
+from Himawari import telethn as meow
 
-@register(pattern="^/write")
-async def writer(m: events.NewMessage):
-    if not m.reply_to_msg_id:
-        text: str = (
-            m.text.split(None, 1)[1]
-            if len(m.text) < 3
-            else m.text.split(None, 1)[1].replace(" ", "%20")
-        )
-        var: str = await m.reply("`Waitoo...`")
-        with BytesIO(get(f"https://apis.xditya.me/write?text={text}").content) as file:
-            file.name: str = "image.jpg"
-            await m.reply(file=file)
-        await var.delete()
-        
-    else:
-        reply: str = (await m.get_reply_message()).text
-        text = reply.split(" ")[1].replace(" ", "%20")
-        var: str = await m.reply("`Waitoo...`")
-        with BytesIO(get(f"https://apis.xditya.me/write?text={text}").content) as file:
-            file.name: str = "image.jpg"
-            await m.reply(file=file)
-        await var.delete()
+@meow.on(events.NewMessage(pattern="^/cosplay"))
+async def waifu(event):
+  r = requests.get("https://waifu-api.vercel.app").json() #api credit- @YASH_SHARMA_1807 on telegram
+  await event.reply(file=r)
+  
+@meow.on(events.NewMessage(pattern="^/lewd"))
+async def waifu(event):
+  r = requests.get("https://waifu-api.vercel.app/items/1").json()
+  await event.reply(file=r)
 
-
-__mod_name__ = "Hand Write"
-
+__mod_name__ = "Cosplay"
 __help__ = """
-Writes the given text on white page with a pen 🖊
-
-/write <text> *:* Writes the given text.
- """
+Just a weeb type module to get anime cosplay and lewd pictures
+- /cosplay
+- /lewd
+"""
