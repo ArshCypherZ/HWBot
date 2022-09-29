@@ -39,7 +39,7 @@ async def make_carbon(code):
     return image
 
 
-@pgram.on_message(filters.command("carbon"))
+@pgram.on_message(filters.command("carbon"), group=1)
 @capture_err
 async def carbon_func(_, message):
     if not message.reply_to_message:

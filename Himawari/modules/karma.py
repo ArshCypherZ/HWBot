@@ -119,7 +119,7 @@ async def upvote(_, message):
 async def downvote(_, message):
     chat_id = message.chat.id
     is_karma = k.find_one({"chat_id": chat_id})    
-    if is_karma:
+    if not is_karma:
         if not message.reply_to_message.from_user:
             return
         if not message.from_user:

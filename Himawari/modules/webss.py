@@ -28,7 +28,7 @@ from pyrogram.types import Message
 from Himawari import pgram
 from Himawari.utils.errors import capture_err
 
-@pgram.on_message(filters.command("webss"))
+@pgram.on_message(filters.command("webss"), group=1)
 @capture_err
 async def take_ss(_, message: Message):
     try:

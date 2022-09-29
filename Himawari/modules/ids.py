@@ -63,7 +63,7 @@ async def getid(client, message):
 
     if not getattr(reply, "empty", True) and not message.forward_from_chat and not reply.sender_chat:
         text += (
-            f"**[Replied Message ID:]({reply.link})** `{reply.message_id}`\n"
+            f"**[Replied Message ID:]({reply.link})** `{message.reply_to_message.id}`\n"
         )
         text += f"**[Replied User ID:](tg://user?id={reply.from_user.id})** `{reply.from_user.id}`\n\n"
 

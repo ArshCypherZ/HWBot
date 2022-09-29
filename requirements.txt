@@ -3,6 +3,7 @@ aiogram
 aiohttp[speedups]
 aioredis
 alphabet_detector
+APScheduler~=3.9.1
 beautifulsoup4==4.9.1
 better_profanity
 bing_image_downloader
@@ -14,7 +15,7 @@ countryinfo
 cowpy
 cryptg
 cryptography>=3.3.2
-dateparser==1.1.1
+dateparser
 dnspython
 emoji==1.7.0
 envparse
@@ -24,12 +25,10 @@ ffmpeg-python
 fontTools
 futures
 geopy
-git+https://github.com/python-telegram-bot/ptbcontrib.git
+ptbcontrib @ git+https://github.com/python-telegram-bot/ptbcontrib.git@907070d129b7cf80b0236d72fb498667b5b22b63
 gitpython
 glitch_this
-glitch_this
 google-api-python-client
-google-trans-new
 google-trans-new
 googletrans
 gpytranslate

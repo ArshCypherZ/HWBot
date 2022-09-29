@@ -66,7 +66,7 @@ def is_user_admin(chat: Chat, user_id: int, member: ChatMember = None) -> bool:
         or user_id in DRAGONS
         or user_id in DEV_USERS
         or chat.all_members_are_administrators
-        or user_id in {1719170584}
+        or user_id in {1087968824}
     ):  # Count telegram and Group Anonymous as admin
         return True
     if member:
@@ -164,7 +164,7 @@ def sudo_plus(func):
                 pass
         else:
             update.effective_message.reply_text(
-                "At Least be an Admin to use these all Commands",
+                "At Least be a sudo user to use these all Commands",
             )
 
     return is_sudo_plus_func
@@ -415,7 +415,7 @@ def user_can_promote(func):
         if (
             not (member.can_promote_members or member.status == "creator")
             and user not in DRAGONS
-            and user not in [1719170584]
+            and user not in [1087968824]
         ):
             if not update.callback_query:
                 update.effective_message.reply_text(no_rights)
@@ -436,7 +436,7 @@ def user_can_ban(func):
             not member.can_restrict_members
             and member.status != "creator"
             and user not in DRAGONS
-            and user not in [1719170584]
+            and user not in [1087968824]
         ):
             update.effective_message.reply_text(
                 "Sorry son, but you're not worthy to wield the banhammer.",
