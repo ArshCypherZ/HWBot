@@ -71,7 +71,7 @@ def download_youtube_audio(arq_resp):
     return [title, performer, duration, audio_file, thumbnail_file]
 
 
-@pgram.on_message(filters.command("song") & ~filters.edited)
+@pgram.on_message(filters.command("song"), group=1)
 @capture_err
 async def music(_, message):
     global is_downloading
@@ -128,7 +128,7 @@ async def download_song(url):
     return song
 
 
-@pgram.on_message(filters.command("lyrics") & ~filters.edited)
+@pgram.on_message(filters.command("lyrics"), group=1)
 async def lyrics_func(_, message):
     if len(message.command) < 2:
         return await message.reply_text("**Usage:**\n/lyrics [QUERY]")
