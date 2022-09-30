@@ -68,7 +68,7 @@ def isArgInt(message: Message) -> list:
 
         return [False, 0]
 
-@pgram.on_message(filters.command("q"))
+@pgram.on_message(filters.command("q"), group=1)
 
 @capture_err
 
