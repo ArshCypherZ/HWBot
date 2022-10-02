@@ -1,18 +1,14 @@
 """
 MIT License
-
 Copyright (c) 2022 Arsh
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -35,7 +31,7 @@ from typing import Callable, Coroutine, Dict, List, Tuple, Union
 from PIL import Image
 from pyrogram import Client
 from pyrogram.errors import FloodWait, MessageNotModified
-from pyrogram.types import Chat, Message, User
+from pyrogram.types import Chat, Message, User, ChatPrivileges
 
 from Himawari import OWNER_ID, SUPPORT_CHAT
 from Himawari.utils.errors import split_limits
@@ -362,9 +358,12 @@ def capture_err(func):
 
 
 
-async def member_permissions(chat_id, user_id):
+async def member_permissions(chat_id: int, user_id: int):
     perms = []
-    member = await pgram.get_chat_member(chat_id, user_id)
+    try:
+        member = (await pgram.get_chat_member(chat_id, user_id)).privileges
+    except Exception:
+        return []
     if member.can_post_messages:
         perms.append("can_post_messages")
     if member.can_edit_messages:
@@ -381,8 +380,9 @@ async def member_permissions(chat_id, user_id):
         perms.append("can_invite_users")
     if member.can_pin_messages:
         perms.append("can_pin_messages")
+    if member.can_manage_video_chats:
+        perms.append("can_manage_video_chats")
     return perms
-
 
 async def current_chat_permissions(chat_id):
     perms = []

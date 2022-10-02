@@ -49,8 +49,10 @@ Should any credit be missing, kindly let us know at [Tech Division](https://t.me
 </h2>
 
 ```console
+$ sudo apt upgrade
+$ sudo apt install python3-pip
 $ git clone https://github.com/ArshCypherZ/HWBot
-$ cd HWBot
+$ cd <Repo Name>
 $ pip3 install -U -r requirements.txt
 $ cd Himawari
 $ cp config.py
