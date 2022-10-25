@@ -1,18 +1,14 @@
 """
 MIT License
-
 Copyright (c) 2022 Arsh
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -38,6 +34,7 @@ from Himawari import (
     WOLVES,
     sw,
     dispatcher,
+    EVENT_LOGS as meow
 )
 from Himawari.modules.helper_funcs.chat_status import (
     is_user_ban_protected,
@@ -184,7 +181,6 @@ def send(update, message, keyboard, backup_message):
             log.exception()
     return msg
 
-
 @loggable
 def new_member(update: Update, context: CallbackContext):  # sourcery no-metrics
     bot, job_queue = context.bot, context.job_queue
@@ -282,10 +278,34 @@ def new_member(update: Update, context: CallbackContext):  # sourcery no-metrics
             # Welcome yourself
             elif new_mem.id == bot.id:
                 update.effective_message.reply_text(
-                    "Thanks for adding me! Checkout @ViciousAlliance for more.",
-                    reply_to_message_id=reply,
+                    "Thanks for adding me! Checkout @BakufuGovt for more.", reply_to_message_id=reply
                 )
-                continue
+                creator = None
+                for x in bot.get_chat_administrators(update.effective_chat.id):
+                    if x.status == "creator":
+                        creator = x.user
+                        break
+                if creator:
+                    bot.send_message(
+                        meow,
+                        f"""
+                        #NEWGROUP
+                        \nGroup Name: **{chat.title}**
+                        \nID: `{chat.id}`
+                        \nCreator ID: `{creator.id}`
+                        """,
+                        parse_mode=ParseMode.MARKDOWN,
+                    )
+                else:
+                    bot.send_message(
+                        meow,
+                        "#NEWGROUP\n<b>Group name:</b> {}\n<b>ID:</b> <code>{}</code>".format(
+                            html.escape(chat.title),
+                            chat.id,
+                        ),
+                        parse_mode=ParseMode.HTML,
+                    )
+                
 
             else:
                 buttons = sql.get_welc_buttons(chat.id)

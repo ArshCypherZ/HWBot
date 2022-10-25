@@ -46,7 +46,8 @@ from Himawari import (
     telethn,
     updater,
     pgram,
-    BOT_USERNAME
+    BOT_USERNAME,
+    BOT_NAME
     )
 
 # needed to dynamically load modules
@@ -108,9 +109,9 @@ START_MSG = "*Hie Onichwannnn~ UwU* I am well and alive ;)"
 HELP_IMG = "https://telegra.ph/file/9dfcdab5244a61b323210.jpg"
 START_IMG = "https://telegra.ph/file/eb8617465e7a62650f862.jpg"
     
-PM_START_TEXT = """
-  ⫸ [Himawari](https://telegra.ph/file/7ba6536e75495cdc6ceb1.jpg) ⫷
-Konnichiwa, I am {}
+PM_START_TEXT = f"""
+  ⫸ [{BOT_NAME}](https://telegra.ph/file/7ba6536e75495cdc6ceb1.jpg) ⫷
+Konnichiwa, I am {BOT_NAME}
  
 I am an Anime themed group management bot with some fun extras ;)
 
@@ -140,6 +141,9 @@ buttons = [
                              text="Updates 🏃‍♂️",
                              url=f"https://t.me/{UPDATES_CHANNEL}")
                      ], 
+                    [
+                       InlineKeyboardButton(text="Bakufu Government 🌐", url="https://t.me/BakufuGovt")
+                       ]
     ]
 
                     
@@ -151,9 +155,10 @@ HELP_STRINGS = """
 • /settings:
    - in PM: will send you your settings for all supported modules.
    - in a group: will redirect you to pm, with all that chat's settings.
+• You can also navigate between the help menu by clicking on left-right arrow.   
 """
 
-DONATE_STRING = """Just support us, we will be more than happy"""
+DONATE_STRING = """PM @Arsshh for donating :)"""
 
 
 IMPORTED = {}
@@ -283,7 +288,7 @@ def start(update: Update, context: CallbackContext):
                   InlineKeyboardButton(text="Updates 🌻", url=f"https://telegram.dog/{UPDATES_CHANNEL}")
                       ],
                     [
-                       InlineKeyboardButton(text="Alliance 🌐", url="https://telegram.dog/ViciousAlliance")
+                       InlineKeyboardButton(text="Source 🌐", url="https://github.com/ArshCypherZ/HWBOT")
                   ]
                 ]
             ),

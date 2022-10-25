@@ -40,6 +40,8 @@ Reach out support at [Tech Division](https://t.me/IgniteTechDivision), where you
 + [Priyansh Bharti](https://github.com/PriyanshBharti) : Major fixes
 + [Siddharta Rao](https://github.com/IzumiCypherX) : Cats GIF module
 
+Major thanks to Bakufu's Multi-API (api.bakufu.tech)
+
 
 Should any credit be missing, kindly let us know at [Tech Division](https://t.me/IgniteTechDivision) or simply submit a pull request on the readme.
 

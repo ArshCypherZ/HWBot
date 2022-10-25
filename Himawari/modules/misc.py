@@ -204,7 +204,7 @@ def get_user_info(chat: Chat, user: User) -> str:
             if result.custom_title:
                 text += f"\n\nThis user holds the title <b>{result.custom_title}</b> here."
     if user.id == OWNER_ID:        
-        text += "\n\n<code>Our Cute Neko Arsh</code> :3"
+        text += "\n\n<code>Our Cute Neko</code> :3"
         disaster_level_present = True
     elif user.id in DEV_USERS:
         text += "\n\n<code>This user is a part of our family</code> 🌻"
@@ -222,7 +222,7 @@ def get_user_info(chat: Chat, user: User) -> str:
         text += "\n\n<code>Member of Himawari Tech, totally cool right?</code>"
         disaster_level_present = True
     if disaster_level_present:
-        text += ' [<a href="https://t.me/IgniteTechUpdates/13">?</a>]'
+        text += f' [<a href="https://t.me/IgniteTechUpdates/13">?</a>]'
     text += "\n"
     for mod in USER_INFO:
         if mod.__mod_name__ == "Users":
@@ -323,7 +323,7 @@ def stats(update, context):
             "\n*Bot statistics*:\n"
             + "\n".join([mod.__stats__() for mod in STATS]) +
             "\n\n[⍙ GitHub](https://github.com/ArshCypherZ/HWBot) | [Telegram](https://t.me/Himawari_robot)\n\n" +
-            "╘══「 by [Vicious Alliance](t.me/ViciousAlliance) 」\n",
+            "╘══「 by [Bakufu Government](t.me/BakufuGovt) 」\n",
         parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
     except BaseException:
         update.effective_message.reply_text(
@@ -335,7 +335,7 @@ def stats(update, context):
                     )
                     + "\n\n⍙ [GitHub](https://github.com/ArshCypherZ/HWBot) | [Telegram](https://t.me/Himawari_Robot)\n\n"
                 )
-                + "╘══「 by [Vicious Alliance](t.me/ViciousAlliance) 」\n"
+                + "╘══「 by [Bakufu Government](t.me/BakufuGovt) 」\n"
             ),
             parse_mode=ParseMode.MARKDOWN,         
             disable_web_page_preview=True,
