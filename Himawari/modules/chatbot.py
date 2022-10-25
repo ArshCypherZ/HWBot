@@ -1,18 +1,14 @@
 """
 MIT License
-
 Copyright (c) 2022 Arsh
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -48,10 +44,12 @@ from Himawari.modules.log_channel import gloggable
 def kukirm(update: Update, context: CallbackContext) -> str:
     query: Optional[CallbackQuery] = update.callback_query
     user: Optional[User] = update.effective_user
-    if match := re.match(r"rm_chat\((.+?)\)", query.data):
-        user_id = match[1]
+    match = re.match(r"rm_chat\((.+?)\)", query.data)
+    if match:
+        user_id = match.group(1)
         chat: Optional[Chat] = update.effective_chat
-        if is_kuki := sql.rem_kuki(chat.id):
+        is_kuki = sql.rem_kuki(chat.id)
+        if is_kuki:
             is_kuki = sql.rem_kuki(user_id)
             return (
                 f"<b>{html.escape(chat.title)}:</b>\n"
@@ -69,10 +67,12 @@ def kukirm(update: Update, context: CallbackContext) -> str:
 def kukiadd(update: Update, context: CallbackContext) -> str:
     query: Optional[CallbackQuery] = update.callback_query
     user: Optional[User] = update.effective_user
-    if match := re.match(r"add_chat\((.+?)\)", query.data):
-        user_id = match[1]
+    match = re.match(r"add_chat\((.+?)\)", query.data)
+    if match:
+        user_id = match.group(1)
         chat: Optional[Chat] = update.effective_chat
-        if is_kuki := sql.set_kuki(chat.id):
+        is_kuki = sql.set_kuki(chat.id)
+        if is_kuki:
             is_kuki = sql.set_kuki(user_id)
             return (
                 f"<b>{html.escape(chat.title)}:</b>\n"
@@ -93,11 +93,11 @@ def kuki(update: Update, context: CallbackContext):
     msg = "Choose an option"
     keyboard = InlineKeyboardMarkup([[
         InlineKeyboardButton(
-            text="Enable",
+            text="Enable Chatbot",
             callback_data="add_chat({})")],
        [
         InlineKeyboardButton(
-            text="Disable",
+            text="Disable Chatbot",
             callback_data="rm_chat({})")]])
     message.reply_text(
         msg,
@@ -123,16 +123,13 @@ def chatbot(update: Update, context: CallbackContext):
     is_kuki = sql.is_kuki(chat_id)
     if not is_kuki:
         return
-
+	
     if message.text and not message.document:
         if not kuki_message(context, message):
             return
         Message = message.text
         bot.send_chat_action(chat_id, action="typing")
-        kukiurl = requests.get(
-            f'https://kukiapi.xyz/api/apikey=5281955434-KUKIyq4NCB2Ca8/himawari/@nekoarsh/message={Message}'
-        )
-
+        kukiurl = requests.get('https://api.bakufu.tech/api/chatbot/cleverbot?name=himawari&owner=arsh&message='+Message)
         Kuki = json.loads(kukiurl.text)
         kuki = Kuki['reply']
         sleep(0.3)
@@ -153,13 +150,10 @@ def list_all_chats(update: Update, context: CallbackContext):
     update.effective_message.reply_text(text, parse_mode="HTML")
 
 __help__ = """
-Chatbot utilizes the Kuki's API which allows Himawari to talk and provide a more interactive group chat experience.
-
+Chatbot utilizes the Bakufu's Chatbot API which allows Himawari to talk and provide a more interactive group chat experience.
 *Admins only Commands*:
-
 • /Chatbot*:* Shows chatbot control panel
-
-*Powered by ItelAi*
+*Powered by @BakufuGovt*
 """
 
 __mod_name__ = "ChatBot"
