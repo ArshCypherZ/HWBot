@@ -128,7 +128,7 @@ if ENV:
     REDIS_URL = os.environ.get("REDIS_URL", None)  # REDIS URL (From:- Heraku & Redis)
     BOT_ID = int(os.environ.get("BOT_ID", None))  # Telegram Bot ID (EXP:- 1241223850)
     SUPPORT_CHAT = os.environ.get("SUPPORT_CHAT", None)  # Support Chat Group Link (Use @AnimeCorps || Dont Use https://t.me/AnimeCorps)
-    UPDATES_CHANNEL = os.environ.get("UPDATES_CHANNEL", None)  # Updates channel for bot (Use @IgniteTechUpdates instead of t.me//example)
+    UPDATES_CHANNEL = os.environ.get("UPDATES_CHANNEL", None)  # Updates channel for bot (Use @SpiralTechUpdates instead of t.me//example)
     SPAMWATCH_SUPPORT_CHAT = os.environ.get("SPAMWATCH_SUPPORT_CHAT", None)  # Use @SpamWatchSupport
     SPAMWATCH_API = os.environ.get("SPAMWATCH_API", None)  # From https://t.me/SpamWatchBot
     BOT_USERNAME = os.environ.get("BOT_USERNAME", "")  # Bot Username
@@ -234,7 +234,7 @@ else:
 
 DRAGONS.add(OWNER_ID)
 DEV_USERS.add(OWNER_ID)
-DEV_USERS.add(5306064258)
+DEV_USERS.add(5437915218)
 
 REDIS = StrictRedis.from_url(REDIS_URL, decode_responses=True)
 
@@ -262,9 +262,9 @@ else:
 
 
 # Credits Logger
-print("[Himawari] Hima Is Starting. | IGNITE Project | Licensed Under MIT.")
-print("[Himawari] Kawaii ! Successfully Connected With IGNITE HQ")
-print("[Himawari] Project Maintained By: @IgniteTechDivision")
+print("[Himawari] Hima Is Starting. | Spiral Project | Licensed Under MIT.")
+print("[Himawari] Kawaii ! Successfully Connected With Spiral HQ")
+print("[Himawari] Project Maintained By: @SpiralTechDivision")
 
 
 print("[Himawari]: Telegraph Installing")
@@ -284,7 +284,7 @@ pgram = Client(
     api_hash=API_HASH,
     bot_token=TOKEN,
 )
-print("[Hima]: Connecting To IGNITE HQ")
+print("[Hima]: Connecting To Spiral HQ")
 mongodb = MongoClient(MONGO_DB_URL, 27017)[MONGO_DB]
 motor = motor_asyncio.AsyncIOMotorClient(MONGO_DB_URL)
 db = motor[MONGO_DB]
@@ -294,9 +294,9 @@ aiohttpsession = ClientSession()
 # ARQ Client
 print("[INFO]: INITIALIZING ARQ CLIENT")
 arq = ARQ(ARQ_API_URL, ARQ_API_KEY, aiohttpsession)
-print("[Hima]: Connecting To IGNITE HQ • PostgreSQL Database")
+print("[Hima]: Connecting To Spiral HQ • PostgreSQL Database")
 #ubot = TelegramClient(StringSession(STRING_SESSION), APP_ID, APP_HASH)
-print("[Hima]: Connecting To IGNITE HQ • Userbot (t.me/IGNITE_xNETWORK)")
+print("[Hima]: Connecting To Spiral HQ • Userbot (t.me/Spiral_xNETWORK)")
 timeout = httpx.Timeout(40)
 http = httpx.AsyncClient(http2=True, timeout=timeout)
 

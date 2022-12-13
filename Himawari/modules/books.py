@@ -71,12 +71,12 @@ async def _(event):
 
         f.write(f"By @{BOT_USERNAME}.")
         f.close()
-        caption = f"A collabration with IGNITE HQ.\n Join Support @{SUPPORT_CHAT} "
+        caption = f"A collabration with Spiral HQ.\n Join Support @{SUPPORT_CHAT} "
 
         await telethn.send_file(
             event.chat_id,
             "book.txt",
-            caption=f"**BOOKS GATHERED SUCCESSFULLY!\n\nBY @IGNITE_XNETWORK **",
+            caption=f"**BOOKS GATHERED SUCCESSFULLY!**",
         )
         os.remove("book.txt")
         await KkK.delete()

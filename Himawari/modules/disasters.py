@@ -194,17 +194,17 @@ def addwhitelist(update: Update, context: CallbackContext) -> str:
         data = json.load(infile)
 
     if user_id in DRAGONS:
-        rt += "This member is our bestfriend but i will like when our bestfriend becomes a IGNITE "
+        rt += "This member is our bestfriend but i will like when our bestfriend becomes a Spiral "
         data["sudos"].remove(user_id)
         DRAGONS.remove(user_id)
 
     if user_id in DEMONS:
-        rt += "You are our friend, but it's for your own good if you become a IGNITE instead."
+        rt += "You are our friend, but it's for your own good if you become a Spiral instead."
         data["supports"].remove(user_id)
         DEMONS.remove(user_id)
 
     if user_id in WOLVES:
-        message.reply_text("This user is already a true IGNITE")
+        message.reply_text("This user is already a true Spiral")
         return ""
 
     data["whitelists"].append(user_id)
@@ -214,7 +214,7 @@ def addwhitelist(update: Update, context: CallbackContext) -> str:
         json.dump(data, outfile, indent=4)
 
     update.effective_message.reply_text(
-        f"{rt}\nSuccessfully promoted {user_member.first_name} to a ranked IGNITE!"
+        f"{rt}\nSuccessfully promoted {user_member.first_name} to a ranked Spiral!"
     )
 
 
@@ -259,7 +259,7 @@ def addtiger(update: Update, context: CallbackContext) -> str:
         DEMONS.remove(user_id)
 
     if user_id in WOLVES:
-        rt += "This user is already a IGNITE, we can be classmates as well.."
+        rt += "This user is already a Spiral, we can be classmates as well.."
         data["whitelists"].remove(user_id)
         WOLVES.remove(user_id)
 
@@ -403,7 +403,7 @@ def removewhitelist(update: Update, context: CallbackContext) -> str:
             log_message = f"<b>{html.escape(chat.title)}:</b>\n{log_message}"
 
         return log_message
-    message.reply_text("This user is not a IGNITE!")
+    message.reply_text("This user is not a Spiral!")
     return ""
 
 
@@ -448,9 +448,9 @@ def removetiger(update: Update, context: CallbackContext) -> str:
 
 @whitelist_plus
 def whitelistlist(update: Update, context: CallbackContext):
-    reply = "<b>IGNITE:</b>\n\n"
+    reply = "<b>Spiral:</b>\n\n"
     m = update.effective_message.reply_text(
-        "<code>Gathering intel from IGNITE HQ...</code>", parse_mode=ParseMode.HTML,
+        "<code>Gathering intel from Spiral HQ...</code>", parse_mode=ParseMode.HTML,
     )
     bot = context.bot
     for each_user in WOLVES:
@@ -469,7 +469,7 @@ def whitelistlist(update: Update, context: CallbackContext):
 def tigerlist(update: Update, context: CallbackContext):
     reply = "<b>Classmates:</b>\n\n"
     m = update.effective_message.reply_text(
-        "<code>Gathering intel from IGNITE HQ...</code>", parse_mode=ParseMode.HTML,
+        "<code>Gathering intel from Spiral HQ...</code>", parse_mode=ParseMode.HTML,
     )
     bot = context.bot
     for each_user in TIGERS:
@@ -486,7 +486,7 @@ def tigerlist(update: Update, context: CallbackContext):
 def supportlist(update: Update, context: CallbackContext):
     bot = context.bot
     m = update.effective_message.reply_text(
-        "<code>Gathering intel from IGNITE HQ..</code>", parse_mode=ParseMode.HTML,
+        "<code>Gathering intel from Spiral HQ..</code>", parse_mode=ParseMode.HTML,
     )
     reply = "<b>Friends:</b>\n\n"
     for each_user in DEMONS:
@@ -503,7 +503,7 @@ def supportlist(update: Update, context: CallbackContext):
 def sudolist(update: Update, context: CallbackContext):
     bot = context.bot
     m = update.effective_message.reply_text(
-        "<code>Gathering intel from IGNITE HQ..</code>", parse_mode=ParseMode.HTML,
+        "<code>Gathering intel from Spiral HQ..</code>", parse_mode=ParseMode.HTML,
     )
     true_sudo = list(set(DRAGONS) - set(DEV_USERS))
     reply = "<b>Besto Friendos:</b>\n\n"
@@ -521,7 +521,7 @@ def sudolist(update: Update, context: CallbackContext):
 def devlist(update: Update, context: CallbackContext):
     bot = context.bot
     m = update.effective_message.reply_text(
-        "<code>Gathering intel from IGNITE HQ..</code>", parse_mode=ParseMode.HTML,
+        "<code>Gathering intel from Spiral HQ..</code>", parse_mode=ParseMode.HTML,
     )
     true_dev = list(set(DEV_USERS) - {OWNER_ID})
     reply = "<b>Family Members:</b>\n\n"
@@ -538,12 +538,12 @@ def devlist(update: Update, context: CallbackContext):
 SUDO_HANDLER = CommandHandler(("addsudo", "addbestfriend"), addsudo, run_async=True)
 SUPPORT_HANDLER = CommandHandler(("addsupport", "addfriend"), addsupport, run_async=True)
 TIGER_HANDLER = CommandHandler(("addclassmate"), addtiger)
-WHITELIST_HANDLER = CommandHandler(("IGNITE", "addwhitelist"), addwhitelist, run_async=True)
+WHITELIST_HANDLER = CommandHandler(("Spiral", "addwhitelist"), addwhitelist, run_async=True)
 UNSUDO_HANDLER = CommandHandler(("removesudo", "rmbestfriend"), removesudo, run_async=True)
 UNSUPPORT_HANDLER = CommandHandler(("removesupport", "rmfriend"), removesupport, run_async=True)
 UNTIGER_HANDLER = CommandHandler(("rmclassmate"), removetiger)
-UNWHITELIST_HANDLER = CommandHandler(("removewhitelist", "rmIGNITE"), removewhitelist, run_async=True)
-WHITELISTLIST_HANDLER = CommandHandler(["whitelistlist", "IGNITES"], whitelistlist, run_async=True)
+UNWHITELIST_HANDLER = CommandHandler(("removewhitelist", "rmSpiral"), removewhitelist, run_async=True)
+WHITELISTLIST_HANDLER = CommandHandler(["whitelistlist", "SpiralS"], whitelistlist, run_async=True)
 TIGERLIST_HANDLER = CommandHandler(["classmates"], tigerlist, run_async=True)
 SUPPORTLIST_HANDLER = CommandHandler(["supportlist", "friends"], supportlist, run_async=True)
 SUDOLIST_HANDLER = CommandHandler(["sudolist", "bestfriends"], sudolist, run_async=True)

@@ -10,7 +10,7 @@
 
 An advanced scary looking :p telegram botto running on python3 with sqlalchemy, Redis, mongodb database.
 
-Reach out support at [Tech Division](https://t.me/IgniteTechDivision), where you can ask for help setting up your bot, discover/request new features, report bugs, and stay in the loop whenever a new update is available. 
+Reach out support at [Spiral Tech Division](https://t.me/SpiralTechDivision), where you can ask for help setting up your bot, discover/request new features, report bugs, and stay in the loop whenever a new update is available. 
 
 <p align="center">
     <a href="https://python.org">
@@ -40,10 +40,8 @@ Reach out support at [Tech Division](https://t.me/IgniteTechDivision), where you
 + [Priyansh Bharti](https://github.com/PriyanshBharti) : Major fixes
 + [Siddharta Rao](https://github.com/IzumiCypherX) : Cats GIF module
 
-Major thanks to Bakufu's Multi-API (api.bakufu.tech)
 
-
-Should any credit be missing, kindly let us know at [Tech Division](https://t.me/IgniteTechDivision) or simply submit a pull request on the readme.
+Should any credit be missing, kindly let us know at [Spiral Tech Division](https://t.me/SpiralTechDivision) or simply submit a pull request on the readme.
 
 
 <h2 align="center"> 
@@ -57,7 +55,7 @@ $ git clone https://github.com/ArshCypherZ/HWBot
 $ cd <Repo Name>
 $ pip3 install -U -r requirements.txt
 $ cd Himawari
-$ cp config.py
+$ cp Himawari/config.py
 ```
  
 <h3 align="center"> 

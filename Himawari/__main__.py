@@ -29,6 +29,7 @@ import time
 import re
 import traceback
 import Himawari.modules.sql.users_sql as sql
+from sys import argv
 
 from typing import Optional
 from Himawari import (
@@ -141,9 +142,6 @@ buttons = [
                              text="Updates 🏃‍♂️",
                              url=f"https://t.me/{UPDATES_CHANNEL}")
                      ], 
-                    [
-                       InlineKeyboardButton(text="Bakufu Government 🌐", url="https://t.me/BakufuGovt")
-                       ]
     ]
 
                     
@@ -721,9 +719,9 @@ def main():
     dispatcher.add_error_handler(error_callback)
 
     if WEBHOOK:
-        URL="https://meow.herokuapp.com" #dont change or do if u r on heroku
+        URL="https://meow.herokuapp.com"
         LOGGER.info("Using webhooks.")
-        updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN)
+        updater.start_webhook(listen="", port=PORT, url_path=TOKEN)
 
         if CERT_PATH:
             updater.bot.set_webhook(url=URL + TOKEN, certificate=open(CERT_PATH, "rb"))
@@ -731,12 +729,17 @@ def main():
             updater.bot.set_webhook(url=URL + TOKEN)
 
     else:
-        LOGGER.info(f"Himawari started, Using long polling. | SUPPORT: [@{SUPPORT_CHAT}]")
+        LOGGER.info(f"Himawari started, Using long polling.")
         updater.start_polling(timeout=15, read_latency=4, drop_pending_updates=True, allowed_updates=Update.ALL_TYPES)
+    if len(argv) not in (1, 3, 4):
+        telethn.disconnect()
+    else:
+        telethn.run_until_disconnected()
+    updater.idle()
 
 
-if __name__ == '__main__':
-    LOGGER.info("Successfully loaded modules: " + str(ALL_MODULES))
+if __name__ == "__main__":
+    LOGGER.info("[Himawari] Successfully loaded modules: " + str(ALL_MODULES))
     telethn.start(bot_token=TOKEN)
     pgram.start()
     main()

@@ -124,7 +124,7 @@ def ban(update: Update, context: CallbackContext) -> str:
                 "Bring an order from Onichan to fight our classmates"
             )
         elif user_id in WOLVES:
-            message.reply_text("IGNITE access make them ban immune!")
+            message.reply_text("Spiral access make them ban immune!")
         else:
             message.reply_text("⚠️ Cannot banned admin.")
         return log_message

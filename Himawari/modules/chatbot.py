@@ -128,8 +128,12 @@ def chatbot(update: Update, context: CallbackContext):
         if not kuki_message(context, message):
             return
         Message = message.text
+        if " " in Message:
+          meow = Message.replace(" ", "%20")
+        else:
+          meow = Message
         bot.send_chat_action(chat_id, action="typing")
-        kukiurl = requests.get('https://api.bakufu.tech/api/chatbot/cleverbot?name=himawari&owner=arsh&message='+Message)
+        kukiurl = requests.get(f'https://bakufuapi.vercel.app/api/chatbot/cleverbot?name=Himawari&owner=Arsh&message={meow}')
         Kuki = json.loads(kukiurl.text)
         kuki = Kuki['reply']
         sleep(0.3)
@@ -137,7 +141,7 @@ def chatbot(update: Update, context: CallbackContext):
 
 def list_all_chats(update: Update, context: CallbackContext):
     chats = sql.get_all_kuki_chats()
-    text = "<b>KUKI-Enabled Chats</b>\n"
+    text = "<b>Chatbot-Enabled Chats</b>\n"
     for chat in chats:
         try:
             x = context.bot.get_chat(int(*chat))

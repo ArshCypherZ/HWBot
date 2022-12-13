@@ -46,7 +46,7 @@ MemesReddit = [
 async def mimi(event):
     try:
         memereddit = random.choice(MemesReddit)
-        meme_link = f"https://meme-api.herokuapp.com/gimme/{memereddit}"
+        meme_link = f"https://meme-api.com/gimme/{memereddit}"
         q = requests.get(meme_link).json()
         await event.reply(q["title"], file=q["url"])
         
@@ -57,7 +57,7 @@ async def mimi(event):
 async def mimi(event):
     try:
         memereddit = random.choice(MemesReddit)
-        meme_link = "https://meme-api.herokuapp.com/gimme/dankmemes"
+        meme_link = "https://meme-api.com/gimme/dankmemes"
         q = requests.get(meme_link).json()
         await event.reply(q["title"], file=q["url"])
         
@@ -68,7 +68,7 @@ async def mimi(event):
 async def mimi(event):
     try:
         memereddit = random.choice(MemesReddit)
-        meme_link = "https://meme-api.herokuapp.com/gimme/LoliMemes"
+        meme_link = "https://meme-api.com/gimme/LoliMemes"
         q = requests.get(meme_link).json()
         await event.reply(q["title"], file=q["url"])
         
@@ -79,7 +79,7 @@ async def mimi(event):
 async def mimi(event):
     try:
         memereddit = random.choice(MemesReddit)
-        meme_link = "https://meme-api.herokuapp.com/gimme/Hornyjail"
+        meme_link = "https://meme-api.com/gimme/Hornyjail"
         q = requests.get(meme_link).json()
         await event.reply(q["title"], file=q["url"])
         
@@ -90,7 +90,7 @@ async def mimi(event):
 async def mimi(event):
     try:
         memereddit = random.choice(MemesReddit)
-        meme_link = "https://meme-api.herokuapp.com/gimme/wholesomememes"
+        meme_link = "https://meme-api.com/gimme/wholesomememes"
         q = requests.get(meme_link).json()
         await event.reply(q["title"], file=q["url"])
         
@@ -101,7 +101,7 @@ async def mimi(event):
 async def mimi(event):
     try:
         memereddit = random.choice(MemesReddit)
-        meme_link = "https://meme-api.herokuapp.com/gimme/PewdiepieSubmissions"
+        meme_link = "https://meme-api.com/gimme/PewdiepieSubmissions"
         q = requests.get(meme_link).json()
         await event.reply(q["title"], file=q["url"])
         
@@ -112,7 +112,7 @@ async def mimi(event):
 async def mimi(event):
     try:
         memereddit = random.choice(MemesReddit)
-        meme_link = "https://meme-api.herokuapp.com/gimme/hornyresistance"
+        meme_link = "https://meme-api.com/gimme/hornyresistance"
         q = requests.get(meme_link).json()
         await event.reply(q["title"], file=q["url"])
         
@@ -123,7 +123,7 @@ async def mimi(event):
 async def mimi(event):
     try:
         memereddit = random.choice(MemesReddit)
-        meme_link = "https://meme-api.herokuapp.com/gimme/teenagers"
+        meme_link = "https://meme-api.com/gimme/teenagers"
         q = requests.get(meme_link).json()
         await event.reply(q["title"], file=q["url"])
         
@@ -134,7 +134,7 @@ async def mimi(event):
 async def mimi(event):
     try:
         memereddit = random.choice(MemesReddit)
-        meme_link = "https://meme-api.herokuapp.com/gimme/FBI_Memes"
+        meme_link = "https://meme-api.com/gimme/FBI_Memes"
         q = requests.get(meme_link).json()
         await event.reply(q["title"], file=q["url"])
         
@@ -145,7 +145,7 @@ async def mimi(event):
 async def mimi(event):
     try:
         memereddit = random.choice(MemesReddit)
-        meme_link = "https://meme-api.herokuapp.com/gimme/shitposting"
+        meme_link = "https://meme-api.com/gimme/shitposting"
         q = requests.get(meme_link).json()
         await event.reply(q["title"], file=q["url"])
         
@@ -157,7 +157,7 @@ async def mimi(event):
 async def mimi(event):
     try:
         memereddit = random.choice(MemesReddit)
-        meme_link = "https://meme-api.herokuapp.com/gimme/cursedcomments"
+        meme_link = "https://meme-api.com/gimme/cursedcomments"
         q = requests.get(meme_link).json()
         await event.reply(q["title"], file=q["url"])
         

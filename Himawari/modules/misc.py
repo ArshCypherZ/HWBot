@@ -222,7 +222,7 @@ def get_user_info(chat: Chat, user: User) -> str:
         text += "\n\n<code>Member of Himawari Tech, totally cool right?</code>"
         disaster_level_present = True
     if disaster_level_present:
-        text += f' [<a href="https://t.me/IgniteTechUpdates/13">?</a>]'
+        text += f' [<a href="https://t.me/SpiralTechUpdates/13">?</a>]'
     text += "\n"
     for mod in USER_INFO:
         if mod.__mod_name__ == "Users":

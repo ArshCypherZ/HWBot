@@ -85,10 +85,10 @@ def warn(user: User,
 
     if user.id in WOLVES:
         if warner:
-            message.reply_text("IGNITES are warn immune.")
+            message.reply_text("SpiralS are warn immune.")
         else:
             message.reply_text(
-                "IGNITE triggered an auto warn filter!\nI can't warn IGNITES but they should avoid abusing this."
+                "Spiral triggered an auto warn filter!\nI can't warn SpiralS but they should avoid abusing this."
             )
         return
 

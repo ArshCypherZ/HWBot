@@ -63,7 +63,7 @@ class Config(object):
     DB_URL="postgresql://wdsdsw@ldsas/wasassddb" #postgres sql database link
     REDIS_URL="redis://dsds3@reddsdsuth-1-1.ec2.cloud.redislabs.com:154dsd/Arssddsdsb" #redis database url from redislabs.com
     TOKEN="54dssdV8e59Odo" #bot token from @BotFather
-    DEV_USERS=[5306064258] #developers id
+    DEV_USERS=[5437915218] #developers id
     DRAGONS=[9656] #sudo users id
     DEMONS=[1909] #support user ids
     TIGERS=[1] #commas for multiple ids
@@ -71,7 +71,7 @@ class Config(object):
     DONATION_LINK="https://www.paypal.me/PaulSonOfLars" #u can change with yours
     EVENT_LOGS=-100159 #channel id for gban logs
     JOIN_LOGGER=-1001523  #log channel/group id
-    OWNER_ID=5306064258 #owner id in integer
+    OWNER_ID=5437915218 #owner id in integer
     ERROR_LOGS=-1001 #support group id
     BOT_NAME="Himawari" #your bot name
     ARQ_API_KEY="SLSFXSsdUXNSMH-ARQ" #ARQ api key from @ARQRobot
