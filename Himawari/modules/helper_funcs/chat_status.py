@@ -413,7 +413,8 @@ def user_can_promote(func):
         member = update.effective_chat.get_member(user)
         no_rights = "You do not have 'add admin' rights."
         if (
-            not (member.can_promote_members or member.status == "creator")
+            not member.can_promote_members
+            and member.status != "creator"
             and user not in DRAGONS
             and user not in [1087968824]
         ):

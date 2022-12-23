@@ -51,16 +51,12 @@ def afk(update, context):
     if user.id == 777000:
         return
     start_afk_time = time.time()
-    if len(args) >= 2:
-        reason = args[1]
-    else:
-        reason = "none"
+    reason = args[1] if len(args) >= 2 else "none"
     start_afk(update.effective_user.id, reason)
     REDIS.set(f'afk_time_{update.effective_user.id}', start_afk_time)
     fname = update.effective_user.first_name
     try:
-        update.effective_message.reply_text(
-            "{} is now away!".format(fname))
+        update.effective_message.reply_text(f"{fname} is now away!")
     except BadRequest:
         pass
 
@@ -74,14 +70,14 @@ def no_longer_afk(update, context):
         return
     end_afk_time = get_readable_time((time.time() - float(REDIS.get(f'afk_time_{user.id}'))))
     REDIS.delete(f'afk_time_{user.id}')
-    res = end_afk(user.id)
-    if res:
+    if res := end_afk(user.id):
         if message.new_chat_members:  #dont say msg
             return
         firstname = update.effective_user.first_name
         try:
             message.reply_text(
-                "{} is back online!\n\nYou were gone for {}.".format(firstname, end_afk_time))
+                f"{firstname} is back online!\n\nYou were gone for {end_afk_time}."
+            )
         except Exception:
             return
 
@@ -119,8 +115,7 @@ def reply_afk(update, context):
                 try:
                     chat = context.bot.get_chat(user_id)
                 except BadRequest:
-                    print("Error: Could not fetch userid {} for AFK module".
-                          format(user_id))
+                    print(f"Error: Could not fetch userid {user_id} for AFK module")
                     return
                 fst_name = chat.first_name
 
@@ -139,16 +134,14 @@ def check_afk(update, context, user_id, fst_name, userc_id):
     if is_user_afk(user_id):
         reason = afk_reason(user_id)
         since_afk = get_readable_time((time.time() - float(REDIS.get(f'afk_time_{user_id}'))))
+        if int(userc_id) == int(user_id):
+            return
         if reason == "none":
-            if int(userc_id) == int(user_id):
-                return
-            res = "{} is afk.\n\nLast seen {} ago.".format(fst_name, since_afk)
-            update.effective_message.reply_text(res)
+            res = f"{fst_name} is afk.\n\nLast seen {since_afk} ago."
         else:
-            if int(userc_id) == int(user_id):
-                return
-            res = "{} is afk.\nReason: {}\n\nLast seen {} ago.".format(fst_name, reason, since_afk)
-            update.effective_message.reply_text(res)
+            res = f"{fst_name} is afk.\nReason: {reason}\n\nLast seen {since_afk} ago."
+
+        update.effective_message.reply_text(res)
 
 
 def __user_info__(user_id):

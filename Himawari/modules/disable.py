@@ -82,13 +82,13 @@ if is_module_loaded(FILENAME):
                     command = fst_word[1:].split("@")
                     command.append(message.bot.username)
 
-                    if not (
-                        command[0].lower() in self.command
-                        and command[1].lower() == message.bot.username.lower()
+                    if (
+                        command[0].lower() not in self.command
+                        or command[1].lower() != message.bot.username.lower()
                     ):
                         return None
-                    chat = update.effective_chat
                     user = update.effective_user
+                    chat = update.effective_chat
                     user_id = chat.id if user.id == 1087968824 else user.id
                     if SpamChecker.check_user(user_id):
                         return None
@@ -145,13 +145,13 @@ if is_module_loaded(FILENAME):
     @user_admin
     def disable(update: Update, context: CallbackContext):
         args = context.args
-        chat = update.effective_chat
         if len(args) >= 1:
             disable_cmd = args[0]
             if disable_cmd.startswith(CMD_STARTERS):
                 disable_cmd = disable_cmd[1:]
 
             if disable_cmd in set(DISABLE_CMDS + DISABLE_OTHER):
+                chat = update.effective_chat
                 sql.disable_command(chat.id, str(disable_cmd).lower())
                 update.effective_message.reply_text(
                     f"Disabled the use of `{disable_cmd}`",
@@ -167,7 +167,6 @@ if is_module_loaded(FILENAME):
     @user_admin
     def disable_module(update: Update, context: CallbackContext):
         args = context.args
-        chat = update.effective_chat
         if len(args) >= 1:
             disable_module = "Himawari.modules." + args[0].rsplit(".", 1)[0]
 
@@ -188,6 +187,7 @@ if is_module_loaded(FILENAME):
             disabled_cmds = []
             failed_disabled_cmds = []
 
+            chat = update.effective_chat
             for disable_cmd in command_list:
                 if disable_cmd.startswith(CMD_STARTERS):
                     disable_cmd = disable_cmd[1:]
@@ -219,12 +219,12 @@ if is_module_loaded(FILENAME):
     @user_admin
     def enable(update: Update, context: CallbackContext):
         args = context.args
-        chat = update.effective_chat
         if len(args) >= 1:
             enable_cmd = args[0]
             if enable_cmd.startswith(CMD_STARTERS):
                 enable_cmd = enable_cmd[1:]
 
+            chat = update.effective_chat
             if sql.enable_command(chat.id, enable_cmd):
                 update.effective_message.reply_text(
                     f"Enabled the use of `{enable_cmd}`", parse_mode=ParseMode.MARKDOWN,
@@ -239,8 +239,6 @@ if is_module_loaded(FILENAME):
     @user_admin
     def enable_module(update: Update, context: CallbackContext):
         args = context.args
-        chat = update.effective_chat
-
         if len(args) >= 1:
             enable_module = "Himawari.modules." + args[0].rsplit(".", 1)[0]
 
@@ -260,6 +258,8 @@ if is_module_loaded(FILENAME):
 
             enabled_cmds = []
             failed_enabled_cmds = []
+
+            chat = update.effective_chat
 
             for enable_cmd in command_list:
                 if enable_cmd.startswith(CMD_STARTERS):

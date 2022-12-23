@@ -37,7 +37,7 @@ class Rules(BASE):
         self.chat_id = chat_id
 
     def __repr__(self):
-        return "<Chat {} rules: {}>".format(self.chat_id, self.rules)
+        return f"<Chat {self.chat_id} rules: {self.rules}>"
 
 
 Rules.__table__.create(checkfirst=True)
@@ -72,7 +72,6 @@ def num_chats():
 
 def migrate_chat(old_chat_id, new_chat_id):
     with INSERTION_LOCK:
-        chat = SESSION.query(Rules).get(str(old_chat_id))
-        if chat:
+        if chat := SESSION.query(Rules).get(str(old_chat_id)):
             chat.chat_id = str(new_chat_id)
         SESSION.commit()

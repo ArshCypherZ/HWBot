@@ -38,9 +38,8 @@ async def _(event):
         return
     input_str = event.pattern_match.group(1)
     KkK = await event.reply("searching for the book...")
-    lin = "https://b-ok.cc/s/"
     text = input_str
-    link = lin + text
+    link = f"https://b-ok.cc/s/{text}"
 
     headers = [
         "User-Agent",
@@ -76,7 +75,7 @@ async def _(event):
         await telethn.send_file(
             event.chat_id,
             "book.txt",
-            caption=f"**BOOKS GATHERED SUCCESSFULLY!**",
+            caption="**BOOKS GATHERED SUCCESSFULLY!**",
         )
         os.remove("book.txt")
         await KkK.delete()

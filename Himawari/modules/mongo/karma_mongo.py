@@ -60,9 +60,7 @@ async def user_global_karma(user_id) -> int:
 
 async def get_karmas(chat_id: int) -> Dict[str, int]:
     karma = await karmadb.find_one({"chat_id": chat_id})
-    if not karma:
-        return {}
-    return karma['karma']
+    return karma['karma'] if karma else {}
 
 
 async def get_karma(chat_id: int, name: str) -> Union[bool, dict]:
@@ -111,5 +109,4 @@ async def alpha_to_int(user_id_alphabet: str) -> int:
     for i in user_id_alphabet:
         index = alphabet.index(i)
         user_id += str(index)
-    user_id = int(user_id)
-    return user_id
+    return int(user_id)

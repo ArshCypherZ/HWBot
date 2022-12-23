@@ -43,7 +43,7 @@ close_btn = "Close ❌"
 def shorten(description, info="anilist.co"):
     msg = ""
     if len(description) > 700:
-        description = description[0:500] + "...."
+        description = f"{description[:500]}...."
         msg += f"\n*Description*:\n{description}[Read More]({info})"
     else:
         msg += f"\n*Description*:\n{description}"
@@ -54,16 +54,16 @@ def shorten(description, info="anilist.co"):
 def t(milliseconds: int) -> str:
     """Inputs time in milliseconds, to get beautified time,
     as string"""
-    seconds, milliseconds = divmod(int(milliseconds), 1000)
+    seconds, milliseconds = divmod(milliseconds, 1000)
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
     days, hours = divmod(hours, 24)
     tmp = (
-        ((str(days) + " Days, ") if days else "")
-        + ((str(hours) + " Hours, ") if hours else "")
-        + ((str(minutes) + " Minutes, ") if minutes else "")
-        + ((str(seconds) + " Seconds, ") if seconds else "")
-        + ((str(milliseconds) + " ms, ") if milliseconds else "")
+        (f"{str(days)} Days, " if days else "")
+        + (f"{str(hours)} Hours, " if hours else "")
+        + (f"{str(minutes)} Minutes, " if minutes else "")
+        + (f"{str(seconds)} Seconds, " if seconds else "")
+        + (f"{str(milliseconds)} ms, " if milliseconds else "")
     )
     return tmp[:-2]
 
@@ -187,9 +187,7 @@ def extract_arg(message: Message):
     if len(split) > 1:
         return split[1]
     reply = message.reply_to_message
-    if reply is not None:
-        return reply.text
-    return None
+    return reply.text if reply is not None else None
 
 
 def airing(update: Update, context: CallbackContext):
@@ -245,7 +243,7 @@ def anime(update: Update, context: CallbackContext):
             trailer_id = trailer.get("id", None)
             site = trailer.get("site", None)
             if site == "youtube":
-                trailer = "https://youtu.be/" + trailer_id
+                trailer = f"https://youtu.be/{trailer_id}"
         description = (
             json.get("description", "N/A")
             .replace("<i>", "")
@@ -308,8 +306,7 @@ def character(update: Update, context: CallbackContext):
         description = f"{json['description']}".replace("~!", "").replace("!~", "")
         site_url = json.get("siteUrl")
         msg += shorten(description, site_url)
-        image = json.get("image", None)
-        if image:
+        if image := json.get("image", None):
             image = image.get("large")
             update.effective_message.reply_photo(
                 photo=image,
@@ -415,9 +412,7 @@ def site_search(update: Update, context: CallbackContext, site: str):
         search_url = f"https://animekaizoku.com/?s={search_query}"
         html_text = requests.get(search_url).text
         soup = bs4.BeautifulSoup(html_text, "html.parser")
-        search_result = soup.find_all("h2", {"class": "post-title"})
-
-        if search_result:
+        if search_result := soup.find_all("h2", {"class": "post-title"}):
             result = f"<b>Search results for</b> <code>{html.escape(search_query)}</code> <b>on</b> @KaizokuAnime: \n\n"
             for entry in search_result:
                 post_link = "https://animekaizoku.com/" + entry.a["href"]

@@ -113,11 +113,11 @@ def connection_chat(update, context):
 @typing_action
 def connect_chat(update, context):
 
-    chat = update.effective_chat
     user = update.effective_user
-    args = context.args
-
+    chat = update.effective_chat
     if update.effective_chat.type == "private":
+        args = context.args
+
         if args and len(args) >= 1:
             try:
                 connect_chat = int(args[0])
@@ -210,11 +210,7 @@ def connect_chat(update, context):
                         ]
                     )
 
-                text += "╘══「 Total {} Chats 」".format(
-                    f"{len(gethistory)} (max)"
-                    if len(gethistory) == 5
-                    else str(len(gethistory))
-                )
+                text += f'╘══「 Total {f"{len(gethistory)} (max)" if len(gethistory) == 5 else str(len(gethistory))} Chats 」'
 
                 conn_hist = InlineKeyboardMarkup(buttons)
             elif buttons:

@@ -41,46 +41,30 @@ def getData(repoURL):
         return None
 
 def getReleaseData(repoData, index):
-    if index < len(repoData):
-        return repoData[index]
-    return None
+    return repoData[index] if index < len(repoData) else None
 
 #Release-wise stuff
 
 def getAuthor(releaseData):
-    if releaseData is None:
-        return None
-    return releaseData['author']['login']
+    return None if releaseData is None else releaseData['author']['login']
     
 def getAuthorUrl(releaseData):
-    if releaseData is None:
-        return None    
-    return releaseData['author']['html_url']
+    return None if releaseData is None else releaseData['author']['html_url']
     
 def getReleaseName(releaseData):
-    if releaseData is None:
-        return None    
-    return releaseData['name']
+    return None if releaseData is None else releaseData['name']
 
 def getReleaseDate(releaseData):
-    if releaseData is None:
-        return None    
-    return releaseData['published_at']
+    return None if releaseData is None else releaseData['published_at']
 
 def getAssetsSize(releaseData):
-    if releaseData is None:
-        return None    
-    return len(releaseData['assets'])
+    return None if releaseData is None else len(releaseData['assets'])
   
 def getAssets(releaseData):
-    if releaseData is None:
-        return None
-    return releaseData['assets']
+    return None if releaseData is None else releaseData['assets']
     
 def getBody(releaseData): #changelog stuff
-    if releaseData is None:
-        return None
-    return releaseData['body']
+    return None if releaseData is None else releaseData['body']
 
 #Asset-wise stuff
 

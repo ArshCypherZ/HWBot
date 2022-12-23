@@ -41,15 +41,11 @@ def wiki(update: Update, context: CallbackContext):
         res = wikipedia.summary(search)
     except DisambiguationError as e:
         update.message.reply_text(
-            "Disambiguated pages found! Adjust your query accordingly.\n<i>{}</i>".format(
-                e,
-            ),
+            f"Disambiguated pages found! Adjust your query accordingly.\n<i>{e}</i>",
             parse_mode=ParseMode.HTML,
         )
     except PageError as e:
-        update.message.reply_text(
-            "<code>{}</code>".format(e), parse_mode=ParseMode.HTML,
-        )
+        update.message.reply_text(f"<code>{e}</code>", parse_mode=ParseMode.HTML)
     if res:
         result = f"<b>{search}</b>\n\n"
         result += f"<i>{res}</i>\n"

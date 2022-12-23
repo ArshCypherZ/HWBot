@@ -176,7 +176,7 @@ async def karma(_, message):
             if not first_name:
                 continue
             username = user.username
-            msg += f"**{karma_count}**  {(first_name[0:12] + '...') if len(first_name) > 12 else first_name}  `{('@' + username) if username else user_idd}`\n"
+            msg += f"**{karma_count}**  {f'{first_name[:12]}...' if len(first_name) > 12 else first_name}  `{f'@{username}' if username else user_idd}`\n"
             limit += 1
         await m.edit(msg)
     else:

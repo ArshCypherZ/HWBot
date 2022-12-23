@@ -51,22 +51,18 @@ PMW_GROUP = 12
 @user_admin
 @loggable
 def pin(bot: Bot, update: Update, args: List[str]) -> str:
-    user = update.effective_user  # type: Optional[User]
     chat = update.effective_chat  # type: Optional[Chat]
 
-    is_group = chat.type != "private" and chat.type != "channel"
+    is_group = chat.type not in ["private", "channel"]
 
     prev_message = update.effective_message.reply_to_message
 
-    is_silent = True
-    if len(args) >= 1:
-        is_silent = not (
-            args[0].lower() == 'notify' or
-            args[0].lower() == 'loud' or
-            args[0].lower() == 'violent'
-        )
-
     if prev_message and is_group:
+        is_silent = (
+            args[0].lower() not in ['notify', 'loud', 'violent']
+            if args
+            else True
+        )
         try:
             bot.pinChatMessage(
                 chat.id,
@@ -74,17 +70,11 @@ def pin(bot: Bot, update: Update, args: List[str]) -> str:
                 disable_notification=is_silent
             )
         except BadRequest as excp:
-            if excp.message == "Chat_not_modified":
-                pass
-            else:
+            if excp.message != "Chat_not_modified":
                 raise
         sql.add_mid(chat.id, prev_message.message_id)
-        return "<b>{}:</b>" \
-               "\n#PINNED" \
-               "\n<b>Admin:</b> {}".format(
-                   html.escape(chat.title),
-                   mention_html(user.id, user.first_name)
-                )
+        user = update.effective_user  # type: Optional[User]
+        return f"<b>{html.escape(chat.title)}:</b>\n#PINNED\n<b>Admin:</b> {mention_html(user.id, user.first_name)}"
 
     return ""
 
@@ -101,15 +91,10 @@ def unpin(bot: Bot, update: Update) -> str:
     try:
         bot.unpinChatMessage(chat.id)
     except BadRequest as excp:
-        if excp.message == "Chat_not_modified":
-            pass
-        else:
+        if excp.message != "Chat_not_modified":
             raise
     sql.remove_mid(chat.id)
-    return "<b>{}:</b>" \
-           "\n#UNPINNED" \
-           "\n<b>Admin:</b> {}".format(html.escape(chat.title),
-                                       mention_html(user.id, user.first_name))
+    return f"<b>{html.escape(chat.title)}:</b>\n#UNPINNED\n<b>Admin:</b> {mention_html(user.id, user.first_name)}"
 
 
 @run_async
@@ -128,19 +113,11 @@ def anti_channel_pin(bot: Bot, update: Update, args: List[str]) -> str:
     if args[0].lower() in ("on", "yes"):
         sql.add_acp_o(str(chat.id), True)
         update.effective_message.reply_text("I'll try to unpin Telegram Channel messages!")
-        return "<b>{}:</b>" \
-               "\n#ANTI_CHANNEL_PIN" \
-               "\n<b>Admin:</b> {}" \
-               "\nHas toggled ANTI CHANNEL PIN to <code>ON</code>.".format(html.escape(chat.title),
-                                                                         mention_html(user.id, user.first_name))
+        return f"<b>{html.escape(chat.title)}:</b>\n#ANTI_CHANNEL_PIN\n<b>Admin:</b> {mention_html(user.id, user.first_name)}\nHas toggled ANTI CHANNEL PIN to <code>ON</code>."
     elif args[0].lower() in ("off", "no"):
         sql.add_acp_o(str(chat.id), False)
         update.effective_message.reply_text("I won't unpin Telegram Channel Messages!")
-        return "<b>{}:</b>" \
-               "\n#ANTI_CHANNEL_PIN" \
-               "\n<b>Admin:</b> {}" \
-               "\nHas toggled ANTI CHANNEL PIN to <code>OFF</code>.".format(html.escape(chat.title),
-                                                                          mention_html(user.id, user.first_name))
+        return f"<b>{html.escape(chat.title)}:</b>\n#ANTI_CHANNEL_PIN\n<b>Admin:</b> {mention_html(user.id, user.first_name)}\nHas toggled ANTI CHANNEL PIN to <code>OFF</code>."
     else:
         # idek what you're writing, say yes or no
         update.effective_message.reply_text("I understand 'on/yes' or 'off/no' only!")
@@ -149,7 +126,6 @@ def anti_channel_pin(bot: Bot, update: Update, args: List[str]) -> str:
 
 @run_async
 @bot_admin
-# @can_delete
 @user_admin
 @loggable
 def clean_linked_channel(bot: Bot, update: Update, args: List[str]) -> str:
@@ -163,19 +139,11 @@ def clean_linked_channel(bot: Bot, update: Update, args: List[str]) -> str:
     if args[0].lower() in ("on", "yes"):
         sql.add_ldp_m(str(chat.id), True)
         update.effective_message.reply_text("I'll try to delete Telegram Channel messages!")
-        return "<b>{}:</b>" \
-               "\n#CLEAN_CHANNEL_MESSAGES" \
-               "\n<b>Admin:</b> {}" \
-               "\nHas toggled DELETE CHANNEL MESSAGES to <code>ON</code>.".format(html.escape(chat.title),
-                                                                         mention_html(user.id, user.first_name))
+        return f"<b>{html.escape(chat.title)}:</b>\n#CLEAN_CHANNEL_MESSAGES\n<b>Admin:</b> {mention_html(user.id, user.first_name)}\nHas toggled DELETE CHANNEL MESSAGES to <code>ON</code>."
     elif args[0].lower() in ("off", "no"):
         sql.add_ldp_m(str(chat.id), False)
         update.effective_message.reply_text("I won't delete Telegram Channel Messages!")
-        return "<b>{}:</b>" \
-               "\n#CLEAN_CHANNEL_MESSAGES" \
-               "\n<b>Admin:</b> {}" \
-               "\nHas toggled DELETE CHANNEL MESSAGES to <code>OFF</code>.".format(html.escape(chat.title),
-                                                                          mention_html(user.id, user.first_name))
+        return f"<b>{html.escape(chat.title)}:</b>\n#CLEAN_CHANNEL_MESSAGES\n<b>Admin:</b> {mention_html(user.id, user.first_name)}\nHas toggled DELETE CHANNEL MESSAGES to <code>OFF</code>."
     else:
         # idek what you're writing, say yes or no
         update.effective_message.reply_text("I understand 'on/yes' or 'off/no' only!")
@@ -212,8 +180,6 @@ def pin_chat_message(bot, chat_id, message_id, is_silent):
             disable_notification=is_silent
         )
     except BadRequest as excp:
-        if excp.message == "Chat_not_modified":
-            pass
         """else:
             raise"""
 

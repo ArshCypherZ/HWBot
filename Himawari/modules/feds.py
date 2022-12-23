@@ -190,8 +190,8 @@ def rename_fed(update, context):
 @run_async
 def fed_chat(update: Update, context: CallbackContext):
     bot, args = context.bot, context.args
-    chat = update.effective_chat
     user = update.effective_user
+    chat = update.effective_chat
     fed_id = sql.get_fed_id(chat.id)
 
     user_id = update.effective_message.from_user.id
@@ -209,10 +209,7 @@ def fed_chat(update: Update, context: CallbackContext):
     chat = update.effective_chat
     info = sql.get_fed_info(fed_id)
 
-    text = (
-        "This group is part of the following federation:"
-        + f"\n{info['fname']} (ID: <code>{fed_id}</code>)"
-    )
+    text = f"This group is part of the following federation:\n{info['fname']} (ID: <code>{fed_id}</code>)"
 
     update.effective_message.reply_text(text, parse_mode=ParseMode.HTML)
 
@@ -449,7 +446,7 @@ def fed_info(update: Update, context: CallbackContext):
     chat = update.effective_chat
     info = sql.get_fed_info(fed_id)
 
-    text = "<b>Federation Information:</b>" + f"\nFedID: <code>{fed_id}</code>"
+    text = f"<b>Federation Information:</b>\nFedID: <code>{fed_id}</code>"
     text += f"\nName: {info['fname']}"
     text += f"\nCreator: {mention_html(owner.id, owner_name)}"
     text += f"\nAll Admins: <code>{TotalAdminFed}</code>"

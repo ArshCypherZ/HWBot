@@ -481,22 +481,16 @@ def selfunban(update: Update, context: CallbackContext) -> str:
     try:
         member = chat.get_member(user.id)
     except BadRequest as excp:
-        if excp.message == "User not found":
-            message.reply_text("I can't seem to find this user.")
-            return
-        else:
+        if excp.message != "User not found":
             raise
+        message.reply_text("I can't seem to find this user.")
+        return
     if is_user_in_chat(chat, user.id):
         message.reply_text("Aren't you already in the chat??")
         return
     chat.unban_member(user.id)
-    message.reply_text(f"Yep, I have unbanned The user.")
-    log = (
-        f"<b>{html.escape(chat.title)}:</b>\n"
-        f"#UNBANNED\n"
-        f"<b>User:</b> {mention_html(member.user.id, html.escape(member.user.first_name))}"
-    )
-    return log
+    message.reply_text("Yep, I have unbanned The user.")
+    return f"<b>{html.escape(chat.title)}:</b>\n#UNBANNED\n<b>User:</b> {mention_html(member.user.id, html.escape(member.user.first_name))}"
 
 @bot_admin
 @can_restrict

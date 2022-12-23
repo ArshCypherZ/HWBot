@@ -52,10 +52,10 @@ k = worddb["Himalol"]["karma_status"]
 def karmaadd(update: Update, context:CallbackContext):
     query= update.callback_query
     bot = context.bot
-    user = update.effective_user
     if query.data == "add_karma":
         chat = update.effective_chat
-        done = k.insert_one({"chat_id": chat.id})    
+        done = k.insert_one({"chat_id": chat.id})
+        user = update.effective_user
         update.effective_message.edit_text(
             f"{bot_name} Karma System Disabled by {mention_html(user.id, user.first_name)}.",
             parse_mode=ParseMode.HTML,
@@ -67,10 +67,10 @@ def karmaadd(update: Update, context:CallbackContext):
 def karmarem(update: Update, context:CallbackContext):
     query= update.callback_query
     bot = context.bot
-    user = update.effective_user
     if query.data == "rem_karma":
         chat = update.effective_chat
-        done = k.delete_one({"chat_id": chat.id})            
+        done = k.delete_one({"chat_id": chat.id})
+        user = update.effective_user
         update.effective_message.edit_text(
             f"{bot_name} Karma System Enabled by {mention_html(user.id, user.first_name)}.",
             parse_mode=ParseMode.HTML,

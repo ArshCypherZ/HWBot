@@ -119,13 +119,7 @@ def unbl_user(update: Update, context: CallbackContext) -> str:
 
         sql.unblacklist_user(user_id)
         message.reply_text("*notices user*")
-        log_message = (
-            f"#UNBLACKLIST\n"
-            f"<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))}\n"
-            f"<b>User:</b> {mention_html(target_user.id, html.escape(target_user.first_name))}"
-        )
-
-        return log_message
+        return f"#UNBLACKLIST\n<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))}\n<b>User:</b> {mention_html(target_user.id, html.escape(target_user.first_name))}"
     message.reply_text("I am not ignoring them at all though!")
     return ""
 
