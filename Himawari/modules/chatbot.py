@@ -44,12 +44,10 @@ from Himawari.modules.log_channel import gloggable
 def kukirm(update: Update, context: CallbackContext) -> str:
     query: Optional[CallbackQuery] = update.callback_query
     user: Optional[User] = update.effective_user
-    match = re.match(r"rm_chat\((.+?)\)", query.data)
-    if match:
-        user_id = match.group(1)
+    if match := re.match(r"rm_chat\((.+?)\)", query.data):
+        user_id = match[1]
         chat: Optional[Chat] = update.effective_chat
-        is_kuki = sql.rem_kuki(chat.id)
-        if is_kuki:
+        if is_kuki := sql.rem_kuki(chat.id):
             is_kuki = sql.rem_kuki(user_id)
             return (
                 f"<b>{html.escape(chat.title)}:</b>\n"
@@ -67,12 +65,10 @@ def kukirm(update: Update, context: CallbackContext) -> str:
 def kukiadd(update: Update, context: CallbackContext) -> str:
     query: Optional[CallbackQuery] = update.callback_query
     user: Optional[User] = update.effective_user
-    match = re.match(r"add_chat\((.+?)\)", query.data)
-    if match:
-        user_id = match.group(1)
+    if match := re.match(r"add_chat\((.+?)\)", query.data):
+        user_id = match[1]
         chat: Optional[Chat] = update.effective_chat
-        is_kuki = sql.set_kuki(chat.id)
-        if is_kuki:
+        if is_kuki := sql.set_kuki(chat.id):
             is_kuki = sql.set_kuki(user_id)
             return (
                 f"<b>{html.escape(chat.title)}:</b>\n"
@@ -123,15 +119,12 @@ def chatbot(update: Update, context: CallbackContext):
     is_kuki = sql.is_kuki(chat_id)
     if not is_kuki:
         return
-	
+
     if message.text and not message.document:
         if not kuki_message(context, message):
             return
         Message = message.text
-        if " " in Message:
-          meow = Message.replace(" ", "%20")
-        else:
-          meow = Message
+        meow = Message.replace(" ", "%20") if " " in Message else Message
         bot.send_chat_action(chat_id, action="typing")
         kukiurl = requests.get(f'https://bakufuapi.vercel.app/api/chatbot/cleverbot?name=Himawari&owner=Arsh&message={meow}')
         Kuki = json.loads(kukiurl.text)

@@ -112,15 +112,14 @@ class CustomCommandHandler(CommandHandler):
                 command.append(message.bot.username)
                 if user_id == 1087968824:
                     user_id = update.effective_chat.id
-                if not (
-                    command[0].lower() in self.command
-                    and command[1].lower() == message.bot.username.lower()
+                if (
+                    command[0].lower() not in self.command
+                    or command[1].lower() != message.bot.username.lower()
                 ):
                     return None
                 if SpamChecker.check_user(user_id):
                     return None
-                filter_result = self.filters(update)
-                if filter_result:
+                if filter_result := self.filters(update):
                     return args, filter_result
                 return False
 

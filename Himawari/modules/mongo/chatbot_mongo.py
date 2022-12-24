@@ -28,8 +28,7 @@ himawari = db_x["CHATBOT"]
 
 
 def add_chat(chat_id):
-    hima = himawari.find_one({"chat_id": chat_id})
-    if hima:
+    if hima := himawari.find_one({"chat_id": chat_id}):
         return False
     himawari.insert_one({"chat_id": chat_id})
     return True
@@ -44,14 +43,9 @@ def remove_chat(chat_id):
 
 
 def get_all_chats():
-    r = list(himawari.find())
-    if r:
-        return r
-    return False
+    return r if (r := list(himawari.find())) else False
 
 
 def get_session(chat_id):
     hima = himawari.find_one({"chat_id": chat_id})
-    if not hima:
-        return False
-    return hima
+    return hima or False

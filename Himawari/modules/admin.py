@@ -204,7 +204,8 @@ def promote(update: Update, context: CallbackContext) -> str:
     promoter = chat.get_member(user.id)
 
     if (
-        not (promoter.can_promote_members or promoter.status == "creator")
+        not promoter.can_promote_members
+        and promoter.status != "creator"
         and user.id not in DRAGONS
     ):
         message.reply_text("You don't have the necessary rights to do that!")
@@ -273,14 +274,7 @@ def promote(update: Update, context: CallbackContext) -> str:
             ],
         ),
     )
-    log_message = (
-        f"<b>{html.escape(chat.title)}:</b>\n"
-        f"#PROMOTED\n"
-        f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
-        f"<b>User:</b> {mention_html(user_member.user.id, user_member.user.first_name)}"
-    )
-
-    return log_message
+    return f"<b>{html.escape(chat.title)}:</b>\n#PROMOTED\n<b>Admin:</b> {mention_html(user.id, user.first_name)}\n<b>User:</b> {mention_html(user_member.user.id, user_member.user.first_name)}"
 
 
 @connection_status
@@ -299,7 +293,8 @@ def fullpromote(update: Update, context: CallbackContext) -> str:
     promoter = chat.get_member(user.id)
 
     if (
-        not (promoter.can_promote_members or promoter.status == "creator")
+        not promoter.can_promote_members
+        and promoter.status != "creator"
         and user.id not in DRAGONS
     ):
         message.reply_text("You don't have the necessary rights to do that!")
@@ -370,14 +365,7 @@ def fullpromote(update: Update, context: CallbackContext) -> str:
         ),
     )
 
-    log_message = (
-        f"<b>{html.escape(chat.title)}:</b>\n"
-        f"#FULLPROMOTED\n"
-        f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
-        f"<b>User:</b> {mention_html(user_member.user.id, user_member.user.first_name)}"
-    )
-
-    return log_message
+    return f"<b>{html.escape(chat.title)}:</b>\n#FULLPROMOTED\n<b>Admin:</b> {mention_html(user.id, user.first_name)}\n<b>User:</b> {mention_html(user_member.user.id, user_member.user.first_name)}"
 
 @connection_status
 @bot_admin
@@ -395,7 +383,8 @@ def lowpromote(update: Update, context: CallbackContext) -> str:
     promoter = chat.get_member(user.id)
 
     if (
-        not (promoter.can_promote_members or promoter.status == "creator")
+        not promoter.can_promote_members
+        and promoter.status != "creator"
         and user.id not in DRAGONS
     ):
         message.reply_text("You don't have the necessary rights to do that!")
@@ -460,14 +449,7 @@ def lowpromote(update: Update, context: CallbackContext) -> str:
         ),
     )
 
-    log_message = (
-        f"<b>{html.escape(chat.title)}:</b>\n"
-        f"#LOWPROMOTED\n"
-        f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
-        f"<b>User:</b> {mention_html(user_member.user.id, user_member.user.first_name)}"
-    )
-
-    return log_message
+    return f"<b>{html.escape(chat.title)}:</b>\n#LOWPROMOTED\n<b>Admin:</b> {mention_html(user.id, user.first_name)}\n<b>User:</b> {mention_html(user_member.user.id, user_member.user.first_name)}"
 
 
 @connection_status
@@ -528,14 +510,7 @@ def demote(update: Update, context: CallbackContext) -> Optional[str]:
             parse_mode=ParseMode.HTML,
         )
 
-        log_message = (
-            f"<b>{html.escape(chat.title)}:</b>\n"
-            f"#DEMOTED\n"
-            f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
-            f"<b>User:</b> {mention_html(user_member.user.id, user_member.user.first_name)}"
-        )
-
-        return log_message
+        return f"<b>{html.escape(chat.title)}:</b>\n#DEMOTED\n<b>Admin:</b> {mention_html(user.id, user.first_name)}\n<b>User:</b> {mention_html(user_member.user.id, user_member.user.first_name)}"
     except BadRequest:
         message.reply_text(
             "Could not demote. I might not be admin, or the admin status was appointed by another"
@@ -625,20 +600,20 @@ def set_title(update: Update, context: CallbackContext):
 @user_admin
 @loggable
 def pin(update: Update, context: CallbackContext) -> str:
-    bot = context.bot
-    args = context.args
-
-    user = update.effective_user
     chat = update.effective_chat
 
     is_group = chat.type not in ('private', 'channel')
     prev_message = update.effective_message.reply_to_message
 
-    is_silent = True
-    if len(args) >= 1:
-        is_silent = args[0].lower() in ('notify', 'loud', 'violent')
-
     if prev_message and is_group:
+        args = context.args
+
+        is_silent = (
+            args[0].lower() in ('notify', 'loud', 'violent')
+            if len(args) >= 1
+            else True
+        )
+        bot = context.bot
         try:
             bot.pinChatMessage(
                 chat.id,
@@ -648,13 +623,8 @@ def pin(update: Update, context: CallbackContext) -> str:
         except BadRequest as excp:
             if excp.message != "Chat_not_modified":
                 raise
-        log_message = (
-            f"<b>{html.escape(chat.title)}:</b>\n"
-            f"#PINNED\n"
-            f"<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))}"
-        )
-
-        return log_message
+        user = update.effective_user
+        return f"<b>{html.escape(chat.title)}:</b>\n#PINNED\n<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))}"
 
 
 @bot_admin
@@ -669,18 +639,10 @@ def unpin(update: Update, context: CallbackContext) -> str:
     try:
         bot.unpinChatMessage(chat.id)
     except BadRequest as excp:
-        if excp.message == "Chat_not_modified":
-            pass
-        else:
+        if excp.message != "Chat_not_modified":
             raise
 
-    log_message = (
-        f"<b>{html.escape(chat.title)}:</b>\n"
-        f"#UNPINNED\n"
-        f"<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))}"
-    )
-
-    return log_message
+    return f"<b>{html.escape(chat.title)}:</b>\n#UNPINNED\n<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))}"
 
 
 @bot_admin
@@ -778,24 +740,11 @@ def adminlist(update, context):
         status = admin.status
         custom_title = admin.custom_title
 
-        if user.first_name == "":
-            name = "☠ Deleted Account"
-        else:
-            name = "{}".format(
-                mention_html(
-                    user.id,
-                    html.escape(
-                        f"{user.first_name} " + ((user.last_name or ""))
-                    ),
-                )
-            )
-
-
-                        ##if user.is_bot:
-                            #bot_admin_list.append(name)
-                    #administrators.remove(admin)
-                    #continue
-
+        name = (
+            "☠ Deleted Account"
+            if user.first_name == ""
+            else f'{mention_html(user.id, html.escape(f"{user.first_name} " + (user.last_name or "")))}'
+        )
         #   continue
 
         # if user.username:
@@ -817,18 +766,11 @@ def adminlist(update, context):
         status = admin.status
         custom_title = admin.custom_title
 
-        if user.first_name == "":
-            name = "☠ Deleted Account"
-        else:
-            name = "{}".format(
-                mention_html(
-                    user.id,
-                    html.escape(
-                        f"{user.first_name} " + ((user.last_name or ""))
-                    ),
-                )
-            )
-
+        name = (
+            "☠ Deleted Account"
+            if user.first_name == ""
+            else f'{mention_html(user.id, html.escape(f"{user.first_name} " + (user.last_name or "")))}'
+        )
         if status == "administrator":
             if custom_title:
                 try:

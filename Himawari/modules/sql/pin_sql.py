@@ -43,7 +43,7 @@ class SPinSettings(BASE):
 
 
     def __repr__(self):
-        return "<Pin Settings for {} in {}>".format(self.chat_id, self.message_id)
+        return f"<Pin Settings for {self.chat_id} in {self.message_id}>"
 
 
 SPinSettings.__table__.create(checkfirst=True)
@@ -63,8 +63,7 @@ def add_mid(chat_id, message_id):
 
 def remove_mid(chat_id):
     with PIN_INSERTION_LOCK:
-        chat = SESSION.query(SPinSettings).get(str(chat_id))
-        if chat:
+        if chat := SESSION.query(SPinSettings).get(str(chat_id)):
             SESSION.delete(chat)
             SESSION.commit()
         SESSION.close()
@@ -94,6 +93,5 @@ def add_ldp_m(chat_id, setting):
 
 def get_current_settings(chat_id):
     with PIN_INSERTION_LOCK:
-        chat = SESSION.query(SPinSettings).get(str(chat_id))
-        return chat
+        return SESSION.query(SPinSettings).get(str(chat_id))
 

@@ -39,8 +39,5 @@ def watchorderx(_, message):
     soup = BeautifulSoup(res_, 'html.parser')
     anime_names = soup.find_all('span', class_='wo_title')
     for x in anime_names:
-        if data:
-            data = f"{data}\n{x.text}"
-        else:
-            data = x.text
+        data = f"{data}\n{x.text}" if data else x.text
     message.reply_text(f'**Watching order list of {anime}:** \n\n```{data}```')

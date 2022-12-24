@@ -44,7 +44,7 @@ def humanbytes(size: int) -> str:
     while size > power:
         size /= power
         raised_to_pow += 1
-    return str(round(size, 2)) + " " + dict_power_n[raised_to_pow] + "B"
+    return f"{str(round(size, 2))} {dict_power_n[raised_to_pow]}B"
 
 
 def time_formatter(seconds: int) -> str:
@@ -52,10 +52,10 @@ def time_formatter(seconds: int) -> str:
     hours, minutes = divmod(minutes, 60)
     days, hours = divmod(hours, 24)
     tmp = (
-        ((str(days) + " day(s), ") if days else "")
-        + ((str(hours) + " hour(s), ") if hours else "")
-        + ((str(minutes) + " minute(s), ") if minutes else "")
-        + ((str(seconds) + " second(s), ") if seconds else "")
+        (f"{str(days)} day(s), " if days else "")
+        + (f"{str(hours)} hour(s), " if hours else "")
+        + (f"{str(minutes)} minute(s), " if minutes else "")
+        + (f"{str(seconds)} second(s), " if seconds else "")
     )
     return tmp[:-2]
 

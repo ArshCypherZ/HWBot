@@ -101,7 +101,7 @@ class Quotly:
 
     async def _format_quote(self, event, reply=None, sender=None, type_="private"):
         async def telegraph(file_):
-            file = file_ + ".png"
+            file = f"{file_}.png"
             Image.open(file_).save(file, "PNG")
             files = {"file": open(file, "rb").read()}
             uri = (
@@ -267,9 +267,7 @@ async def async_searcher(
             return await data.json()
         if re_content:
             return await data.read()
-        if real:
-            return data
-        return await data.text()
+        return data if real else await data.text()
 
 
 def _unquote_text(text):
@@ -307,8 +305,8 @@ def check_filename(filroid):
 
 #edit or reply
 async def eor(event, text=None, **args):
-    time = args.get("time", None)
-    edit_time = args.get("edit_time", None)
+    time = args.get("time")
+    edit_time = args.get("edit_time")
     if "edit_time" in args:
         del args["edit_time"]
     if "time" in args:

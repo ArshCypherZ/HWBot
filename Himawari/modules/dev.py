@@ -139,10 +139,10 @@ def pip_install(update: Update, context: CallbackContext):
 	
 @dev_plus
 def leave(update: Update, context: CallbackContext):
-    bot = context.bot
     if args := context.args:
         chat_id = str(args[0])
         leave_msg = " ".join(args[1:])
+        bot = context.bot
         try:
             context.bot.send_message(chat_id, leave_msg)
             bot.leave_chat(int(chat_id))

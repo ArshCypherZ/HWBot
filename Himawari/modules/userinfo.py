@@ -43,9 +43,7 @@ def about_me(update: Update, context: CallbackContext):
     user_id = extract_user(message, args)
 
     user = bot.get_chat(user_id) if user_id else message.from_user
-    info = sql.get_user_me_info(user.id)
-
-    if info:
+    if info := sql.get_user_me_info(user.id):
         update.effective_message.reply_text(
             f"*{user.first_name}*:\n{escape_markdown(info)}",
             parse_mode=ParseMode.MARKDOWN,
@@ -87,9 +85,7 @@ def set_about_me(update: Update, context: CallbackContext):
                 message.reply_text("Updated your info!")
         else:
             message.reply_text(
-                "The info needs to be under {} characters! You have {}.".format(
-                    MAX_MESSAGE_LENGTH // 4, len(info[1])
-                )
+                f"The info needs to be under {MAX_MESSAGE_LENGTH // 4} characters! You have {len(info[1])}."
             )
 
 
@@ -101,11 +97,9 @@ def about_bio(update: Update, context: CallbackContext):
 
     user_id = extract_user(message, args)
     user = bot.get_chat(user_id) if user_id else message.from_user
-    info = sql.get_user_bio(user.id)
-
-    if info:
+    if info := sql.get_user_bio(user.id):
         update.effective_message.reply_text(
-            "*{}*:\n{}".format(user.first_name, escape_markdown(info)),
+            f"*{user.first_name}*:\n{escape_markdown(info)}",
             parse_mode=ParseMode.MARKDOWN,
         )
     elif message.reply_to_message:
@@ -147,14 +141,10 @@ def about_bio(update: Update, context: CallbackContext):
         if len(bio) == 2:
             if len(bio[1]) < MAX_MESSAGE_LENGTH // 4:
                 sql.set_user_bio(user_id, bio[1])
-                message.reply_text(
-                    "Updated {}'s bio!".format(repl_message.from_user.first_name)
-                )
+                message.reply_text(f"Updated {repl_message.from_user.first_name}'s bio!")
             else:
                 message.reply_text(
-                    "A bio needs to be under {} characters! You tried to set {}.".format(
-                        MAX_MESSAGE_LENGTH // 4, len(bio[1])
-                    )
+                    f"A bio needs to be under {MAX_MESSAGE_LENGTH // 4} characters! You tried to set {len(bio[1])}."
                 )
     else:
         message.reply_text("Reply to someone's message to set their bio!")
@@ -195,14 +185,10 @@ def set_about_bio(update: Update, context: CallbackContext):
         if len(bio) == 2:
             if len(bio[1]) < MAX_MESSAGE_LENGTH // 4:
                 sql.set_user_bio(user_id, bio[1])
-                message.reply_text(
-                    "Updated {}'s bio!".format(repl_message.from_user.first_name)
-                )
+                message.reply_text(f"Updated {repl_message.from_user.first_name}'s bio!")
             else:
                 message.reply_text(
-                    "Bio needs to be under {} characters! You tried to set {}.".format(
-                        MAX_MESSAGE_LENGTH // 4, len(bio[1])
-                    )
+                    f"Bio needs to be under {MAX_MESSAGE_LENGTH // 4} characters! You tried to set {len(bio[1])}."
                 )
     else:
         message.reply_text("Reply to someone to set their bio!")

@@ -48,8 +48,7 @@ downloader = aiodownloader.Handler()
 
 async def download_url(url: str):
     loop = get_running_loop()
-    file = await loop.run_in_executor(None, download, url)
-    return file
+    return await loop.run_in_executor(None, download, url)
 
 
 def generate_captcha():
@@ -131,9 +130,11 @@ async def transfer_sh(file):
 
 
 def obj_to_str(object):
-    if not object:
-        return False
-    return codecs.encode(pickle.dumps(object), "base64").decode()
+    return (
+        codecs.encode(pickle.dumps(object), "base64").decode()
+        if object
+        else False
+    )
 
 
 def str_to_obj(string: str):

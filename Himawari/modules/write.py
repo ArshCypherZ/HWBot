@@ -35,20 +35,15 @@ async def writer(m: events.NewMessage):
             if len(m.text) < 3
             else m.text.split(None, 1)[1].replace(" ", "%20")
         )
-        var: str = await m.reply("`Waitoo...`")
-        with BytesIO(get(f"https://apis.xditya.me/write?text={text}").content) as file:
-            file.name: str = "image.jpg"
-            await m.reply(file=file)
-        await var.delete()
-        
     else:
         reply: str = (await m.get_reply_message()).text
         text = reply.split(" ")[1].replace(" ", "%20")
-        var: str = await m.reply("`Waitoo...`")
-        with BytesIO(get(f"https://apis.xditya.me/write?text={text}").content) as file:
-            file.name: str = "image.jpg"
-            await m.reply(file=file)
-        await var.delete()
+
+    var: str = await m.reply("`Waitoo...`")
+    with BytesIO(get(f"https://apis.xditya.me/write?text={text}").content) as file:
+        file.name: str = "image.jpg"
+        await m.reply(file=file)
+    await var.delete()
 
 
 __mod_name__ = "Hand Write"

@@ -65,7 +65,7 @@ def download_youtube_audio(arq_resp):
 
     out_file = audio.download()
     base, _ = os.path.splitext(out_file)
-    audio_file = base + ".mp3"
+    audio_file = f"{base}.mp3"
     os.rename(out_file, audio_file)
 
     return [title, performer, duration, audio_file, thumbnail_file]

@@ -62,10 +62,10 @@ def check_user_id(user_id: int, context: CallbackContext) -> Optional[str]:
 @dev_plus
 @gloggable
 def addsudo(update: Update, context: CallbackContext) -> str:
-    message = update.effective_message
     user = update.effective_user
     chat = update.effective_chat
     bot, args = context.bot, context.args
+    message = update.effective_message
     user_id = extract_user(message, args)
     user_member = bot.getChat(user_id)
     rt = ""
@@ -98,10 +98,7 @@ def addsudo(update: Update, context: CallbackContext) -> str:
         json.dump(data, outfile, indent=4)
 
     update.effective_message.reply_text(
-        (
-            rt
-            + f"\nSuccessfully made best friendship with {user_member.first_name} !"
-        )
+        f"{rt}\nSuccessfully made best friendship with {user_member.first_name} !"
     )
 
 
@@ -322,7 +319,7 @@ def removesudo(update: Update, context: CallbackContext) -> str:
         )
 
         if chat.type != "private":
-            log_message = f"<b>{html.escape(chat.title)}:</b>\n" + log_message
+            log_message = f"<b>{html.escape(chat.title)}:</b>\n{log_message}"
 
         return log_message
     message.reply_text("This user is not a our besto friendo, you must have misunderstood Senpai!")

@@ -53,8 +53,7 @@ def set_raid(chat_id):
 
 def rem_raid(chat_id):
     with INSERTION_LOCK:
-        raidchat = SESSION.query(RaidChats).get(str(chat_id))
-        if raidchat:
+        if raidchat := SESSION.query(RaidChats).get(str(chat_id)):
             SESSION.delete(raidchat)
         SESSION.commit()
 

@@ -201,13 +201,7 @@ def disable_raid_cb(update: Update, _: CallbackContext) -> Optional[str]:
         'Raid mode has been <code>Disabled</code>, newly joining members will no longer be kicked.',
         parse_mode=ParseMode.HTML,
     )
-    logmsg = (
-        f"<b>{html.escape(chat.title)}:</b>\n"
-        f"#RAID\n"
-        f"Disabled\n"
-        f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
-    )
-    return logmsg
+    return f"<b>{html.escape(chat.title)}:</b>\n#RAID\nDisabled\n<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
 
 
 @Himawaricallback(pattern="cancel_raid=")

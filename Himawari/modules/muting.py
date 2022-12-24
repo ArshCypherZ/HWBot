@@ -60,29 +60,20 @@ from telegram.utils.helpers import mention_html
 def check_user(user_id: int, bot: Bot, chat: Chat) -> Optional[str]:
 
     if not user_id:
-        reply = "You don't seem to be referring to a user or the ID specified is incorrect.."
-        return reply
-
+        return "You don't seem to be referring to a user or the ID specified is incorrect.."
     if is_approved(chat.id, user_id):
-        reply = "This is user is approved in this chat and approved users can't be muted!"
-        return reply
-
+        return "This is user is approved in this chat and approved users can't be muted!"
     try:
         member = chat.get_member(user_id)
     except BadRequest as excp:
         if excp.message == "User not found":
-            reply = "I can't seem to find this user"
-            return reply
+            return "I can't seem to find this user"
         raise
 
     if user_id == bot.id:
-        reply = "I'm not gonna MUTE myself, How high are you?"
-        return reply
-
+        return "I'm not gonna MUTE myself, How high are you?"
     if is_user_admin(chat, user_id, member) or user_id in TIGERS:
-        reply = "Can't. Find someone else to mute but not this one."
-        return reply
-
+        return "Can't. Find someone else to mute but not this one."
     return None
 
 

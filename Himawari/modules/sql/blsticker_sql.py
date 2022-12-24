@@ -38,13 +38,13 @@ class StickersFilters(BASE):
         self.trigger = trigger
 
     def __repr__(self):
-        return "<Stickers filter '%s' for %s>" % (self.trigger, self.chat_id)
+        return f"<Stickers filter '{self.trigger}' for {self.chat_id}>"
 
     def __eq__(self, other):
-        return bool(
+        return (
             isinstance(other, StickersFilters)
             and self.chat_id == other.chat_id
-            and self.trigger == other.trigger,
+            and self.trigger == other.trigger
         )
 
 
@@ -60,9 +60,7 @@ class StickerSettings(BASE):
         self.value = value
 
     def __repr__(self):
-        return "<{} will executing {} for blacklist trigger.>".format(
-            self.chat_id, self.blacklist_type,
-        )
+        return f"<{self.chat_id} will executing {self.blacklist_type} for blacklist trigger.>"
 
 
 StickersFilters.__table__.create(checkfirst=True)
@@ -90,8 +88,9 @@ def add_to_stickers(chat_id, trigger):
 
 def rm_from_stickers(chat_id, trigger):
     with STICKERS_FILTER_INSERTION_LOCK:
-        stickers_filt = SESSION.query(StickersFilters).get((str(chat_id), trigger))
-        if stickers_filt:
+        if stickers_filt := SESSION.query(StickersFilters).get(
+            (str(chat_id), trigger)
+        ):
             if trigger in CHAT_STICKERS.get(str(chat_id), set()):  # sanity check
                 CHAT_STICKERS.get(str(chat_id), set()).remove(trigger)
 
@@ -163,8 +162,7 @@ def set_blacklist_strength(chat_id, blacklist_type, value):
 
 def get_blacklist_setting(chat_id):
     try:
-        setting = CHAT_BLSTICK_BLACKLISTS.get(str(chat_id))
-        if setting:
+        if setting := CHAT_BLSTICK_BLACKLISTS.get(str(chat_id)):
             return setting["blacklist_type"], setting["value"]
         return 1, "0"
 

@@ -100,8 +100,7 @@ def anon_callback_handler1(upd: Update, _: CallbackContext):
         dispatcher.bot.delete_message(chat_id, anon_callback_messages.pop((chat_id, message_id), None))
         dispatcher.bot.send_message(chat_id, "You lack the permissions required for this command")
     elif getattr(mem, perm) is True or mem.status == "creator" or mem.user.id in DEV_USERS:
-        cb = anon_callbacks.pop((chat_id, message_id), None)
-        if cb:
+        if cb := anon_callbacks.pop((chat_id, message_id), None):
             message_id = anon_callback_messages.pop((chat_id, message_id), None)
             if message_id is not None:
                 dispatcher.bot.delete_message(chat_id, message_id)

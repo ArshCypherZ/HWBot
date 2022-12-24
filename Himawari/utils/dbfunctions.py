@@ -28,9 +28,7 @@ antiservicedb = db.antiservice
 
 async def is_antiservice_on(chat_id: int) -> bool:
     chat = await antiservicedb.find_one({"chat_id": chat_id})
-    if not chat:
-        return True
-    return False
+    return not chat
 
 
 async def antiservice_on(chat_id: int):

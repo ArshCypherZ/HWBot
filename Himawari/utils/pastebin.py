@@ -34,16 +34,15 @@ def _netcat(host, port, content):
     s.sendall(content.encode())
     s.shutdown(socket.SHUT_WR)
     while True:
-        data = s.recv(4096).decode("utf-8").strip("\n\x00")
-        if not data:
+        if data := s.recv(4096).decode("utf-8").strip("\n\x00"):
+            return data
+        else:
             break
-        return data
     s.close()
 
 
 async def paste(content):
     loop = get_running_loop()
-    link = await loop.run_in_executor(
+    return await loop.run_in_executor(
         None, partial(_netcat, "ezup.dev", 9999, content)
     )
-    return link
