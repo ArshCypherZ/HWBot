@@ -72,6 +72,7 @@ class Config(object):
     JOIN_LOGGER=-1001523  #log channel/group id
     OWNER_ID=5437915218 #owner id in integer
     ERROR_LOGS=-1001 #support group id
+    BOT_ID = 2321 #id of bot in integer value
     BOT_NAME="Himawari" #your bot name
     ARQ_API_KEY="SLSFXSsdUXNSMH-ARQ" #ARQ api key from @ARQRobot
     ARQ_API_URL="arq.hamker.dev" #arq link
