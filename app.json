@@ -10,6 +10,12 @@
          "Himawari"
       ],   
    "repository": "https://github.com/ArshCypherZ/HWBot",
+   "formation": {
+        "worker": {
+          "quantity": 1,
+          "size": "eco"
+        }
+   },
    "addons": [
       {
          "options": {
