@@ -40,10 +40,9 @@ from Himawari import (
     DEV_USERS,
     LOGGER,
     OWNER_ID,
-    DRAGONS,
-    DEMONS,
-    TIGERS,
-    WOLVES,
+    SUDO_USERS,
+    SUPPORT_USERS,
+    WHITELIST_USERS,
     dispatcher,
 )
 
@@ -111,19 +110,15 @@ def ban(update: Update, context: CallbackContext) -> str:
             message.reply_text("Trying to put me against my Onichan huh?")
         elif user_id in DEV_USERS:
             message.reply_text("I can't act against our family.")
-        elif user_id in DRAGONS:
+        elif user_id in SUDO_USERS:
             message.reply_text(
                 "Fighting our best friends here will put user lives at risk."
             )
-        elif user_id in DEMONS:
+        elif user_id in SUPPORT_USERS:
             message.reply_text(
                 "Bring an order from Onichan to fight our friends."
             )
-        elif user_id in TIGERS:
-            message.reply_text(
-                "Bring an order from Onichan to fight our classmates"
-            )
-        elif user_id in WOLVES:
+        elif user_id in WHITELIST_USERS:
             message.reply_text("Spiral access make them ban immune!")
         else:
             message.reply_text("⚠️ Cannot banned admin.")
@@ -149,7 +144,6 @@ def ban(update: Update, context: CallbackContext) -> str:
                 message.reply_to_message.delete()
             message.delete()
             return log
-        # bot.send_sticker(chat.id, BAN_STICKER)  # banhammer marie sticker
         reply = (
           f"<code>❕</code><b>Ban Event</b>\n\n"
           f"<b>• User:</b> {mention_html(member.user.id, html.escape(member.user.first_name))}\n"
@@ -243,7 +237,6 @@ def temp_ban(update: Update, context: CallbackContext) -> str:
         log += f"\nReason: {reason}"
     try:
         chat.ban_member(user_id, until_date=bantime)
-        # bot.send_sticker(chat.id, BAN_STICKER)  # banhammer marie sticker
         reply_msg = (
             f"<code>❕</code><b>Temporarily Banned</b>\n\n"
             f"<b>• User:</b> {mention_html(member.user.id, html.escape(member.user.first_name))}\n"
@@ -372,7 +365,6 @@ def punch(update: Update, context: CallbackContext) -> str:
         message.reply_text("I really wish I could punch this user....")
         return log_message
     if res := chat.unban_member(user_id):
-        # bot.send_sticker(chat.id, BAN_STICKER)  # banhammer marie sticker
         bot.sendMessage(
             chat.id,
             f"{mention_html(member.user.id, html.escape(member.user.first_name))} [<code>{member.user.id}</code>] Kicked by {mention_html(user.id, html.escape(user.first_name))}",
@@ -470,7 +462,7 @@ def selfunban(update: Update, context: CallbackContext) -> str:
     message = update.effective_message
     user = update.effective_user
     bot, args = context.bot, context.args
-    if user.id not in DRAGONS or user.id not in TIGERS:
+    if user.id not in SUDO_USERS or user.id not in WHITELIST_USERS:
         return
     try:
         chat_id = int(args[0])

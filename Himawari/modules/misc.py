@@ -32,14 +32,13 @@ from telegram.error import BadRequest
 from telegram.ext import Filters, CallbackContext
 from telegram.utils.helpers import mention_html, escape_markdown
 from subprocess import Popen, PIPE
-from Himawari import DRAGONS as SUDO_USERS
-from Himawari import DEMONS as SUPPORT_USERS
-from Himawari import WOLVES as WHITELIST_USERS  
+from Himawari import SUDO_USERS as SUDO_USERS
+from Himawari import SUPPORT_USERS
+from Himawari import WHITELIST_USERS  
 from Himawari import (
     dispatcher,
     OWNER_ID,
     DEV_USERS,
-    TIGERS,
     INFOPIC,
     sw,
     StartTime
@@ -214,9 +213,6 @@ def get_user_info(chat: Chat, user: User) -> str:
         disaster_level_present = True
     elif user.id in SUPPORT_USERS:
         text += "\n\n<code>This user is our friend</code> ✨"
-        disaster_level_present = True
-    elif user.id in TIGERS:
-        text += "\n\n<code>One of my classmates</code> :p"
         disaster_level_present = True
     elif user.id in WHITELIST_USERS:
         text += "\n\n<code>Member of Himawari Tech, totally cool right?</code>"

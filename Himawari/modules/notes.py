@@ -29,7 +29,7 @@ import Himawari.modules.sql.notes_sql as sql
 
 from io import BytesIO
 from typing import Optional
-from Himawari import LOGGER, JOIN_LOGGER, SUPPORT_CHAT, dispatcher, DRAGONS
+from Himawari import LOGGER, SUPPORT_CHAT, dispatcher, SUDO_USERS, EVENT_LOGS
 from Himawari.modules.disable import DisableAbleCommandHandler
 from Himawari.modules.helper_funcs.handlers import MessageHandlerChecker
 from Himawari.modules.helper_funcs.chat_status import user_admin, connection_status
@@ -95,10 +95,10 @@ def get(update, context, notename, show_none=True, no_format=False):
         else:
             reply_id = message.message_id
         if note.is_reply:
-            if JOIN_LOGGER:
+            if EVENT_LOGS:
                 try:
                     bot.forward_message(
-                        chat_id=chat_id, from_chat_id=JOIN_LOGGER, message_id=note.value,
+                        chat_id=chat_id, from_chat_id=EVENT_LOGS, message_id=note.value,
                     )
                 except BadRequest as excp:
                     if excp.message != "Message to forward not found":
@@ -337,7 +337,7 @@ def clearall(update: Update, context: CallbackContext):
     chat = update.effective_chat
     user = update.effective_user
     member = chat.get_member(user.id)
-    if member.status != "creator" and user.id not in DRAGONS:
+    if member.status != "creator" and user.id not in SUDO_USERS:
         update.effective_message.reply_text(
             "Only the chat owner can clear all notes at once.",
         )
@@ -365,7 +365,7 @@ def clearall_btn(update: Update, context: CallbackContext):
     message = update.effective_message
     member = chat.get_member(query.from_user.id)
     if query.data == "notes_rmall":
-        if member.status == "creator" or query.from_user.id in DRAGONS:
+        if member.status == "creator" or query.from_user.id in SUDO_USERS:
             note_list = sql.get_all_chat_notes(chat.id)
             try:
                 for notename in note_list:
@@ -381,7 +381,7 @@ def clearall_btn(update: Update, context: CallbackContext):
         if member.status == "member":
             query.answer("You need to be admin to do this.")
     elif query.data == "notes_cancel":
-        if member.status == "creator" or query.from_user.id in DRAGONS:
+        if member.status == "creator" or query.from_user.id in SUDO_USERS:
             message.edit_text("Clearing of all notes has been cancelled.")
             return
         if member.status == "administrator":

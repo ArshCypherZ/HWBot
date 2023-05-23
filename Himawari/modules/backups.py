@@ -32,7 +32,7 @@ from telegram.error import BadRequest
 from telegram.ext import CommandHandler, run_async
 
 import Himawari.modules.sql.notes_sql as sql
-from Himawari import dispatcher, LOGGER, OWNER_ID, JOIN_LOGGER, SUPPORT_CHAT
+from Himawari import dispatcher, LOGGER, OWNER_ID, SUPPORT_CHAT, EVENT_LOGS
 from Himawari.__main__ import DATA_IMPORT
 from Himawari.modules.helper_funcs.chat_status import user_admin
 from Himawari.modules.helper_funcs.alternate import typing_action
@@ -346,7 +346,7 @@ def export_data(update, context):
     tgl = time.strftime("%H:%M:%S - %d/%m/%Y", time.localtime(time.time()))
     try:
         context.bot.sendMessage(
-            JOIN_LOGGER,
+            EVENT_LOGS,
             "*Successfully imported backup:*\nChat: `{}`\nChat ID: `{}`\nOn: `{}`".format(
                 chat.title, chat_id, tgl,
             ),

@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from Himawari import DEV_USERS, DRAGONS, DEMONS
+from Himawari import DEV_USERS, SUDO_USERS, SUPPORT_USERS
 from telegram import Message
 from telegram.ext import MessageFilter
 
@@ -30,13 +30,13 @@ from telegram.ext import MessageFilter
 class CustomFilters:
     class _Supporters(MessageFilter):
         def filter(self, message: Message):
-            return bool(message.from_user and message.from_user.id in DEMONS)
+            return bool(message.from_user and message.from_user.id in SUPPORT_USERS)
 
     support_filter = _Supporters()
 
     class _Sudoers(MessageFilter):
         def filter(self, message: Message):
-            return bool(message.from_user and message.from_user.id in DRAGONS)
+            return bool(message.from_user and message.from_user.id in SUDO_USERS)
 
     sudo_filter = _Sudoers()
 

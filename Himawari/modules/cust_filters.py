@@ -35,7 +35,7 @@ from telegram.ext import (
 )
 from telegram.utils.helpers import mention_html, escape_markdown
 
-from Himawari import dispatcher, LOGGER as log, DRAGONS
+from Himawari import dispatcher, LOGGER as log, SUDO_USERS
 from Himawari.modules.helper_funcs.extraction import extract_text
 from Himawari.modules.helper_funcs.filters import CustomFilters
 from Himawari.modules.helper_funcs.misc import build_keyboard_parser
@@ -479,7 +479,7 @@ def rmall_filters(update, _):
     chat = update.effective_chat
     user = update.effective_user
     member = chat.get_member(user.id)
-    if member.status != "creator" and user.id not in DRAGONS:
+    if member.status != "creator" and user.id not in SUDO_USERS:
         update.effective_message.reply_text(
             "Only the chat owner can clear all notes at once."
         )
@@ -531,7 +531,7 @@ def rmall_callback(update, _):
         if member.status == "member":
             query.answer("You need to be admin to do this.")
     elif query.data == "filters_cancel":
-        if member.status == "creator" or query.from_user.id in DRAGONS:
+        if member.status == "creator" or query.from_user.id in SUDO_USERS:
             msg.edit_text("Clearing of all filters has been cancelled.")
             return
         if member.status == "administrator":

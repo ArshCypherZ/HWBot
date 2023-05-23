@@ -33,13 +33,10 @@ from sys import argv
 
 from typing import Optional
 from Himawari import (
-    CERT_PATH,
-    DONATION_LINK,
     LOGGER,
     OWNER_ID,
-    PORT,
+    URL,
     TOKEN,
-    WEBHOOK,
     SUPPORT_CHAT,
     UPDATES_CHANNEL,
     dispatcher,
@@ -158,7 +155,7 @@ HELP_STRINGS = """
 • You can also navigate between the help menu by clicking on left-right arrow.   
 """
 
-DONATE_STRING = """PM @Arsshh for donating :)"""
+DONATE_STRING = """PM @nyagurl for donating :)"""
 
 
 IMPORTED = {}
@@ -218,13 +215,6 @@ def send_help(chat_id, text, keyboard=None):
         disable_web_page_preview=True,
         reply_markup=keyboard,
     )
-
-
-def test(update: Update, context: CallbackContext):
-    # pprint(eval(str(update)))
-    # update.effective_message.reply_text("Hola tester! _I_ *have* `markdown`", parse_mode=ParseMode.MARKDOWN)
-    update.effective_message.reply_text("This person edited a message")
-    print(update.effective_message)
 
 
 def start(update: Update, context: CallbackContext):
@@ -638,12 +628,6 @@ def donate(update: Update, context: CallbackContext):
             DONATE_STRING, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True
         )
 
-        if OWNER_ID != 254318997 and DONATION_LINK:
-            update.effective_message.reply_text(
-                f"You can also donate to the person currently running me [here]({DONATION_LINK})",
-                parse_mode=ParseMode.MARKDOWN,
-            )
-
     else:
         user = update.effective_message.from_user
         bot = context.bot
@@ -695,7 +679,6 @@ def main():
     donate_handler = DisableAbleCommandHandler("donate", donate, run_async=True)
     migrate_handler = MessageHandler(Filters.status_update.migrate, migrate_chats, run_async=True)
 
-    # dispatcher.add_handler(test_handler)
     dispatcher.add_handler(start_handler)
     dispatcher.add_handler(help_handler)
     dispatcher.add_handler(data_callback_handler)
@@ -706,20 +689,9 @@ def main():
     dispatcher.add_handler(donate_handler)
 
     dispatcher.add_error_handler(error_callback)
-
-    if WEBHOOK:
-        URL="https://meow.herokuapp.com"
-        LOGGER.info("Using webhooks.")
-        updater.start_webhook(listen="", port=PORT, url_path=TOKEN)
-
-        if CERT_PATH:
-            updater.bot.set_webhook(url=URL + TOKEN, certificate=open(CERT_PATH, "rb"))
-        else:
-            updater.bot.set_webhook(url=URL + TOKEN)
-
-    else:
-        LOGGER.info("Himawari started, Using long polling.")
-        updater.start_polling(timeout=15, read_latency=4, drop_pending_updates=True, allowed_updates=Update.ALL_TYPES)
+    
+    LOGGER.info("Himawari started, Using long polling.")
+    updater.start_polling(timeout=15, read_latency=4, drop_pending_updates=True, allowed_updates=Update.ALL_TYPES)
     if len(argv) in {1, 3, 4}:
         telethn.run_until_disconnected()
     else:

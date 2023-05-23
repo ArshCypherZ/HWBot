@@ -54,8 +54,6 @@ $ sudo apt install python3-pip
 $ git clone https://github.com/ArshCypherZ/HWBot
 $ cd <Repo Name>
 $ pip3 install -U -r requirements.txt
-$ cd Himawari
-$ cp Himawari/config.py
 ```
  
 <h3 align="center"> 

@@ -33,7 +33,7 @@ import requests
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import CallbackContext, CommandHandler
 
-from Himawari import dispatcher, DEV_USERS, ERROR_LOGS as JOIN_LOGGER
+from Himawari import dispatcher, DEV_USERS, ERROR_LOGS
 
 pretty_errors.mono()
 
@@ -101,7 +101,7 @@ def error_callback(update: Update, context: CallbackContext):
             with open("error.txt", "w+") as f:
                 f.write(pretty_message)
             context.bot.send_document(
-                JOIN_LOGGER,
+                ERROR_LOGS,
                 open("error.txt", "rb"),
                 caption=f"#{context.error.identifier}\n<b>Onichan some errors are happening:"
                 f"</b>\n<code>{e}</code>",
@@ -111,7 +111,7 @@ def error_callback(update: Update, context: CallbackContext):
 
         url = f"https://spaceb.in/{response['payload']['id']}"
         context.bot.send_message(
-            JOIN_LOGGER,
+            ERROR_LOGS,
             text=f"#{context.error.identifier}\n<b>Onichan some errors are happening!:"
             f"</b>\n<code>{e}</code>",
             reply_markup=InlineKeyboardMarkup(

@@ -31,7 +31,7 @@ from telegram.ext import CallbackContext, CallbackQueryHandler, CommandHandler, 
 from telegram.utils.helpers import mention_html
 from typing import Optional
 
-from Himawari import DRAGONS, dispatcher, LOGGER
+from Himawari import SUDO_USERS, dispatcher, LOGGER
 from Himawari.modules.disable import DisableAbleCommandHandler
 from Himawari.modules.helper_funcs.chat_status import (
     bot_admin,
@@ -206,7 +206,7 @@ def promote(update: Update, context: CallbackContext) -> str:
     if (
         not promoter.can_promote_members
         and promoter.status != "creator"
-        and user.id not in DRAGONS
+        and user.id not in SUDO_USERS
     ):
         message.reply_text("You don't have the necessary rights to do that!")
         return
@@ -295,7 +295,7 @@ def fullpromote(update: Update, context: CallbackContext) -> str:
     if (
         not promoter.can_promote_members
         and promoter.status != "creator"
-        and user.id not in DRAGONS
+        and user.id not in SUDO_USERS
     ):
         message.reply_text("You don't have the necessary rights to do that!")
         return
@@ -385,7 +385,7 @@ def lowpromote(update: Update, context: CallbackContext) -> str:
     if (
         not promoter.can_promote_members
         and promoter.status != "creator"
-        and user.id not in DRAGONS
+        and user.id not in SUDO_USERS
     ):
         message.reply_text("You don't have the necessary rights to do that!")
         return

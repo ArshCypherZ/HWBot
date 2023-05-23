@@ -1,14 +1,18 @@
 """
 MIT License
+
 Copyright (c) 2022 Arsh
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
+
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
+
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,10 +32,10 @@ from Himawari import (
     DEV_USERS,
     LOGGER as log,
     OWNER_ID,
-    DRAGONS,
-    DEMONS,
-    TIGERS,
-    WOLVES,
+    SUPPORT_CHAT,
+    SUDO_USERS,
+    SUPPORT_USERS,
+    WHITELIST_USERS,
     sw,
     dispatcher,
     EVENT_LOGS as meow
@@ -94,7 +98,7 @@ CAPTCHA_ANS_DICT = {}
 
 from multicolorcaptcha import CaptchaGenerator
 
-WHITELISTED = [OWNER_ID] + DEV_USERS + DRAGONS + DEMONS + WOLVES
+WHITELISTED = [OWNER_ID] + DEV_USERS + SUDO_USERS + SUPPORT_USERS + WHITELIST_USERS
 # do not async
 def send(update, message, keyboard, backup_message):
     chat = update.effective_chat
@@ -253,7 +257,7 @@ def new_member(update: Update, context: CallbackContext):  # sourcery no-metrics
                 continue
 
             # Welcome Sudos
-            elif new_mem.id in DRAGONS:
+            elif new_mem.id in SUDO_USERS:
                 update.effective_message.reply_text(
                     "Huh! My bestfriend just joined! Stay Alert!",
                     reply_to_message_id=reply,
@@ -261,24 +265,24 @@ def new_member(update: Update, context: CallbackContext):  # sourcery no-metrics
                 continue
 
             # Welcome Support
-            elif new_mem.id in DEMONS:
+            elif new_mem.id in SUPPORT_USERS:
                 update.effective_message.reply_text(
                     "Huh! Is that a friend? waku waku <3",
                     reply_to_message_id=reply,
                 )
                 continue
 
-            # Welcome WOLVES
-            elif new_mem.id in WOLVES:
+            # Welcome WHITELIST_USERS
+            elif new_mem.id in WHITELIST_USERS:
                 update.effective_message.reply_text(
                     "Oof! My classmate just joined!", reply_to_message_id=reply
                 )
                 continue
 
-            # Welcome yourself
+            # Welcome yourselflog
             elif new_mem.id == bot.id:
                 update.effective_message.reply_text(
-                    "Thanks for adding me! Checkout @BakufuGovt for more.", reply_to_message_id=reply
+                    f"Thanks for adding me! Checkout {SUPPORT_CHAT} for bug reports.", reply_to_message_id=reply
                 )
                 creator = None
                 for x in bot.get_chat_administrators(update.effective_chat.id):
@@ -574,7 +578,10 @@ def new_member(update: Update, context: CallbackContext):  # sourcery no-metrics
                         parse_mode="markdown",
                     )
             else:
-                sent = send(update, res, keyboard, backup_message)
+                try:
+                    sent = send(update, res, keyboard, backup_message)
+                except UnboundLocalError:
+                    pass
             prev_welc = sql.get_clean_pref(chat.id)
             if prev_welc:
                 try:

@@ -30,7 +30,7 @@ from telegram.utils.helpers import escape_markdown
 
 import Himawari.modules.sql.userinfo_sql as sql
 from Himawari import DEV_USERS
-from Himawari import DRAGONS as SUDO_USERS
+from Himawari import SUDO_USERS as SUDO_USERS
 from Himawari.modules.helper_funcs.decorators import Himawaricmd
 from Himawari.modules.helper_funcs.extraction import extract_user
 

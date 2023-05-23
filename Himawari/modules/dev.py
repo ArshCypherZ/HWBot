@@ -52,22 +52,6 @@ def leave_cb(update: Update, context: CallbackContext):
     bot.leave_chat(chat_id=chat)
     callback.answer(text="Left chat")
 
-@dev_plus
-def allow_groups(update: Update, context: CallbackContext):
-    args = context.args
-    if not args:
-        state = "off" if Himawari.ALLOW_CHATS else "Lockdown is " + "on"
-        update.effective_message.reply_text(f"Current state: {state}")
-        return
-    if args[0].lower() in ["off", "no"]:
-        Himawari.ALLOW_CHATS = True
-    elif args[0].lower() in ["yes", "on"]:
-        Himawari.ALLOW_CHATS = False
-    else:
-        update.effective_message.reply_text("Format: /lockdown Yes/No or Off/On")
-        return
-    update.effective_message.reply_text("Done! Lockdown value toggled.")
-
 	
 class Store:
     def __init__(self, func):
@@ -198,15 +182,13 @@ PIP_INSTALL_HANDLER = CommandHandler("install", pip_install, run_async=True)
 LEAVE_HANDLER = CommandHandler("leave", leave, run_async=True)
 GITPULL_HANDLER = CommandHandler("gitpull", gitpull, run_async=True)
 RESTART_HANDLER = CommandHandler("reboot", restart, run_async=True)
-ALLOWGROUPS_HANDLER = CommandHandler("lockdown", allow_groups, run_async=True)
 LEAVE_CALLBACK_HANDLER = CallbackQueryHandler(leave_cb, pattern=r"leavechat_cb_", run_async=True)
 
 dispatcher.add_handler(PIP_INSTALL_HANDLER)
-dispatcher.add_handler(ALLOWGROUPS_HANDLER)
 dispatcher.add_handler(LEAVE_HANDLER)
 dispatcher.add_handler(GITPULL_HANDLER)
 dispatcher.add_handler(RESTART_HANDLER)
 dispatcher.add_handler(LEAVE_CALLBACK_HANDLER)
 
 __mod_name__ = "Dev"
-__handlers__ = [LEAVE_HANDLER, GITPULL_HANDLER, RESTART_HANDLER, ALLOWGROUPS_HANDLER, LEAVE_CALLBACK_HANDLER, PIP_INSTALL_HANDLER]
+__handlers__ = [LEAVE_HANDLER, GITPULL_HANDLER, RESTART_HANDLER, LEAVE_CALLBACK_HANDLER, PIP_INSTALL_HANDLER]

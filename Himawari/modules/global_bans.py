@@ -46,12 +46,10 @@ from Himawari import (
     EVENT_LOGS,
     OWNER_ID,
     STRICT_GBAN,
-    DRAGONS,
+    SUDO_USERS,
     SUPPORT_CHAT,
-    SPAMWATCH_SUPPORT_CHAT,
-    DEMONS,
-    TIGERS,
-    WOLVES,
+    SUPPORT_USERS,
+    WHITELIST_USERS,
     sw,
     dispatcher,
 )
@@ -119,23 +117,19 @@ def gban(update: Update, context: CallbackContext):
         )
         return
 
-    if int(user_id) in DRAGONS:
+    if int(user_id) in SUDO_USERS:
         message.reply_text(
             "I spy, with my little eye... Bestfriends! Why are you guys turning on each other?",
         )
         return
 
-    if int(user_id) in DEMONS:
+    if int(user_id) in SUPPORT_USERS:
         message.reply_text(
             "OOOH someone's trying to gban our friendo! *grabs popcorn*",
         )
         return
 
-    if int(user_id) in TIGERS:
-        message.reply_text("That's our classmate! They cannot be banned!")
-        return
-
-    if int(user_id) in WOLVES:
+    if int(user_id) in WHITELIST_USERS:
         message.reply_text("That's one of the SHINOBI! They cannot be banned!")
         return
 
@@ -217,7 +211,7 @@ def gban(update: Update, context: CallbackContext):
             )
 
     else:
-        send_to_list(bot, DRAGONS + DEMONS, log_message, html=True)
+        send_to_list(bot, SUDO_USERS + SUPPORT_USERS, log_message, html=True)
 
     sql.gban_user(user_id, user_chat.username or user_chat.first_name, reason)
 
@@ -246,7 +240,7 @@ def gban(update: Update, context: CallbackContext):
                     )
                 else:
                     send_to_list(
-                        bot, DRAGONS + DEMONS, f"Could not gban due to: {excp.message}",
+                        bot, SUDO_USERS + SUPPORT_USERS, f"Could not gban due to: {excp.message}",
                     )
                 sql.ungban_user(user_id)
                 return
@@ -261,7 +255,7 @@ def gban(update: Update, context: CallbackContext):
     else:
         send_to_list(
             bot,
-            DRAGONS + DEMONS,
+            SUDO_USERS + SUPPORT_USERS,
             f"Gban complete! (User banned in <code>{gbanned_chats}</code> chats)",
             html=True,
         )
@@ -340,7 +334,7 @@ def ungban(update: Update, context: CallbackContext):
                 + "\n\nFormatting has been disabled due to an unexpected error.",
             )
     else:
-        send_to_list(bot, DRAGONS + DEMONS, log_message, html=True)
+        send_to_list(bot, SUDO_USERS + SUPPORT_USERS, log_message, html=True)
 
     chats = get_user_com_chats(user_id)
     ungbanned_chats = 0
@@ -383,7 +377,7 @@ def ungban(update: Update, context: CallbackContext):
             parse_mode=ParseMode.HTML,
         )
     else:
-        send_to_list(bot, DRAGONS + DEMONS, "un-gban complete!")
+        send_to_list(bot, SUDO_USERS + SUPPORT_USERS, "un-gban complete!")
 
     end_time = time.time()
     ungban_time = round((end_time - start_time), 2)
@@ -422,7 +416,7 @@ def gbanlist(update: Update, context: CallbackContext):
 
 def check_and_ban(update, user_id, should_message=True):
 
-    if user_id in TIGERS or user_id in WOLVES:
+    if user_id in WHITELIST_USERS:
         sw_ban = None
     else:
         try:
@@ -436,7 +430,7 @@ def check_and_ban(update, user_id, should_message=True):
             update.effective_message.reply_text(
                 f"<b>Alert</b>: this user has been globally banned by @SpamWatch\n"
                 f"<code>*bans them from here*</code>.\n"
-                f"<b>Appeal for unban</b>: {SPAMWATCH_SUPPORT_CHAT}\n"
+                f"<b>Appeal for unban</b>: @SpamWatchSupport\n"
                 f"<b>User ID</b>: <code>{sw_ban.id}</code>\n"
                 f"<b>Ban Reason</b>: <code>{html.escape(sw_ban.reason)}</code>",
                 parse_mode=ParseMode.HTML,
@@ -519,7 +513,7 @@ def __user_info__(user_id):
         return ""
     if user_id == dispatcher.bot.id:
         return ""
-    if int(user_id) in DRAGONS + TIGERS + WOLVES:
+    if int(user_id) in SUDO_USERS + WHITELIST_USERS:
         return ""
     if is_gbanned:
         text = text.format("Yes")

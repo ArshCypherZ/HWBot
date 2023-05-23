@@ -26,7 +26,7 @@ import html
 import re
 from typing import Optional
 
-from Himawari import LOGGER, TIGERS, dispatcher
+from Himawari import LOGGER, WHITELIST_USERS, dispatcher
 from Himawari.modules.helper_funcs.chat_status import (
     bot_admin,
     can_restrict,
@@ -72,7 +72,7 @@ def check_user(user_id: int, bot: Bot, chat: Chat) -> Optional[str]:
 
     if user_id == bot.id:
         return "I'm not gonna MUTE myself, How high are you?"
-    if is_user_admin(chat, user_id, member) or user_id in TIGERS:
+    if is_user_admin(chat, user_id, member) or user_id in WHITELIST_USERS:
         return "Can't. Find someone else to mute but not this one."
     return None
 

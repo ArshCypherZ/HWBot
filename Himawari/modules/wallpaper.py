@@ -21,61 +21,44 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-
-import requests as r
-
-from random import randint
-from telegram import Update, ChatAction
-from telegram.ext import CallbackContext, run_async
-
-from Himawari import SUPPORT_CHAT, WALL_API, dispatcher
-from Himawari.modules.disable import DisableAbleCommandHandler
-from Himawari.modules.helper_funcs.alternate import send_action
+# if kanging please do not remove credits else i will turn off my api :) ~ ArshCypherZ
 
 
-@send_action(ChatAction.UPLOAD_PHOTO)
-def wall(update: Update, context: CallbackContext):
-    chat_id = update.effective_chat.id
-    msg = update.effective_message
-    args = context.args
-    msg_id = update.effective_message.message_id
-    bot = context.bot
-    query = " ".join(args)
-    if not query:
-        msg.reply_text("Please enter a query!")
-        return
-    term = query.replace(" ", "%20")
-    json_rep = r.get(
-        f"https://wall.alphacoders.com/api2.0/get.php?auth={WALL_API}&method=search&term={term}"
-    ).json()
-    if not json_rep.get("success"):
-        msg.reply_text(f"An error occurred! Report this @{SUPPORT_CHAT}")
-    else:
-        wallpapers = json_rep.get("wallpapers")
-        if not wallpapers:
-            msg.reply_text("No results found! Refine your search.")
-            return
-        index = randint(0, len(wallpapers) - 1)  # Choose random index
-        wallpaper = wallpapers[index]
-        wallpaper = wallpaper.get("url_image")
-        wallpaper = wallpaper.replace("\\", "")
-        caption = query
-        bot.send_photo(
-            chat_id,
-            photo=wallpaper,
-            caption="Preview",
-            reply_to_message_id=msg_id,
-            timeout=60,
+import asyncio
+import random
+
+from requests import get
+
+from Himawari import telethn as meow
+from Himawari.events import register
+
+
+@register(pattern="^[!/]wall")
+async def some(event):
+    try:
+        inpt: str = (
+            event.text.split(None, 1)[1]
+            if len(event.text) < 3
+            else event.text.split(None, 1)[1].replace(" ", "%20")
         )
-        bot.send_document(
-            chat_id,
-            document=wallpaper,
-            filename="wallpaper",
-            caption=caption,
-            reply_to_message_id=msg_id,
-            timeout=60,
-        )
+    except IndexError:
+        return await event.reply("Usage: /wall <query>")
 
+    Emievent = await event.reply("Sending please wait...")
+    try:
+        r = get(
+            f"https://bakufuapi.vercel.app/api/wall/wallhaven?query={inpt}&page=1"
+        ).json()
 
-WALLPAPER_HANDLER = DisableAbleCommandHandler("wall", wall, run_async=True)
-dispatcher.add_handler(WALLPAPER_HANDLER)
+        list_id = [r["response"][i]["path"] for i in range(len(r["response"]))]
+        item = (random.sample(list_id, 1))[0]
+    except BaseException:
+        await Emievent.delete()
+        return await event.reply("Try again later or enter correct query.")
+
+    await meow.send_file(event.chat_id, item, caption="Preview", reply_to=event)
+    await meow.send_file(
+        event.chat_id, file=item, caption="wall", reply_to=event, force_document=True
+    )
+    await Emievent.delete()
+    await asyncio.sleep(5)

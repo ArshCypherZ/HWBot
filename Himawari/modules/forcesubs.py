@@ -34,7 +34,7 @@ from pyrogram.errors.exceptions.bad_request_400 import (
 )
 from pyrogram.types import ChatPermissions, InlineKeyboardButton, InlineKeyboardMarkup
 
-from Himawari import DRAGONS as SUDO_USERS
+from Himawari import SUDO_USERS as SUDO_USERS
 from Himawari import pgram as pbot
 from Himawari.modules.sql import forceSubscribe_sql as sql
 

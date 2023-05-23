@@ -25,7 +25,7 @@ SOFTWARE.
 from os import remove
 from pyrogram import filters
 
-from Himawari import DRAGONS, BOT_USERNAME, arq, pgram
+from Himawari import SUDO_USERS, BOT_USERNAME, arq, pgram
 from Himawari.utils.errors import capture_err
 from Himawari.utils.permissions import adminsOnly
 from Himawari.modules.mongo.nsfw_mongo import is_nsfw_on, nsfw_off, nsfw_on
@@ -94,7 +94,7 @@ async def detect_nsfw(_, message):
     results = results.result
     remove(file)
     nsfw = results.is_nsfw
-    if message.from_user.id in DRAGONS:
+    if message.from_user.id in SUDO_USERS:
         return
     if not nsfw:
         return

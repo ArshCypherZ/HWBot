@@ -34,7 +34,7 @@ from telegram.utils.helpers import mention_html
 from alphabet_detector import AlphabetDetector
 
 import Himawari.modules.sql.locks_sql as sql
-from Himawari import dispatcher, DRAGONS, LOGGER
+from Himawari import dispatcher, SUDO_USERS, LOGGER
 from Himawari.modules.disable import DisableAbleCommandHandler
 from Himawari.modules.helper_funcs.chat_status import (
     can_delete,

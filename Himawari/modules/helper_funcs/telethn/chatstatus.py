@@ -23,7 +23,7 @@ SOFTWARE.
 """
 
 from Himawari.modules.helper_funcs.telethn import IMMUNE_USERS, telethn
-from Himawari import DRAGONS
+from Himawari import SUDO_USERS
 from telethon.tl.types import ChannelParticipantsAdmins
 
 
@@ -49,7 +49,7 @@ async def user_is_admin(user_id: int, message):
     async for user in telethn.iter_participants(
         message.chat_id, filter=ChannelParticipantsAdmins,
     ):
-        if user_id == user.id or user_id in DRAGONS:
+        if user_id == user.id or user_id in SUDO_USERS:
             status = True
             break
     return status
@@ -60,7 +60,7 @@ async def is_user_admin(user_id: int, chat_id):
     async for user in telethn.iter_participants(
         chat_id, filter=ChannelParticipantsAdmins,
     ):
-        if user_id == user.id or user_id in DRAGONS:
+        if user_id == user.id or user_id in SUDO_USERS:
             status = True
             break
     return status

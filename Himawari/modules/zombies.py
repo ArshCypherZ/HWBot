@@ -30,7 +30,7 @@ from telethon.errors import ChatAdminRequiredError, UserAdminInvalidError
 from telethon.tl.functions.channels import EditBannedRequest
 from telethon.tl.types import ChatBannedRights, ChannelParticipantsAdmins
 
-from Himawari import telethn, OWNER_ID, DEV_USERS, DRAGONS, DEMONS
+from Himawari import telethn, OWNER_ID, DEV_USERS, SUDO_USERS, SUPPORT_USERS
 
 
 BANNED_RIGHTS = ChatBannedRights(
@@ -57,7 +57,7 @@ UNBAN_RIGHTS = ChatBannedRights(
     embed_links=None,
 )
 
-ONICHAN = [OWNER_ID] + DEV_USERS + DRAGONS + DEMONS
+ONICHAN = [OWNER_ID] + DEV_USERS + SUDO_USERS + SUPPORT_USERS
 
 # Check if user has admin rights
 

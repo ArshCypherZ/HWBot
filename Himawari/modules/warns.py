@@ -27,7 +27,7 @@ import re
 from typing import Optional
 
 import telegram
-from Himawari import TIGERS, WOLVES, dispatcher
+from Himawari import WHITELIST_USERS, dispatcher
 from Himawari.modules.disable import DisableAbleCommandHandler
 from Himawari.modules.helper_funcs.chat_status import (bot_admin,
                                                            can_restrict,
@@ -74,16 +74,7 @@ def warn(user: User,
             message.reply_text("Approved user triggered an auto filter! But they can't be warned.")
         return 
 
-    if user.id in TIGERS:
-        if warner:
-            message.reply_text("Classmates cant be warned.")
-        else:
-            message.reply_text(
-                "One of the Classmate triggered an auto warn filter!\n I can't warn our own classmates but they should avoid abusing this."
-            )
-        return
-
-    if user.id in WOLVES:
+    if user.id in WHITELIST_USERS:
         if warner:
             message.reply_text("SpiralS are warn immune.")
         else:
@@ -118,7 +109,6 @@ def warn(user: User,
         for warn_reason in reasons:
             reply += f"\n - {html.escape(warn_reason)}"
 
-        # message.bot.send_sticker(chat.id, BAN_STICKER)
         keyboard = None
         log_reason = (f"<b>{html.escape(chat.title)}:</b>\n"
                       f"#WARN_BAN\n\n"

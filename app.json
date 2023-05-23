@@ -30,6 +30,11 @@
          "required": true,
          "value": ""
       },
+      "ENV": {
+         "description": "Do not change if deploying on heroku.",
+         "required": true,
+         "value": "True"
+      },
       "API_ID": {
          "description": "Get API_ID from my.telegram.org, used for telethon based modules.",
          "required": true,
@@ -40,23 +45,8 @@
          "required": true,
          "value": ""
       },
-      "APP_ID": {
-         "description": "Same as API_ID",
-         "required": true,
-         "value": ""
-      },
-      "APP_HASH": {
-         "description": "Same as API_HASH",
-         "required": true,
-         "value": ""
-      },  
       "DATABASE_URL": {
          "description": "Your Postgres SQL DataBase URI, Get one from ElephantSQL.com",
-         "required": true,
-         "value": ""
-      }, 
-      "DATABASE_URL2": {
-         "description": "Your one extra Mongo DataBase URI, Get one from mongodb.com",
          "required": true,
          "value": ""
       }, 
@@ -75,11 +65,6 @@
          "required": true,
          "value": ""
       },
-      "BOT_ID": {
-         "description": "Your Telegram Bot ID.",
-         "required": true,
-         "value": ""
-      },
       "BOT_NAME": {
          "description": "Your Telegram Bot Name.",
          "required": true,
@@ -88,10 +73,6 @@
       "BOT_USERNAME": {
          "description": "Your Telegram Bot UserName without @",
          "required": true,
-         "value": ""
-      },
-      "OWNER_USERNAME": {
-         "description": "Your Telegram username without the @",
          "value": ""
       },
       "SUPPORT_CHAT": {
@@ -108,22 +89,7 @@
          "description": "Event logs channel to note down important bot level events, recommend to make this public. ex: '-123456'",
          "required": true,
          "value": "-123456789"
-      },
-      "JOIN_LOGGER": {
-         "description": "A channel where bot will print who added it to what group, useful during debugging or spam handling.",
-         "required": true,
-         "value": "-123456789"
-      },      
-      "TIME_API_KEY": {
-         "description": "Required for timezone information. Get yours from https://timezonedb.com/api",
-         "required": false,
-         "value": "abc"
-      },
-     "WALL_API": {
-         "description": "Required for wallpapers. From:- https://wall.alphacoders.com/api.php",
-         "required": false,
-         "value": ""
-      },
+      },   
       "DEV_USERS": {
          "description": "Enter the IDs of the users who are the Developers of the Bot. If you are newbie and want help from us Itself, then keep the IDs as they are and add yours",
          "required": false,
@@ -134,7 +100,7 @@
          "required": false,
          "value": ""
       }, 
-      "DRAGONS": {
+      "SUDO_USERS": {
          "description": "A space separated list of user IDs who you want to assign as sudo users.",
          "required": false,
          "value": ""
@@ -143,39 +109,20 @@
          "description": "Enforce gbans across new groups as well as old groups. When a gbanned user talks, he will be banned.",
          "value": "True"
       },
-      "DEMONS": {
+      "SUPPORT_USERS": {
          "description": "A space separated list of user IDs who can use Gban From Your Bot",
          "required": false,
          "value": ""
       },
-      "TIGERS": {
-         "description": "A space separated list of user IDs who can not be banned by your Bot",
-         "required": false,
-         "value": ""
-      },
-      "WOLVES": {
+      "WHITELIST_USERS": {
          "description": "A space separated list of user IDs who you want to assign as whitelisted - can't be banned with your bot.",
          "required": false,
          "value": ""
       },
-      "ENV": {
-         "description": "Setting this to ANYTHING will enable environment variables. Leave it as it is",
-         "value": "ANYTHING"
-      },
       "URL": {
          "description": "The Heroku App URL :-  https://<appname>.herokuapp.com/",
-         "required": false,
+         "required": true,
          "value": "https://example.herokuapp.com/"
-      },
-      "GENIUS_API_TOKEN": {
-         "description": "Genius API Token get one from genius.com/api-client",
-         "required": false,
-         "value": ""
-      },
-      "DONATION_LINK": {
-         "description": "Optional: link where you would like to receive donations. If you are a noob, better leave it linking to paul",
-         "required": false,
-         "value": "https://www.paypal.me/PaulSonOfLars"
       },
       "MONGO_DB_URL": {
          "description": "Your Mongo DB URI",
@@ -193,7 +140,7 @@
          "value": ""
       },
       "INFOPIC": {
-         "description": "Dont change",
+         "description": "Whether to show picture while doing /info or not",
          "required": true,
          "value": "True"
       },

@@ -30,12 +30,11 @@ from typing import Optional
 from Himawari import (
     DEV_USERS,
     OWNER_ID,
-    DRAGONS,
+    SUDO_USERS,
     SUPPORT_CHAT,
     UPDATES_CHANNEL,
-    DEMONS,
-    TIGERS,
-    WOLVES,
+    SUPPORT_USERS,
+    WHITELIST_USERS,
     dispatcher,
 )
 from Himawari.modules.helper_funcs.chat_status import (
@@ -77,22 +76,22 @@ def addsudo(update: Update, context: CallbackContext) -> str:
     with open(ELEVATED_USERS_FILE, "r") as infile:
         data = json.load(infile)
 
-    if user_id in DRAGONS:
+    if user_id in SUDO_USERS:
         message.reply_text("Already our besto friendo :3")
         return ""
 
-    if user_id in DEMONS:
+    if user_id in SUPPORT_USERS:
         rt += "."
         data["supports"].remove(user_id)
-        DEMONS.remove(user_id)
+        SUPPORT_USERS.remove(user_id)
 
-    if user_id in WOLVES:
+    if user_id in WHITELIST_USERS:
         rt += "We are Best Friends now 🌸"
         data["whitelists"].remove(user_id)
-        WOLVES.remove(user_id)
+        WHITELIST_USERS.remove(user_id)
 
     data["sudos"].append(user_id)
-    DRAGONS.append(user_id)
+    SUDO_USERS.append(user_id)
 
     with open(ELEVATED_USERS_FILE, "w") as outfile:
         json.dump(data, outfile, indent=4)
@@ -135,22 +134,22 @@ def addsupport(
     with open(ELEVATED_USERS_FILE, "r") as infile:
         data = json.load(infile)
 
-    if user_id in DRAGONS:
+    if user_id in SUDO_USERS:
         rt += "I dont want to be your best friend 🥲"
         data["sudos"].remove(user_id)
-        DRAGONS.remove(user_id)
+        SUDO_USERS.remove(user_id)
 
-    if user_id in DEMONS:
+    if user_id in SUPPORT_USERS:
         message.reply_text("We are already friends.")
         return ""
 
-    if user_id in WOLVES:
+    if user_id in WHITELIST_USERS:
         rt += "We are friends now :)"
         data["whitelists"].remove(user_id)
-        WOLVES.remove(user_id)
+        WHITELIST_USERS.remove(user_id)
 
     data["supports"].append(user_id)
-    DEMONS.append(user_id)
+    SUPPORT_USERS.append(user_id)
 
     with open(ELEVATED_USERS_FILE, "w") as outfile:
         json.dump(data, outfile, indent=4)
@@ -190,22 +189,22 @@ def addwhitelist(update: Update, context: CallbackContext) -> str:
     with open(ELEVATED_USERS_FILE, "r") as infile:
         data = json.load(infile)
 
-    if user_id in DRAGONS:
+    if user_id in SUDO_USERS:
         rt += "This member is our bestfriend but i will like when our bestfriend becomes a Spiral "
         data["sudos"].remove(user_id)
-        DRAGONS.remove(user_id)
+        SUDO_USERS.remove(user_id)
 
-    if user_id in DEMONS:
+    if user_id in SUPPORT_USERS:
         rt += "You are our friend, but it's for your own good if you become a Spiral instead."
         data["supports"].remove(user_id)
-        DEMONS.remove(user_id)
+        SUPPORT_USERS.remove(user_id)
 
-    if user_id in WOLVES:
+    if user_id in WHITELIST_USERS:
         message.reply_text("This user is already a true Spiral")
         return ""
 
     data["whitelists"].append(user_id)
-    WOLVES.append(user_id)
+    WHITELIST_USERS.append(user_id)
 
     with open(ELEVATED_USERS_FILE, "w") as outfile:
         json.dump(data, outfile, indent=4)
@@ -217,66 +216,6 @@ def addwhitelist(update: Update, context: CallbackContext) -> str:
 
     log_message = (
         f"#WHITELIST\n"
-        f"<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))} \n"
-        f"<b>User:</b> {mention_html(user_member.id, html.escape(user_member.first_name))}"
-    )
-
-    if chat.type != "private":
-        log_message = f"<b>{html.escape(chat.title)}:</b>\n{log_message}"
-
-    return log_message
-
-
-@sudo_plus
-@gloggable
-def addtiger(update: Update, context: CallbackContext) -> str:
-    message = update.effective_message
-    user = update.effective_user
-    chat = update.effective_chat
-    bot, args = context.bot, context.args
-    user_id = extract_user(message, args)
-    user_member = bot.getChat(user_id)
-    rt = ""
-
-    if reply := check_user_id(user_id, bot):
-        message.reply_text(reply)
-        return ""
-
-    with open(ELEVATED_USERS_FILE, "r") as infile:
-        data = json.load(infile)
-
-    if user_id in DRAGONS:
-        rt += "You were our besto friendo, but now you are just a classmate to us ;("
-        data["sudos"].remove(user_id)
-        DRAGONS.remove(user_id)
-
-    if user_id in DEMONS:
-        rt += "Let's become classmates instead."
-        data["supports"].remove(user_id)
-        DEMONS.remove(user_id)
-
-    if user_id in WOLVES:
-        rt += "This user is already a Spiral, we can be classmates as well.."
-        data["whitelists"].remove(user_id)
-        WOLVES.remove(user_id)
-
-    if user_id in TIGERS:
-        message.reply_text("This user is already our classmate.")
-        return ""
-
-    data["tigers"].append(user_id)
-    TIGERS.append(user_id)
-
-    with open(ELEVATED_USERS_FILE, "w") as outfile:
-        json.dump(data, outfile, indent=4)
-
-    update.effective_message.reply_text(
-        f"{rt}\nLet's welcome our new classmate, {user_member.first_name}!"
-    )
-
-
-    log_message = (
-        f"#SCOUT\n"
         f"<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))} \n"
         f"<b>User:</b> {mention_html(user_member.id, html.escape(user_member.first_name))}"
     )
@@ -304,9 +243,9 @@ def removesudo(update: Update, context: CallbackContext) -> str:
     with open(ELEVATED_USERS_FILE, "r") as infile:
         data = json.load(infile)
 
-    if user_id in DRAGONS:
+    if user_id in SUDO_USERS:
         message.reply_text("We are no more best friends hmph!")
-        DRAGONS.remove(user_id)
+        SUDO_USERS.remove(user_id)
         data["sudos"].remove(user_id)
 
         with open(ELEVATED_USERS_FILE, "w") as outfile:
@@ -343,9 +282,9 @@ def removesupport(update: Update, context: CallbackContext) -> str:
     with open(ELEVATED_USERS_FILE, "r") as infile:
         data = json.load(infile)
 
-    if user_id in DEMONS:
+    if user_id in SUPPORT_USERS:
         message.reply_text("Our friendship has been broken 💔")
-        DEMONS.remove(user_id)
+        SUPPORT_USERS.remove(user_id)
         data["supports"].remove(user_id)
 
         with open(ELEVATED_USERS_FILE, "w") as outfile:
@@ -382,9 +321,9 @@ def removewhitelist(update: Update, context: CallbackContext) -> str:
     with open(ELEVATED_USERS_FILE, "r") as infile:
         data = json.load(infile)
 
-    if user_id in WOLVES:
+    if user_id in WHITELIST_USERS:
         message.reply_text("Demoting to normal citizen")
-        WOLVES.remove(user_id)
+        WHITELIST_USERS.remove(user_id)
         data["whitelists"].remove(user_id)
 
         with open(ELEVATED_USERS_FILE, "w") as outfile:
@@ -404,44 +343,6 @@ def removewhitelist(update: Update, context: CallbackContext) -> str:
     return ""
 
 
-@sudo_plus
-@gloggable
-def removetiger(update: Update, context: CallbackContext) -> str:
-    message = update.effective_message
-    user = update.effective_user
-    chat = update.effective_chat
-    bot, args = context.bot, context.args
-    user_id = extract_user(message, args)
-    user_member = bot.getChat(user_id)
-
-    if reply := check_user_id(user_id, bot):
-        message.reply_text(reply)
-        return ""
-
-    with open(ELEVATED_USERS_FILE, "r") as infile:
-        data = json.load(infile)
-
-    if user_id in TIGERS:
-        message.reply_text("Demoting to normal citizen")
-        TIGERS.remove(user_id)
-        data["Tigers"].remove(user_id)
-
-        with open(ELEVATED_USERS_FILE, "w") as outfile:
-            json.dump(data, outfile, indent=4)
-
-        log_message = (
-            f"#UNSCOUT\n"
-            f"<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))}\n"
-            f"<b>User:</b> {mention_html(user_member.id, html.escape(user_member.first_name))}"
-        )
-
-        if chat.type != "private":
-            log_message = f"<b>{html.escape(chat.title)}:</b>\n{log_message}"
-
-        return log_message
-    message.reply_text("This user is not our classmate!")
-    return ""
-
 
 @whitelist_plus
 def whitelistlist(update: Update, context: CallbackContext):
@@ -450,29 +351,11 @@ def whitelistlist(update: Update, context: CallbackContext):
         "<code>Gathering intel from Spiral HQ...</code>", parse_mode=ParseMode.HTML,
     )
     bot = context.bot
-    for each_user in WOLVES:
+    for each_user in WHITELIST_USERS:
         user_id = int(each_user)
         try:
             user = bot.get_chat(user_id)
 
-            reply += f"• {mention_html(user_id, html.escape(user.first_name))}\n"
-        except TelegramError:
-            pass
-    m.edit_text(reply, parse_mode=ParseMode.HTML)
-
-
-
-@whitelist_plus
-def tigerlist(update: Update, context: CallbackContext):
-    reply = "<b>Classmates:</b>\n\n"
-    m = update.effective_message.reply_text(
-        "<code>Gathering intel from Spiral HQ...</code>", parse_mode=ParseMode.HTML,
-    )
-    bot = context.bot
-    for each_user in TIGERS:
-        user_id = int(each_user)
-        try:
-            user = bot.get_chat(user_id)
             reply += f"• {mention_html(user_id, html.escape(user.first_name))}\n"
         except TelegramError:
             pass
@@ -486,7 +369,7 @@ def supportlist(update: Update, context: CallbackContext):
         "<code>Gathering intel from Spiral HQ..</code>", parse_mode=ParseMode.HTML,
     )
     reply = "<b>Friends:</b>\n\n"
-    for each_user in DEMONS:
+    for each_user in SUPPORT_USERS:
         user_id = int(each_user)
         try:
             user = bot.get_chat(user_id)
@@ -502,7 +385,7 @@ def sudolist(update: Update, context: CallbackContext):
     m = update.effective_message.reply_text(
         "<code>Gathering intel from Spiral HQ..</code>", parse_mode=ParseMode.HTML,
     )
-    true_sudo = list(set(DRAGONS) - set(DEV_USERS))
+    true_sudo = list(set(SUDO_USERS) - set(DEV_USERS))
     reply = "<b>Besto Friendos:</b>\n\n"
     for each_user in true_sudo:
         user_id = int(each_user)
@@ -534,14 +417,11 @@ def devlist(update: Update, context: CallbackContext):
 
 SUDO_HANDLER = CommandHandler(("addsudo", "addbestfriend"), addsudo, run_async=True)
 SUPPORT_HANDLER = CommandHandler(("addsupport", "addfriend"), addsupport, run_async=True)
-TIGER_HANDLER = CommandHandler(("addclassmate"), addtiger)
 WHITELIST_HANDLER = CommandHandler(("Spiral", "addwhitelist"), addwhitelist, run_async=True)
 UNSUDO_HANDLER = CommandHandler(("removesudo", "rmbestfriend"), removesudo, run_async=True)
 UNSUPPORT_HANDLER = CommandHandler(("removesupport", "rmfriend"), removesupport, run_async=True)
-UNTIGER_HANDLER = CommandHandler(("rmclassmate"), removetiger)
 UNWHITELIST_HANDLER = CommandHandler(("removewhitelist", "rmSpiral"), removewhitelist, run_async=True)
 WHITELISTLIST_HANDLER = CommandHandler(["whitelistlist", "SpiralS"], whitelistlist, run_async=True)
-TIGERLIST_HANDLER = CommandHandler(["classmates"], tigerlist, run_async=True)
 SUPPORTLIST_HANDLER = CommandHandler(["supportlist", "friends"], supportlist, run_async=True)
 SUDOLIST_HANDLER = CommandHandler(["sudolist", "bestfriends"], sudolist, run_async=True)
 DEVLIST_HANDLER = CommandHandler(["devlist", "devs"], devlist, run_async=True)
@@ -549,14 +429,11 @@ DEVLIST_HANDLER = CommandHandler(["devlist", "devs"], devlist, run_async=True)
 
 dispatcher.add_handler(SUDO_HANDLER)
 dispatcher.add_handler(SUPPORT_HANDLER)
-dispatcher.add_handler(TIGER_HANDLER)
 dispatcher.add_handler(WHITELIST_HANDLER)
 dispatcher.add_handler(UNSUDO_HANDLER)
 dispatcher.add_handler(UNSUPPORT_HANDLER)
-dispatcher.add_handler(UNTIGER_HANDLER)
 dispatcher.add_handler(UNWHITELIST_HANDLER)
 dispatcher.add_handler(WHITELISTLIST_HANDLER)
-dispatcher.add_handler(TIGERLIST_HANDLER)
 dispatcher.add_handler(SUPPORTLIST_HANDLER)
 dispatcher.add_handler(SUDOLIST_HANDLER)
 dispatcher.add_handler(DEVLIST_HANDLER)
@@ -567,14 +444,11 @@ __mod_name__ = "Bot Owner"
 __handlers__ = [
     SUDO_HANDLER,
     SUPPORT_HANDLER,
-    TIGER_HANDLER,
     WHITELIST_HANDLER,
     UNSUDO_HANDLER,
     UNSUPPORT_HANDLER,
-    UNTIGER_HANDLER,
     UNWHITELIST_HANDLER,
     WHITELISTLIST_HANDLER,
-    TIGERLIST_HANDLER,
     SUPPORTLIST_HANDLER,
     SUDOLIST_HANDLER,
     DEVLIST_HANDLER,

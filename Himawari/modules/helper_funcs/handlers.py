@@ -23,8 +23,7 @@ SOFTWARE.
 """
 
 import Himawari.modules.sql.blacklistusers_sql as sql
-from Himawari import ALLOW_EXCL
-from Himawari import DEV_USERS, DRAGONS, DEMONS, TIGERS, WOLVES
+from Himawari import DEV_USERS, SUDO_USERS, SUPPORT_USERS, WHITELIST_USERS
 
 from telegram import Update
 from telegram.ext import CommandHandler, MessageHandler, RegexHandler, Filters
@@ -36,17 +35,16 @@ from pyrate_limiter import (
     MemoryListBucket,
 )
 
-CMD_STARTERS = ("/", "!") if ALLOW_EXCL else ("/", )
+CMD_STARTERS = ("/", "!")
 
 
 class AntiSpam:
     def __init__(self):
         self.whitelist = (
             (DEV_USERS or [])
-            + (DRAGONS or [])
-            + (WOLVES or [])
-            + (DEMONS or [])
-            + (TIGERS or [])
+            + (SUDO_USERS or [])
+            + (WHITELIST_USERS or [])
+            + (SUPPORT_USERS or [])
         )
         # Values are HIGHLY experimental, its recommended you pay attention to our commits as we will be adjusting the values over time with what suits best.
         Duration.CUSTOM = 15  # Custom duration, 15 seconds

@@ -27,7 +27,7 @@ from functools import wraps
 from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
 from pyrogram.types import Message
 
-from Himawari import DRAGONS
+from Himawari import SUDO_USERS
 from Himawari.utils.pluginhelp import member_permissions
 from Himawari import pgram
 
@@ -70,7 +70,7 @@ def adminsOnly(permission):
             # For admins and sudo users
             userID = message.from_user.id
             permissions = await member_permissions(chatID, userID)
-            if userID not in DRAGONS and permission not in permissions:
+            if userID not in SUDO_USERS and permission not in permissions:
                 return await unauthorised(message, permission, subFunc2)
             return await authorised(
                 func, subFunc2, client, message, *args, **kwargs

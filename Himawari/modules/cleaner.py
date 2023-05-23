@@ -24,7 +24,7 @@ SOFTWARE.
 
 import html
 
-from Himawari import ALLOW_EXCL, CustomCommandHandler, dispatcher, BOT_NAME
+from Himawari import CustomCommandHandler, dispatcher, BOT_NAME
 from Himawari.modules.disable import DisableAbleCommandHandler
 from Himawari.modules.helper_funcs.chat_status import (
     bot_can_delete,
@@ -41,7 +41,7 @@ from telegram.ext import (
     MessageHandler,
 )
 
-CMD_STARTERS = ("/", "!") if ALLOW_EXCL else "/"
+CMD_STARTERS = ("/", "!")
 BLUE_TEXT_CLEAN_GROUP = 13
 CommandHandlerList = (CommandHandler, CustomCommandHandler, DisableAbleCommandHandler)
 command_list = [

@@ -29,11 +29,10 @@ from threading import RLock
 from Himawari import (
     DEL_CMDS,
     DEV_USERS,
-    DRAGONS,
+    SUDO_USERS,
     SUPPORT_CHAT,
-    DEMONS,
-    TIGERS,
-    WOLVES,
+    SUPPORT_USERS,
+    WHITELIST_USERS,
     dispatcher,
 )
 
@@ -46,15 +45,15 @@ THREAD_LOCK = RLock()
 
 
 def is_whitelist_plus(chat: Chat, user_id: int, member: ChatMember = None) -> bool:
-    return any(user_id in user for user in [WOLVES, TIGERS, DEMONS, DRAGONS, DEV_USERS])
+    return any(user_id in user for user in [WHITELIST_USERS, SUPPORT_USERS, SUDO_USERS, DEV_USERS])
 
 
 def is_support_plus(chat: Chat, user_id: int, member: ChatMember = None) -> bool:
-    return user_id in DEMONS or user_id in DRAGONS or user_id in DEV_USERS
+    return user_id in SUPPORT_USERS or user_id in SUDO_USERS or user_id in DEV_USERS
 
 
 def is_sudo_plus(chat: Chat, user_id: int, member: ChatMember = None) -> bool:
-    return user_id in DRAGONS or user_id in DEV_USERS
+    return user_id in SUDO_USERS or user_id in DEV_USERS
 
 def is_stats_plus(chat: Chat, user_id: int, member: ChatMember = None) -> bool:
     return user_id in DEV_USERS
@@ -63,7 +62,7 @@ def is_stats_plus(chat: Chat, user_id: int, member: ChatMember = None) -> bool:
 def is_user_admin(chat: Chat, user_id: int, member: ChatMember = None) -> bool:
     if (
         chat.type == "private"
-        or user_id in DRAGONS
+        or user_id in SUDO_USERS
         or user_id in DEV_USERS
         or chat.all_members_are_administrators
         or user_id in {1087968824}
@@ -104,10 +103,9 @@ def can_delete(chat: Chat, bot_id: int) -> bool:
 def is_user_ban_protected(chat: Chat,  user_id: int, member: ChatMember = None) -> bool:
     if (
         chat.type == "private"
-        or user_id in DRAGONS
+        or user_id in SUDO_USERS
         or user_id in DEV_USERS
-        or user_id in WOLVES
-        or user_id in TIGERS
+        or user_id in WHITELIST_USERS
     ):  # Count telegram and Group Anonymous as admin
         return True
 
@@ -415,7 +413,7 @@ def user_can_promote(func):
         if (
             not member.can_promote_members
             and member.status != "creator"
-            and user not in DRAGONS
+            and user not in SUDO_USERS
             and user not in [1087968824]
         ):
             if not update.callback_query:
@@ -436,7 +434,7 @@ def user_can_ban(func):
         if (
             not member.can_restrict_members
             and member.status != "creator"
-            and user not in DRAGONS
+            and user not in SUDO_USERS
             and user not in [1087968824]
         ):
             update.effective_message.reply_text(
