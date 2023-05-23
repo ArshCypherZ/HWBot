@@ -33,7 +33,7 @@ from pytube import YouTube
 from requests import get
 
 from Himawari import aiohttpsession as session
-from Himawari import pgram, arq
+from Himawari import arq, pgram
 from Himawari.core.decorators.errors import capture_err
 from Himawari.utils.pastebin import paste
 
@@ -47,9 +47,7 @@ def download_youtube_audio(arq_resp):
     performer = r.channel
 
     m, s = r.duration.split(":")
-    duration = int(
-        datetime.timedelta(minutes=int(m), seconds=int(s)).total_seconds()
-    )
+    duration = int(datetime.timedelta(minutes=int(m), seconds=int(s)).total_seconds())
 
     if duration > 1800:
         return
@@ -84,9 +82,7 @@ async def music(_, message):
             "Another download is in progress, try again after sometime."
         )
     is_downloading = True
-    m = await message.reply_text(
-        f"Downloading {url}", disable_web_page_preview=True
-    )
+    m = await message.reply_text(f"Downloading {url}", disable_web_page_preview=True)
     try:
         loop = get_running_loop()
         arq_resp = await arq.youtube(url)
@@ -141,12 +137,12 @@ async def lyrics_func(_, message):
         return await m.edit("No lyrics found.")
 
     song = resp.result[0]
-    song_name = song['song']
-    artist = song['artist']
-    lyrics = song['lyrics']
+    song_name = song["song"]
+    artist = song["artist"]
+    lyrics = song["lyrics"]
     msg = f"**{song_name}** | **{artist}**\n\n__{lyrics}__"
 
     if len(msg) > 4095:
         msg = await paste(msg)
         msg = f"**LYRICS_TOO_LONG:** [URL]({msg})"
-    return await m.edit(msg)  
+    return await m.edit(msg)

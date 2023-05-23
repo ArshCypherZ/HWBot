@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, String, UnicodeText
+from sqlalchemy import Column, String
 
 from Himawari.modules.sql import BASE, SESSION
 

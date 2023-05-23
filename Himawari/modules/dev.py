@@ -22,22 +22,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import re
+import asyncio
 import os
+import re
 import subprocess
 import sys
-import asyncio
-
-from Himawari import dispatcher, DEV_USERS, telethn, OWNER_ID
-from Himawari.modules.helper_funcs.chat_status import dev_plus
-
 from statistics import mean
 from time import monotonic as time
 from time import sleep
-from telegram import TelegramError, Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telethon import events
+
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, TelegramError, Update
 from telegram.ext import CallbackContext, CommandHandler
 from telegram.ext.callbackqueryhandler import CallbackQueryHandler
+from telethon import events
+
+from Himawari import DEV_USERS, OWNER_ID, dispatcher, telethn
+from Himawari.modules.helper_funcs.chat_status import dev_plus
 
 
 def leave_cb(update: Update, context: CallbackContext):
@@ -52,7 +52,7 @@ def leave_cb(update: Update, context: CallbackContext):
     bot.leave_chat(chat_id=chat)
     callback.answer(text="Left chat")
 
-	
+
 class Store:
     def __init__(self, func):
         self.func = func
@@ -80,8 +80,8 @@ class Store:
 
 async def nothing(event):
     pass
-	
-	
+
+
 messages = Store(nothing)
 inline_queries = Store(nothing)
 callback_queries = Store(nothing)
@@ -89,15 +89,16 @@ callback_queries = Store(nothing)
 telethn.add_event_handler(messages, events.NewMessage())
 telethn.add_event_handler(inline_queries, events.InlineQuery())
 telethn.add_event_handler(callback_queries, events.CallbackQuery())
-	
-	
+
+
 @telethn.on(events.NewMessage(pattern=r"/getstats", from_users=OWNER_ID))
 async def getstats(event):
     await event.reply(
         f"**__EVENT STATISTICS__**\n**Average messages:** {messages.average()}/s\n**Average Callback Queries:** {callback_queries.average()}/s\n**Average Inline Queries:** {inline_queries.average()}/s",
-        parse_mode='md'
+        parse_mode="md",
     )
-	
+
+
 @dev_plus
 def pip_install(update: Update, context: CallbackContext):
     message = update.effective_message
@@ -108,7 +109,10 @@ def pip_install(update: Update, context: CallbackContext):
     if len(args) >= 1:
         cmd = f"py -m pip install {' '.join(args)}"
         process = subprocess.Popen(
-            cmd.split(" "), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True,
+            cmd.split(" "),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=True,
         )
         stdout, stderr = process.communicate()
         reply = ""
@@ -120,7 +124,7 @@ def pip_install(update: Update, context: CallbackContext):
 
         message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN)
 
-	
+
 @dev_plus
 def leave(update: Update, context: CallbackContext):
     if args := context.args:
@@ -150,7 +154,7 @@ def leave(update: Update, context: CallbackContext):
             reply_markup=InlineKeyboardMarkup(himawari_leave_bt),
         )
 
-	
+
 @dev_plus
 def gitpull(update: Update, context: CallbackContext):
     sent_msg = update.effective_message.reply_text(
@@ -173,16 +177,21 @@ def gitpull(update: Update, context: CallbackContext):
 @dev_plus
 def restart(update: Update, context: CallbackContext):
     update.effective_message.reply_text(
-	"Exiting all Processes and starting a new Instance!"
+        "Exiting all Processes and starting a new Instance!"
     )
-    process = subprocess.run("pkill python3 && python3 -m Himawari", shell=True, check=True)
+    process = subprocess.run(
+        "pkill python3 && python3 -m Himawari", shell=True, check=True
+    )
     process.communicate()
+
 
 PIP_INSTALL_HANDLER = CommandHandler("install", pip_install, run_async=True)
 LEAVE_HANDLER = CommandHandler("leave", leave, run_async=True)
 GITPULL_HANDLER = CommandHandler("gitpull", gitpull, run_async=True)
 RESTART_HANDLER = CommandHandler("reboot", restart, run_async=True)
-LEAVE_CALLBACK_HANDLER = CallbackQueryHandler(leave_cb, pattern=r"leavechat_cb_", run_async=True)
+LEAVE_CALLBACK_HANDLER = CallbackQueryHandler(
+    leave_cb, pattern=r"leavechat_cb_", run_async=True
+)
 
 dispatcher.add_handler(PIP_INSTALL_HANDLER)
 dispatcher.add_handler(LEAVE_HANDLER)
@@ -191,4 +200,10 @@ dispatcher.add_handler(RESTART_HANDLER)
 dispatcher.add_handler(LEAVE_CALLBACK_HANDLER)
 
 __mod_name__ = "Dev"
-__handlers__ = [LEAVE_HANDLER, GITPULL_HANDLER, RESTART_HANDLER, LEAVE_CALLBACK_HANDLER, PIP_INSTALL_HANDLER]
+__handlers__ = [
+    LEAVE_HANDLER,
+    GITPULL_HANDLER,
+    RESTART_HANDLER,
+    LEAVE_CALLBACK_HANDLER,
+    PIP_INSTALL_HANDLER,
+]

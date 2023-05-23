@@ -27,15 +27,16 @@ import random
 import threading
 from typing import Union
 
+from sqlalchemy import BigInteger, Boolean, Column, Integer, String, UnicodeText
+
 from Himawari.modules.helper_funcs.msg_types import Types
 from Himawari.modules.sql import BASE, SESSION
-from sqlalchemy import BigInteger, Boolean, Column, Integer, String, UnicodeText
 
 DEFAULT_WELCOME = "Hey {first}, how are you?"
 DEFAULT_GOODBYE = "Nice knowing ya!"
 
 DEFAULT_WELCOME_MESSAGES = [
-    "{first} is here!",  # Discord welcome messages copied    
+    "{first} is here!",  # Discord welcome messages copied
     "Dattebayo? Dattebanye? Dattebasa? Well nevermind.",
     "Onichan!!! {first} has arrived!",
     "Damn, right on time, huh?",
@@ -63,7 +64,7 @@ DEFAULT_WELCOME_MESSAGES = [
     "{first} just showed up. Hold my beer.",
     "Challenger approaching! {first} has appeared!",
     "It's a bird! It's a plane! Nevermind, it's just {first}.",
-    "It's {first}! Praise the catto lord! \o/",
+    "It's {first}! Praise the catto lord! \\o/",
     "Never gonna give {first} up. Never gonna let {first} down.",
     "Ha! {first} has joined! You activated my trap card!",
     "Hey! Listen! {first} has joined!",
@@ -112,7 +113,8 @@ DEFAULT_WELCOME_MESSAGES = [
     "Everyone stop what you’re doing, We are now in the presence of {first}.",
     "Hey {first}, Do you wanna know how I got these scars?",
     "Welcome {first}, drop your weapons and proceed to the spy scanner.",
-    "Stay safe {first}, Keep 3 meters social distances between your messages.",  # Corona memes lmao
+    # Corona memes lmao
+    "Stay safe {first}, Keep 3 meters social distances between your messages.",
     "You’re here now {first}, Resistance is futile",
     "{first} just arrived, the force is strong with this one.",
     "{first} just joined on president’s orders.",
@@ -155,7 +157,8 @@ DEFAULT_WELCOME_MESSAGES = [
     "Kaizoku ou ni...nvm wrong anime.",  # op
     "{first} just joined! Gear.....second!",  # Op
     "Omae wa mou....shindeiru",
-    "Hey {first}, the leaf village lotus blooms twice!",  # Naruto stuff begins from here
+    "Hey {first}, the leaf village lotus blooms twice!",
+    # Naruto stuff begins from here
     "{first} Joined! Omote renge!",
     "{first} joined!, Gate of Opening...open!",
     "{first} joined!, Gate of Healing...open!",
@@ -170,7 +173,8 @@ DEFAULT_WELCOME_MESSAGES = [
     "{first}, welcome to the hidden leaf village!",  # Naruto thingies end here
     "In the jungle you must wait...until the dice read five or eight.",  # Jumanji stuff
     "Dr.{first} Famed archeologist and international explorer,\nWelcome to Jumanji!\nJumanji's Fate is up to you now.",
-    "{first}, this will not be an easy mission - monkeys slow the expedition.",  # End of jumanji stuff
+    # End of jumanji stuff
+    "{first}, this will not be an easy mission - monkeys slow the expedition.",
 ]
 DEFAULT_GOODBYE_MESSAGES = [
     "{first} will be missed.",
@@ -234,7 +238,8 @@ DEFAULT_GOODBYE_MESSAGES = [
     "Go outside",
     "Always your head in the clouds",
 ]
-# Line 111 to 152 are references from https://bindingofisaac.fandom.com/wiki/Fortune_Telling_Machine
+# Line 111 to 152 are references from
+# https://bindingofisaac.fandom.com/wiki/Fortune_Telling_Machine
 
 
 class Welcome(BASE):
@@ -326,6 +331,7 @@ class CleanServiceSetting(BASE):
     def __repr__(self):
         return f"<Chat used clean service ({self.chat_id})>"
 
+
 class RaidMode(BASE):
     __tablename__ = "raid_mode"
     chat_id = Column(String(14), primary_key=True)
@@ -340,6 +346,7 @@ class RaidMode(BASE):
         self.time = time
         self.acttime = acttime
         # self.permanent = permanent
+
 
 Welcome.__table__.create(checkfirst=True)
 WelcomeButtons.__table__.create(checkfirst=True)
@@ -593,9 +600,7 @@ def get_gdbye_buttons(chat_id):
 
 def clean_service(chat_id: Union[str, int]) -> bool:
     try:
-        if chat_setting := SESSION.query(CleanServiceSetting).get(
-            str(chat_id)
-        ):
+        if chat_setting := SESSION.query(CleanServiceSetting).get(str(chat_id)):
             return chat_setting.clean_service
         return False
     finally:
@@ -638,11 +643,12 @@ def migrate_chat(old_chat_id, new_chat_id):
 
         SESSION.commit()
 
+
 def getRaidStatus(chat_id):
     try:
         if stat := SESSION.query(RaidMode).get(str(chat_id)):
             return stat.status, stat.time, stat.acttime
-        return False, 21600, 3600 #default
+        return False, 21600, 3600  # default
     finally:
         SESSION.close()
 
@@ -655,16 +661,20 @@ def setRaidStatus(chat_id, status, time=21600, acttime=3600):
         SESSION.add(newObj)
         SESSION.commit()
 
+
 def toggleRaidStatus(chat_id):
     newObj = True
     with RAID_LOCK:
         prevObj = SESSION.query(RaidMode).get(str(chat_id))
         if prevObj:
             newObj = not prevObj.status
-        stat = RaidMode(str(chat_id), newObj, prevObj.time or 21600, prevObj.acttime or 3600)
+        stat = RaidMode(
+            str(chat_id), newObj, prevObj.time or 21600, prevObj.acttime or 3600
+        )
         SESSION.add(stat)
         SESSION.commit()
         return newObj
+
 
 def _ResetRaidOnRestart():
     with RAID_LOCK:
@@ -673,5 +683,7 @@ def _ResetRaidOnRestart():
             r.status = False
         SESSION.commit()
 
-# it uses a cron job to turn off so if the bot restarts and there is a pending raid disable job then raid will stay on
+
+# it uses a cron job to turn off so if the bot restarts and there is a
+# pending raid disable job then raid will stay on
 _ResetRaidOnRestart()

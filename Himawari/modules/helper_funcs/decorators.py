@@ -22,19 +22,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+from typing import List, Optional, Union
+
+from telegram.ext import (
+    CallbackQueryHandler,
+    CommandHandler,
+    InlineQueryHandler,
+    MessageHandler,
+)
+from telegram.ext.filters import MessageFilter
+
+from Himawari import LOGGER
+from Himawari import dispatcher as d
 from Himawari.modules.disable import (
     DisableAbleCommandHandler,
     DisableAbleMessageHandler,
 )
-from telegram.ext import (
-    CommandHandler,
-    MessageHandler,
-    CallbackQueryHandler,
-    InlineQueryHandler,
-)
-from telegram.ext.filters import MessageFilter
-from Himawari import dispatcher as d, LOGGER
-from typing import Optional, Union, List
 
 
 class HimawariHandler:

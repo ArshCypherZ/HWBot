@@ -22,10 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from time import perf_counter
 from functools import wraps
-from cachetools import TTLCache
 from threading import RLock
+from time import perf_counter
+
+from cachetools import TTLCache
+from telegram import Chat, ChatMember, ParseMode, Update
+from telegram.ext import CallbackContext
+
 from Himawari import (
     DEL_CMDS,
     DEV_USERS,
@@ -35,9 +39,7 @@ from Himawari import (
     WHITELIST_USERS,
     dispatcher,
 )
-
-from telegram import Chat, ChatMember, ParseMode, Update, TelegramError, User
-from telegram.ext import CallbackContext
+from Himawari.modules import connection
 
 # stores admemes in memory for 10 min.
 ADMIN_CACHE = TTLCache(maxsize=512, ttl=60 * 10, timer=perf_counter)
@@ -45,7 +47,10 @@ THREAD_LOCK = RLock()
 
 
 def is_whitelist_plus(chat: Chat, user_id: int, member: ChatMember = None) -> bool:
-    return any(user_id in user for user in [WHITELIST_USERS, SUPPORT_USERS, SUDO_USERS, DEV_USERS])
+    return any(
+        user_id in user
+        for user in [WHITELIST_USERS, SUPPORT_USERS, SUDO_USERS, DEV_USERS]
+    )
 
 
 def is_support_plus(chat: Chat, user_id: int, member: ChatMember = None) -> bool:
@@ -54,6 +59,7 @@ def is_support_plus(chat: Chat, user_id: int, member: ChatMember = None) -> bool
 
 def is_sudo_plus(chat: Chat, user_id: int, member: ChatMember = None) -> bool:
     return user_id in SUDO_USERS or user_id in DEV_USERS
+
 
 def is_stats_plus(chat: Chat, user_id: int, member: ChatMember = None) -> bool:
     return user_id in DEV_USERS
@@ -100,7 +106,7 @@ def can_delete(chat: Chat, bot_id: int) -> bool:
     return chat.get_member(bot_id).can_delete_messages
 
 
-def is_user_ban_protected(chat: Chat,  user_id: int, member: ChatMember = None) -> bool:
+def is_user_ban_protected(chat: Chat, user_id: int, member: ChatMember = None) -> bool:
     if (
         chat.type == "private"
         or user_id in SUDO_USERS
@@ -123,7 +129,7 @@ def is_user_in_chat(chat: Chat, user_id: int) -> bool:
 def dev_plus(func):
     @wraps(func)
     def is_dev_plus_func(update: Update, context: CallbackContext, *args, **kwargs):
-        bot = context.bot
+        context.bot
         user = update.effective_user
 
         if user.id in DEV_USERS:
@@ -133,7 +139,7 @@ def dev_plus(func):
         elif DEL_CMDS and " " not in update.effective_message.text:
             try:
                 update.effective_message.delete()
-            except:
+            except BaseException:
                 pass
         else:
             update.effective_message.reply_text(
@@ -147,7 +153,7 @@ def dev_plus(func):
 def sudo_plus(func):
     @wraps(func)
     def is_sudo_plus_func(update: Update, context: CallbackContext, *args, **kwargs):
-        bot = context.bot
+        context.bot
         user = update.effective_user
         chat = update.effective_chat
 
@@ -158,7 +164,7 @@ def sudo_plus(func):
         elif DEL_CMDS and " " not in update.effective_message.text:
             try:
                 update.effective_message.delete()
-            except:
+            except BaseException:
                 pass
         else:
             update.effective_message.reply_text(
@@ -167,10 +173,11 @@ def sudo_plus(func):
 
     return is_sudo_plus_func
 
+
 def stats_plus(func):
     @wraps(func)
     def is_stats_plus_func(update: Update, context: CallbackContext, *args, **kwargs):
-        bot = context.bot
+        context.bot
         user = update.effective_user
         chat = update.effective_chat
 
@@ -181,7 +188,7 @@ def stats_plus(func):
         elif DEL_CMDS and " " not in update.effective_message.text:
             try:
                 update.effective_message.delete()
-            except:
+            except BaseException:
                 pass
         else:
             update.effective_message.reply_text(
@@ -194,7 +201,7 @@ def stats_plus(func):
 def support_plus(func):
     @wraps(func)
     def is_support_plus_func(update: Update, context: CallbackContext, *args, **kwargs):
-        bot = context.bot
+        context.bot
         user = update.effective_user
         chat = update.effective_chat
 
@@ -203,7 +210,7 @@ def support_plus(func):
         if DEL_CMDS and " " not in update.effective_message.text:
             try:
                 update.effective_message.delete()
-            except:
+            except BaseException:
                 pass
 
     return is_support_plus_func
@@ -212,9 +219,12 @@ def support_plus(func):
 def whitelist_plus(func):
     @wraps(func)
     def is_whitelist_plus_func(
-        update: Update, context: CallbackContext, *args, **kwargs,
+        update: Update,
+        context: CallbackContext,
+        *args,
+        **kwargs,
     ):
-        bot = context.bot
+        context.bot
         user = update.effective_user
         chat = update.effective_chat
 
@@ -230,7 +240,7 @@ def whitelist_plus(func):
 def user_admin(func):
     @wraps(func)
     def is_admin(update: Update, context: CallbackContext, *args, **kwargs):
-        bot = context.bot
+        context.bot
         user = update.effective_user
         chat = update.effective_chat
 
@@ -241,7 +251,7 @@ def user_admin(func):
         elif DEL_CMDS and " " not in update.effective_message.text:
             try:
                 update.effective_message.delete()
-            except:
+            except BaseException:
                 pass
         else:
             update.effective_message.reply_text(
@@ -254,9 +264,12 @@ def user_admin(func):
 def user_admin_no_reply(func):
     @wraps(func)
     def is_not_admin_no_reply(
-        update: Update, context: CallbackContext, *args, **kwargs,
+        update: Update,
+        context: CallbackContext,
+        *args,
+        **kwargs,
     ):
-        bot = context.bot
+        context.bot
         user = update.effective_user
         chat = update.effective_chat
 
@@ -267,7 +280,7 @@ def user_admin_no_reply(func):
         elif DEL_CMDS and " " not in update.effective_message.text:
             try:
                 update.effective_message.delete()
-            except:
+            except BaseException:
                 pass
 
     return is_not_admin_no_reply
@@ -291,7 +304,6 @@ def user_not_admin(func):
             pass
 
     return is_not_admin
-
 
 
 def bot_admin(func):
@@ -395,15 +407,17 @@ def can_restrict(func):
         if chat.get_member(bot.id).can_restrict_members:
             return func(update, context, *args, **kwargs)
         update.effective_message.reply_text(
-            cant_restrict, parse_mode=ParseMode.HTML,
+            cant_restrict,
+            parse_mode=ParseMode.HTML,
         )
 
     return restrict_rights
 
+
 def user_can_promote(func):
     @wraps(func)
     def user_is_promoter(update: Update, context: CallbackContext, *args, **kwargs):
-        bot = context.bot
+        context.bot
         user = update.effective_user
         if not user:
             return
@@ -425,10 +439,11 @@ def user_can_promote(func):
 
     return user_is_promoter
 
+
 def user_can_ban(func):
     @wraps(func)
     def user_is_banhammer(update: Update, context: CallbackContext, *args, **kwargs):
-        bot = context.bot
+        context.bot
         user = update.effective_user.id
         member = update.effective_chat.get_member(user)
         if (
@@ -451,12 +466,13 @@ def connection_status(func):
     def connected_status(update: Update, context: CallbackContext, *args, **kwargs):
         if update.effective_chat is None or update.effective_user is None:
             return
-        if conn:= connected(
+        if conn := connected(
             context.bot,
             update,
             update.effective_chat,
             update.effective_user.id,
-            need_admin=False):
+            need_admin=False,
+        ):
             chat = dispatcher.bot.getChat(conn)
             update.__setattr__("_effective_chat", chat)
         elif update.effective_message.chat.type == "private":
@@ -471,6 +487,5 @@ def connection_status(func):
 
 
 # Workaround for circular import with connection.py
-from Himawari.modules import connection
 
 connected = connection.connected

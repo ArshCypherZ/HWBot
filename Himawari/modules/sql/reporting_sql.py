@@ -25,8 +25,9 @@ SOFTWARE.
 import threading
 from typing import Union
 
+from sqlalchemy import BigInteger, Boolean, Column, String
+
 from Himawari.modules.sql import BASE, SESSION
-from sqlalchemy import Boolean, Column, BigInteger, String
 
 
 class ReportingUserSettings(BASE):
@@ -62,9 +63,7 @@ USER_LOCK = threading.RLock()
 
 def chat_should_report(chat_id: Union[str, int]) -> bool:
     try:
-        if chat_setting := SESSION.query(ReportingChatSettings).get(
-            str(chat_id)
-        ):
+        if chat_setting := SESSION.query(ReportingChatSettings).get(str(chat_id)):
             return chat_setting.should_report
         return False
     finally:

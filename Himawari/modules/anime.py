@@ -23,14 +23,21 @@ SOFTWARE.
 """
 
 import html
+
 import bs4
 import jikanpy
 import requests
+from telegram import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    Message,
+    ParseMode,
+    Update,
+)
+from telegram.ext import CallbackContext
 
 from Himawari import dispatcher
 from Himawari.modules.disable import DisableAbleCommandHandler
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode, Update, Message
-from telegram.ext import CallbackContext
 
 info_btn = "More Information"
 kaizoku_btn = "Kaizoku ☠️"
@@ -182,6 +189,7 @@ query ($id: Int,$search: String) {
 
 url = "https://graphql.anilist.co"
 
+
 def extract_arg(message: Message):
     split = message.text.split(" ", 1)
     if len(split) > 1:
@@ -200,7 +208,8 @@ def airing(update: Update, context: CallbackContext):
         return
     variables = {"search": search_str}
     response = requests.post(
-        url, json={"query": airing_query, "variables": variables},
+        url,
+        json={"query": airing_query, "variables": variables},
     ).json()["data"]["Media"]
     msg = f"*Name*: *{response['title']['romaji']}*(`{response['title']['native']}`)\n*ID*: `{response['id']}`"
     if response["nextAiringEpisode"]:
@@ -212,7 +221,6 @@ def airing(update: Update, context: CallbackContext):
     update.effective_message.reply_text(msg, parse_mode=ParseMode.MARKDOWN)
 
 
-
 def anime(update: Update, context: CallbackContext):
     message = update.effective_message
     search = extract_arg(message)
@@ -221,7 +229,8 @@ def anime(update: Update, context: CallbackContext):
         return
     variables = {"search": search}
     json = requests.post(
-        url, json={"query": anime_query, "variables": variables},
+        url,
+        json={"query": anime_query, "variables": variables},
     ).json()
     if "errors" in json.keys():
         update.effective_message.reply_text("Anime not found")
@@ -238,7 +247,7 @@ def anime(update: Update, context: CallbackContext):
         msg = msg[:-2] + "`\n"
         info = json.get("siteUrl")
         trailer = json.get("trailer", None)
-        anime_id = json["id"]
+        json["id"]
         if trailer:
             trailer_id = trailer.get("id", None)
             site = trailer.get("site", None)
@@ -271,7 +280,7 @@ def anime(update: Update, context: CallbackContext):
                     parse_mode=ParseMode.MARKDOWN,
                     reply_markup=InlineKeyboardMarkup(buttons),
                 )
-            except:
+            except BaseException:
                 msg += f" [〽️]({image})"
                 update.effective_message.reply_text(
                     msg,
@@ -286,7 +295,6 @@ def anime(update: Update, context: CallbackContext):
             )
 
 
-
 def character(update: Update, context: CallbackContext):
     message = update.effective_message
     search = extract_arg(message)
@@ -295,7 +303,8 @@ def character(update: Update, context: CallbackContext):
         return
     variables = {"query": search}
     json = requests.post(
-        url, json={"query": character_query, "variables": variables},
+        url,
+        json={"query": character_query, "variables": variables},
     ).json()
     if "errors" in json.keys():
         update.effective_message.reply_text("Character not found")
@@ -315,9 +324,9 @@ def character(update: Update, context: CallbackContext):
             )
         else:
             update.effective_message.reply_text(
-                msg.replace("<b>", "</b>"), parse_mode=ParseMode.MARKDOWN,
+                msg.replace("<b>", "</b>"),
+                parse_mode=ParseMode.MARKDOWN,
             )
-
 
 
 def manga(update: Update, context: CallbackContext):
@@ -328,7 +337,8 @@ def manga(update: Update, context: CallbackContext):
         return
     variables = {"search": search}
     json = requests.post(
-        url, json={"query": manga_query, "variables": variables},
+        url,
+        json={"query": manga_query, "variables": variables},
     ).json()
     msg = ""
     if "errors" in json.keys():
@@ -337,7 +347,8 @@ def manga(update: Update, context: CallbackContext):
     if json:
         json = json["data"]["Media"]
         title, title_native = json["title"].get("romaji", False), json["title"].get(
-            "native", False,
+            "native",
+            False,
         )
         start_date, status, score = (
             json["startDate"].get("year", False),
@@ -370,7 +381,7 @@ def manga(update: Update, context: CallbackContext):
                     parse_mode=ParseMode.MARKDOWN,
                     reply_markup=InlineKeyboardMarkup(buttons),
                 )
-            except:
+            except BaseException:
                 msg += f" [〽️]({image})"
                 update.effective_message.reply_text(
                     msg,
@@ -383,6 +394,7 @@ def manga(update: Update, context: CallbackContext):
                 parse_mode=ParseMode.MARKDOWN,
                 reply_markup=InlineKeyboardMarkup(buttons),
             )
+
 
 def upcoming(update: Update, context: CallbackContext):
     jikan = jikanpy.jikan.Jikan()
@@ -437,9 +449,10 @@ def site_search(update: Update, context: CallbackContext, site: str):
         )
     else:
         message.reply_text(
-            result, parse_mode=ParseMode.HTML, disable_web_page_preview=True,
+            result,
+            parse_mode=ParseMode.HTML,
+            disable_web_page_preview=True,
         )
-
 
 
 def kaizoku(update: Update, context: CallbackContext):
@@ -452,26 +465,26 @@ Get information about anime, manga or characters from [AniList](anilist.co) and 
 *AniList Commands:*
 
 • /anime <anime>*:* returns information about the anime from AniList
- 
+
 • /character <character>*:* returns information about the character from AniList
-  
+
 • /manga <manga>*:* returns information about the manga from AniList
-  
+
 • /upcoming*:* returns a list of new anime in the upcoming seasons from AniList
-  
+
 • /airing <anime>*:* returns anime airing info from AniList
- 
+
 *Anime Search Commands:*
 
 • /kaizoku*:* search an Anime on AnimeKaizoku website
-   
+
 *Anime Utils:*
 
 • /schedule <weekday>*:* Gets you the anime episodes scheduled to be aired on that day
 Example: /schedule monday or /schedule 0
 
 For more refined and better results, checkout @AnimePizzaBot :)
-         
+
 """
 
 
@@ -479,18 +492,18 @@ ANIME_HANDLER = DisableAbleCommandHandler("anime", anime, run_async=True)
 AIRING_HANDLER = DisableAbleCommandHandler("airing", airing, run_async=True)
 CHARACTER_HANDLER = DisableAbleCommandHandler("character", character, run_async=True)
 MANGA_HANDLER = DisableAbleCommandHandler("manga", manga, run_async=True)
-##USER_HANDLER = DisableAbleCommandHandler("user", user, run_async=True)
+# USER_HANDLER = DisableAbleCommandHandler("user", user, run_async=True)
 UPCOMING_HANDLER = DisableAbleCommandHandler("upcoming", upcoming, run_async=True)
 KAIZOKU_SEARCH_HANDLER = DisableAbleCommandHandler("kaizoku", kaizoku, run_async=True)
-##KAYO_SEARCH_HANDLER = DisableAbleCommandHandler("kayo", kayo, run_async=True)
+# KAYO_SEARCH_HANDLER = DisableAbleCommandHandler("kayo", kayo, run_async=True)
 
 dispatcher.add_handler(ANIME_HANDLER)
 dispatcher.add_handler(CHARACTER_HANDLER)
 dispatcher.add_handler(MANGA_HANDLER)
 dispatcher.add_handler(AIRING_HANDLER)
-#dispatcher.add_handler(USER_HANDLER)
+# dispatcher.add_handler(USER_HANDLER)
 dispatcher.add_handler(KAIZOKU_SEARCH_HANDLER)
-#dispatcher.add_handler(KAYO_SEARCH_HANDLER)
+# dispatcher.add_handler(KAYO_SEARCH_HANDLER)
 dispatcher.add_handler(UPCOMING_HANDLER)
 
 __mod_name__ = "Anime"
@@ -508,9 +521,9 @@ __handlers__ = [
     ANIME_HANDLER,
     CHARACTER_HANDLER,
     MANGA_HANDLER,
- #   USER_HANDLER,
+    #   USER_HANDLER,
     UPCOMING_HANDLER,
-   # KAYO_SEARCH_HANDLER,
+    # KAYO_SEARCH_HANDLER,
     AIRING_HANDLER,
-    KAIZOKU_SEARCH_HANDLER
+    KAIZOKU_SEARCH_HANDLER,
 ]

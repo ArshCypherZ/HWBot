@@ -23,15 +23,15 @@ SOFTWARE.
 """
 
 import time
-import requests
-
 from typing import List
+
+import requests
 from telegram import ParseMode, Update
-from telegram.ext import CallbackContext, run_async
+from telegram.ext import CallbackContext
 
 from Himawari import StartTime, dispatcher
-from Himawari.modules.helper_funcs.chat_status import sudo_plus
 from Himawari.modules.disable import DisableAbleCommandHandler
+from Himawari.modules.helper_funcs.chat_status import sudo_plus
 
 sites_list = {
     "Telegram": "https://api.telegram.org",
@@ -71,7 +71,6 @@ def ping_func(to_ping: List[str]) -> List[str]:
     ping_result = []
 
     for each_ping in to_ping:
-
         start_time = time.time()
         site_to_ping = sites_list[each_ping]
         r = requests.get(site_to_ping)
@@ -80,7 +79,7 @@ def ping_func(to_ping: List[str]) -> List[str]:
 
         pinged_site = f"<b>{each_ping}</b>"
 
-        if each_ping in ('Kaizoku'):
+        if each_ping in ("Kaizoku"):
             pinged_site = f'<a href="{sites_list[each_ping]}">{each_ping}</a>'
             ping_time = f"<code>{ping_time} (Status: {r.status_code})</code>"
 
@@ -88,6 +87,7 @@ def ping_func(to_ping: List[str]) -> List[str]:
         ping_result.append(ping_text)
 
     return ping_result
+
 
 @sudo_plus
 def ping(update: Update, context: CallbackContext):
@@ -116,7 +116,9 @@ def pingall(update: Update, context: CallbackContext):
     reply_msg += f"\n<b>Service uptime:</b> <code>{uptime}</code>"
 
     update.effective_message.reply_text(
-        reply_msg, parse_mode=ParseMode.HTML, disable_web_page_preview=True,
+        reply_msg,
+        parse_mode=ParseMode.HTML,
+        disable_web_page_preview=True,
     )
 
 

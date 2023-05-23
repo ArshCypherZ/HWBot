@@ -23,7 +23,11 @@ SOFTWARE.
 """
 
 import html
-from typing import Optional
+
+from telegram import ChatPermissions, ParseMode, Update
+from telegram.error import BadRequest
+from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler
+from telegram.utils.helpers import mention_html, mention_markdown
 
 import Himawari.modules.sql.blsticker_sql as sql
 from Himawari import LOGGER, dispatcher
@@ -33,14 +37,9 @@ from Himawari.modules.helper_funcs.alternate import send_message
 from Himawari.modules.helper_funcs.chat_status import user_admin, user_not_admin
 from Himawari.modules.helper_funcs.misc import split_message
 from Himawari.modules.helper_funcs.string_handling import extract_time
-from Himawari.modules.sql.approve_sql import is_approved
 from Himawari.modules.log_channel import loggable
+from Himawari.modules.sql.approve_sql import is_approved
 from Himawari.modules.warns import warn
-from telegram import Chat, Message, ParseMode, Update, User, ChatPermissions
-from telegram.error import BadRequest
-from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler
-from telegram.utils.helpers import mention_html, mention_markdown
-
 
 
 def blackliststicker(update: Update, context: CallbackContext):
@@ -86,7 +85,6 @@ def blackliststicker(update: Update, context: CallbackContext):
     send_message(update.effective_message, text, parse_mode=ParseMode.HTML)
 
 
-
 @user_admin
 def add_blackliststicker(update: Update, context: CallbackContext):
     bot = context.bot
@@ -113,7 +111,7 @@ def add_blackliststicker(update: Update, context: CallbackContext):
         added = 0
         for trigger in to_blacklist:
             try:
-                get = bot.getStickerSet(trigger)
+                bot.getStickerSet(trigger)
                 sql.add_to_stickers(chat_id, trigger.lower())
                 added += 1
             except BadRequest:
@@ -122,7 +120,6 @@ def add_blackliststicker(update: Update, context: CallbackContext):
                     f"Sticker `{trigger}` can not be found!",
                     parse_mode="markdown",
                 )
-
 
         if added == 0:
             return
@@ -148,7 +145,7 @@ def add_blackliststicker(update: Update, context: CallbackContext):
             send_message(update.effective_message, "Sticker is invalid!")
             return
         try:
-            get = bot.getStickerSet(trigger)
+            bot.getStickerSet(trigger)
             sql.add_to_stickers(chat_id, trigger.lower())
             added += 1
         except BadRequest:
@@ -157,7 +154,6 @@ def add_blackliststicker(update: Update, context: CallbackContext):
                 f"Sticker `{trigger}` can not be found!",
                 parse_mode="markdown",
             )
-
 
         if added == 0:
             return
@@ -173,7 +169,6 @@ def add_blackliststicker(update: Update, context: CallbackContext):
             update.effective_message,
             "Tell me what stickers you want to add to the blacklist.",
         )
-
 
 
 @user_admin
@@ -215,7 +210,8 @@ def unblackliststicker(update: Update, context: CallbackContext):
 
             else:
                 send_message(
-                    update.effective_message, "This sticker is not on the blacklist...!",
+                    update.effective_message,
+                    "This sticker is not on the blacklist...!",
                 )
 
         elif successful == len(to_unblacklist):
@@ -224,7 +220,6 @@ def unblackliststicker(update: Update, context: CallbackContext):
                 f"Sticker <code>{successful}</code> deleted from blacklist in <b>{html.escape(chat_name)}</b>!",
                 parse_mode=ParseMode.HTML,
             )
-
 
         elif not successful:
             send_message(
@@ -265,7 +260,6 @@ def unblackliststicker(update: Update, context: CallbackContext):
         )
 
 
-
 @loggable
 @user_admin
 def blacklist_mode(update: Update, context: CallbackContext):
@@ -281,7 +275,8 @@ def blacklist_mode(update: Update, context: CallbackContext):
     else:
         if update.effective_message.chat.type == "private":
             send_message(
-                update.effective_message, "You can do this command in groups, not PM",
+                update.effective_message,
+                "You can do this command in groups, not PM",
             )
             return ""
         chat = update.effective_chat
@@ -333,7 +328,9 @@ def blacklist_mode(update: Update, context: CallbackContext):
             text = f"Blacklist sticker mode changed, users will be `{settypeblacklist}` at *{chat_name}*!"
 
         else:
-            text = f"Blacklist sticker mode changed, users will be `{settypeblacklist}`!"
+            text = (
+                f"Blacklist sticker mode changed, users will be `{settypeblacklist}`!"
+            )
         send_message(update.effective_message, text, parse_mode="markdown")
         return f"<b>{html.escape(chat.title)}:</b>\n<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))}\nChanged sticker blacklist mode. users will be {settypeblacklist}."
 
@@ -369,12 +366,12 @@ def del_blackliststicker(update: Update, context: CallbackContext):
     chat = update.effective_chat  # type: Optional[Chat]
     message = update.effective_message  # type: Optional[Message]
     user = update.effective_user
-    to_match = message.sticker   
+    to_match = message.sticker
 
     if not to_match or not to_match.set_name:
         return
 
-    if is_approved(chat.id, user.id): # ignore approved users
+    if is_approved(chat.id, user.id):  # ignore approved users
         return
 
     getmode, value = sql.get_blacklist_setting(chat.id)
@@ -488,17 +485,26 @@ def __stats__():
 __mod_name__ = "Stickers Blacklist"
 
 BLACKLIST_STICKER_HANDLER = DisableAbleCommandHandler(
-    "blsticker", blackliststicker, admin_ok=True, run_async=True,
+    "blsticker",
+    blackliststicker,
+    admin_ok=True,
+    run_async=True,
 )
 ADDBLACKLIST_STICKER_HANDLER = DisableAbleCommandHandler(
-    "addblsticker", add_blackliststicker, run_async=True,
+    "addblsticker",
+    add_blackliststicker,
+    run_async=True,
 )
 UNBLACKLIST_STICKER_HANDLER = CommandHandler(
-    ["unblsticker", "rmblsticker"], unblackliststicker, run_async=True,
+    ["unblsticker", "rmblsticker"],
+    unblackliststicker,
+    run_async=True,
 )
 BLACKLISTMODE_HANDLER = CommandHandler("blstickermode", blacklist_mode, run_async=True)
 BLACKLIST_STICKER_DEL_HANDLER = MessageHandler(
-    Filters.sticker & Filters.chat_type.groups, del_blackliststicker, run_async=True,
+    Filters.sticker & Filters.chat_type.groups,
+    del_blackliststicker,
+    run_async=True,
 )
 
 dispatcher.add_handler(BLACKLIST_STICKER_HANDLER)

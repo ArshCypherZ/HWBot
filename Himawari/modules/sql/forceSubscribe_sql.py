@@ -22,7 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from sqlalchemy import Column, String, Numeric, Boolean
+from sqlalchemy import Column, Numeric, String
+
 from Himawari.modules.sql import BASE, SESSION
 
 
@@ -46,7 +47,7 @@ def fs_settings(chat_id):
             .filter(forceSubscribe.chat_id == chat_id)
             .one()
         )
-    except:
+    except BaseException:
         return None
     finally:
         SESSION.close()

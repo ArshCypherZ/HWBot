@@ -23,32 +23,29 @@ SOFTWARE.
 """
 
 import html
-from typing import Optional
 
-from telegram import Message, Chat, User, ParseMode, ChatPermissions
+from telegram import ChatPermissions, ParseMode
 from telegram.error import BadRequest
-from telegram.ext import Filters, MessageHandler, CommandHandler, run_async
+from telegram.ext import CommandHandler, Filters, MessageHandler
 from telegram.utils.helpers import mention_html
 
 from Himawari import dispatcher
+from Himawari.modules.connection import connected
+from Himawari.modules.helper_funcs.alternate import send_message, typing_action
 from Himawari.modules.helper_funcs.chat_status import is_user_admin, user_admin
 from Himawari.modules.helper_funcs.string_handling import extract_time
 from Himawari.modules.log_channel import loggable
 from Himawari.modules.sql import antiflood_sql as sql
-from Himawari.modules.connection import connected
 from Himawari.modules.sql.approve_sql import is_approved
 
-from Himawari.modules.helper_funcs.alternate import send_message, typing_action
-
 FLOOD_GROUP = 3
-
 
 
 @loggable
 def check_flood(update, context) -> str:
     user = update.effective_user  # type: Optional[User]
     chat = update.effective_chat  # type: Optional[Chat]
-    msg = update.effective_message  # type: Optional[Message]    
+    msg = update.effective_message  # type: Optional[Message]
 
     if is_approved(chat.id, user.id):
         sql.update_flood(chat.id, None)
@@ -103,9 +100,7 @@ def check_flood(update, context) -> str:
             f"Wanna Spam?! Sorry it's not your house Man!\n{execstrings}!",
         )
 
-
         return f"<b>{html.escape(chat.title)}:</b>\n#{tag}\n<b>User:</b> {mention_html(user.id, user.first_name)}\nFlooded the group."
-
 
     except BadRequest:
         msg.reply_text(
@@ -113,7 +108,6 @@ def check_flood(update, context) -> str:
         )
         sql.set_flood(chat.id, 0)
         return f"<b>{chat.title}:</b>\n#INFO\nDon't have enough permission to restrict users so automatically disabled anti-flood"
-
 
 
 @user_admin
@@ -144,7 +138,9 @@ def set_flood(update, context) -> str:
         if val in ("off", "no", "0"):
             sql.set_flood(chat_id, 0)
             if conn:
-                text = message.reply_text(f"Antiflood has been disabled in {chat_name}.")
+                text = message.reply_text(
+                    f"Antiflood has been disabled in {chat_name}."
+                )
             else:
                 text = message.reply_text("Antiflood has been disabled.")
             send_message(update.effective_message, text, parse_mode="markdown")
@@ -154,11 +150,12 @@ def set_flood(update, context) -> str:
             if amount <= 0:
                 sql.set_flood(chat_id, 0)
                 if conn:
-                    text = message.reply_text(f"Antiflood has been disabled in {chat_name}.")
+                    text = message.reply_text(
+                        f"Antiflood has been disabled in {chat_name}."
+                    )
                 else:
                     text = message.reply_text("Antiflood has been disabled.")
                 return f"<b>{html.escape(chat_name)}:</b>\n#SETFLOOD\n<b>Admin:</b> {mention_html(user.id, user.first_name)}\nDisable antiflood."
-
 
             if amount < 3:
                 send_message(
@@ -179,7 +176,6 @@ def set_flood(update, context) -> str:
 
             send_message(update.effective_message, text, parse_mode="markdown")
             return f"<b>{html.escape(chat_name)}:</b>\n#SETFLOOD\n<b>Admin:</b> {mention_html(user.id, user.first_name)}\nSet antiflood to <code>{amount}</code>."
-
 
         else:
             message.reply_text("Invalid argument please use a number, 'off' or 'no'")
@@ -216,9 +212,7 @@ def flood(update, context):
     limit = sql.get_flood_limit(chat_id)
     if limit == 0:
         text = (
-            msg.reply_text(
-                f"I'm not enforcing any flood control in {chat_name}!"
-            )
+            msg.reply_text(f"I'm not enforcing any flood control in {chat_name}!")
             if conn
             else msg.reply_text("I'm not enforcing any flood control here!")
         )
@@ -234,7 +228,6 @@ def flood(update, context):
         )
 
     send_message(update.effective_message, text, parse_mode="markdown")
-
 
 
 @user_admin
@@ -346,16 +339,16 @@ __help__ = """
 You know how sometimes, people join, send 100 messages, and ruin your chat? With antiflood, that happens no more!
 Antiflood allows you to take action on users that send more than x messages in a row. Exceeding the set flood \
 will result in restricting that user.
- 
+
  - /flood: Get the current flood control setting
 *Admin only*:
 
  - /setflood <value>: To set flood limit
- 
+
  - /setflood <'no'/'off'>: disables flood control
 
  - /setfloodmode <ban/kick/mute/tban/tmute> <value>: Action to perform when user have exceeded flood limit. ban/kick/mute/tmute/tban
- 
+
  Note:
  - Value must be filled for tban and tmute!
 
@@ -369,7 +362,9 @@ will result in restricting that user.
 __mod_name__ = "Anti-Flood"
 
 FLOOD_BAN_HANDLER = MessageHandler(
-    Filters.all & ~Filters.status_update & Filters.chat_type.groups, check_flood, run_async=True
+    Filters.all & ~Filters.status_update & Filters.chat_type.groups,
+    check_flood,
+    run_async=True,
 )
 SET_FLOOD_HANDLER = CommandHandler(
     "setflood", set_flood, pass_args=True, run_async=True
@@ -377,7 +372,8 @@ SET_FLOOD_HANDLER = CommandHandler(
 SET_FLOOD_MODE_HANDLER = CommandHandler(
     "setfloodmode", set_flood_mode, pass_args=True, run_async=True
 )  # , filters=Filters.chat_type.groups)
-FLOOD_HANDLER = CommandHandler("flood", flood, run_async=True)  # , filters=Filters.chat_type.groups)
+# , filters=Filters.chat_type.groups)
+FLOOD_HANDLER = CommandHandler("flood", flood, run_async=True)
 
 dispatcher.add_handler(FLOOD_BAN_HANDLER, FLOOD_GROUP)
 dispatcher.add_handler(SET_FLOOD_HANDLER)

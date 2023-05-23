@@ -23,20 +23,22 @@ SOFTWARE.
 """
 
 import html
-import requests
-import nekos
 
-from Himawari import dispatcher
-import Himawari.modules.sql.nsfw_sql as sql
-from Himawari.modules.log_channel import gloggable
+import nekos
+import requests
 from telegram import Update
 from telegram.error import BadRequest, RetryAfter, Unauthorized
-from telegram.ext import CommandHandler, CallbackContext
-from Himawari.modules.helper_funcs.filters import CustomFilters
-from Himawari.modules.helper_funcs.chat_status import user_admin
+from telegram.ext import CallbackContext, CommandHandler
 from telegram.utils.helpers import mention_html
 
+import Himawari.modules.sql.nsfw_sql as sql
+from Himawari import dispatcher
+from Himawari.modules.helper_funcs.chat_status import user_admin
+from Himawari.modules.helper_funcs.filters import CustomFilters
+from Himawari.modules.log_channel import gloggable
+
 url_nsfw = "https://api.waifu.pics/nsfw/"
+
 
 @user_admin
 @gloggable
@@ -52,6 +54,7 @@ def add_nsfw(update: Update, context: CallbackContext):
         msg.reply_text("Activated NSFW Mode!")
         return f"<b>{html.escape(chat.title)}:</b>\nACTIVATED_NSFW\n<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))}\n"
 
+
 @user_admin
 @gloggable
 def rem_nsfw(update: Update, context: CallbackContext):
@@ -65,6 +68,7 @@ def rem_nsfw(update: Update, context: CallbackContext):
     else:
         msg.reply_text("NSFW Mode is already Deactivated")
         return ""
+
 
 def list_nsfw_chats(update: Update, context: CallbackContext):
     chats = sql.get_all_nsfw_chats()
@@ -80,6 +84,7 @@ def list_nsfw_chats(update: Update, context: CallbackContext):
             sleep(e.retry_after)
     update.effective_message.reply_text(text, parse_mode="HTML")
 
+
 def blowjob(update, context):
     chat_id = update.effective_chat.id
     if update.effective_message.chat.type != "private":
@@ -90,8 +95,9 @@ def blowjob(update, context):
     msg = update.effective_message
     url = f"{url_nsfw}blowjob"
     result = requests.get(url).json()
-    img = result['url']
+    img = result["url"]
     msg.reply_animation(img)
+
 
 def trap(update, context):
     chat_id = update.effective_chat.id
@@ -103,8 +109,9 @@ def trap(update, context):
     msg = update.effective_message
     url = f"{url_nsfw}trap"
     result = requests.get(url).json()
-    img = result['url']
+    img = result["url"]
     msg.reply_photo(photo=img)
+
 
 def nsfwwaifu(update, context):
     chat_id = update.effective_chat.id
@@ -116,8 +123,9 @@ def nsfwwaifu(update, context):
     msg = update.effective_message
     url = f"{url_nsfw}waifu"
     result = requests.get(url).json()
-    img = result['url']
+    img = result["url"]
     msg.reply_photo(photo=img)
+
 
 def nsfwneko(update, context):
     chat_id = update.effective_chat.id
@@ -129,8 +137,9 @@ def nsfwneko(update, context):
     msg = update.effective_message
     url = f"{url_nsfw}neko"
     result = requests.get(url).json()
-    img = result['url']
+    img = result["url"]
     msg.reply_photo(photo=img)
+
 
 def spank(update, context):
     chat_id = update.effective_chat.id
@@ -142,10 +151,12 @@ def spank(update, context):
     target = "spank"
     msg.reply_animation(nekos.img(target))
 
+
 ADD_NSFW_HANDLER = CommandHandler("addnsfw", add_nsfw)
 REMOVE_NSFW_HANDLER = CommandHandler("rmnsfw", rem_nsfw)
 LIST_NSFW_CHATS_HANDLER = CommandHandler(
-    "nsfwchats", list_nsfw_chats, filters=CustomFilters.dev_filter)
+    "nsfwchats", list_nsfw_chats, filters=CustomFilters.dev_filter
+)
 NSFWWAIFU_HANDLER = CommandHandler(("nsfwwaifu", "nwaifu"), nsfwwaifu, run_async=True)
 BLOWJOB_HANDLER = CommandHandler(("blowjob", "bj"), blowjob, run_async=True)
 TRAP_HANDLER = CommandHandler("trap", trap, run_async=True)
@@ -172,9 +183,8 @@ __handlers__ = [
     SPANK_HANDLER,
     BLOWJOB_HANDLER,
     TRAP_HANDLER,
-    NSFWNEKO_HANDLER
+    NSFWNEKO_HANDLER,
 ]
-
 
 
 __mod_name__ = "NSFW"

@@ -24,9 +24,8 @@ SOFTWARE.
 
 from telethon.tl.types import ChannelParticipantsAdmins
 
-from Himawari import telethn, BOT_NAME
+from Himawari import BOT_NAME, telethn
 from Himawari.events import register as himawari
-
 
 
 @himawari(pattern="^/tagall ?(.*)")

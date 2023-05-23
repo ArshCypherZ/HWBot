@@ -22,16 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import asyncio
 from asyncio import sleep
 
 from telethon import events
 from telethon.errors import ChatAdminRequiredError, UserAdminInvalidError
 from telethon.tl.functions.channels import EditBannedRequest
-from telethon.tl.types import ChatBannedRights, ChannelParticipantsAdmins
+from telethon.tl.types import ChannelParticipantsAdmins, ChatBannedRights
 
-from Himawari import telethn, OWNER_ID, DEV_USERS, SUDO_USERS, SUPPORT_USERS
-
+from Himawari import DEV_USERS, OWNER_ID, SUDO_USERS, SUPPORT_USERS, telethn
 
 BANNED_RIGHTS = ChatBannedRights(
     until_date=None,

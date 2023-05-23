@@ -24,17 +24,18 @@ SOFTWARE.
 
 import threading
 
-from Himawari import dispatcher
-from Himawari.modules.sql import BASE, SESSION
 from sqlalchemy import (
+    BigInteger,
     Column,
     ForeignKey,
-    BigInteger,
     String,
     UnicodeText,
     UniqueConstraint,
     func,
 )
+
+from Himawari import dispatcher
+from Himawari.modules.sql import BASE, SESSION
 
 
 class Users(BASE):

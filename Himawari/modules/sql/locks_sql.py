@@ -25,9 +25,9 @@ SOFTWARE.
 # New chat added -> setup permissions
 import threading
 
-from sqlalchemy import Column, String, Boolean
+from sqlalchemy import Boolean, Column, String
 
-from Himawari.modules.sql import SESSION, BASE
+from Himawari.modules.sql import BASE, SESSION
 
 
 class Permissions(BASE):

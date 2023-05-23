@@ -24,7 +24,7 @@ SOFTWARE.
 
 import threading
 
-from sqlalchemy import Column, String, UnicodeText, Boolean, BigInteger, distinct, func
+from sqlalchemy import BigInteger, Boolean, Column, String, UnicodeText, distinct, func
 
 from Himawari.modules.helper_funcs.msg_types import Types
 from Himawari.modules.sql import BASE, SESSION
@@ -381,11 +381,19 @@ def __migrate_filters():
             print(x.chat_id, x.keyword, x.reply, file_type.value)
             if file_type == Types.TEXT:
                 filt = CustomFilters(
-                    str(x.chat_id), x.keyword, x.reply, file_type.value, None,
+                    str(x.chat_id),
+                    x.keyword,
+                    x.reply,
+                    file_type.value,
+                    None,
                 )
             else:
                 filt = CustomFilters(
-                    str(x.chat_id), x.keyword, None, file_type.value, x.reply,
+                    str(x.chat_id),
+                    x.keyword,
+                    None,
+                    file_type.value,
+                    x.reply,
                 )
 
             SESSION.add(filt)

@@ -31,10 +31,11 @@ import textwrap
 import traceback
 from contextlib import redirect_stdout
 
+from telegram import ParseMode, Update
+from telegram.ext import CallbackContext, CommandHandler
+
 from Himawari import LOGGER, dispatcher
 from Himawari.modules.helper_funcs.chat_status import dev_plus
-from telegram import ParseMode, Update
-from telegram.ext import CallbackContext, CommandHandler, run_async
 
 namespaces = {}
 
@@ -99,7 +100,8 @@ def do(func, bot, update):
 
     os.chdir(os.getcwd())
     with open(
-        os.path.join(os.getcwd(), "Himawari/modules/helper_funcs/temp.txt"), "w",
+        os.path.join(os.getcwd(), "Himawari/modules/helper_funcs/temp.txt"),
+        "w",
     ) as temp:
         temp.write(body)
 
@@ -117,7 +119,7 @@ def do(func, bot, update):
     try:
         with redirect_stdout(stdout):
             func_return = func()
-    except Exception as e:
+    except Exception:
         value = stdout.getvalue()
         return f"{value}{traceback.format_exc()}"
     else:
@@ -129,7 +131,7 @@ def do(func, bot, update):
             else:
                 try:
                     result = f"{repr(ast.literal_eval(body, env))}"
-                except:
+                except BaseException:
                     pass
         else:
             result = f"{value}{func_return}"

@@ -24,31 +24,27 @@ SOFTWARE.
 
 import html
 
-from telegram import Message, Chat, ParseMode, MessageEntity
-from telegram import TelegramError, ChatPermissions
+from alphabet_detector import AlphabetDetector
+from telegram import ChatPermissions, MessageEntity, ParseMode, TelegramError
 from telegram.error import BadRequest
-from telegram.ext import CommandHandler, MessageHandler, Filters
+from telegram.ext import CommandHandler, Filters, MessageHandler
 from telegram.ext.dispatcher import run_async
 from telegram.utils.helpers import mention_html
 
-from alphabet_detector import AlphabetDetector
-
 import Himawari.modules.sql.locks_sql as sql
-from Himawari import dispatcher, SUDO_USERS, LOGGER
+from Himawari import LOGGER, dispatcher
+from Himawari.modules.connection import connected
 from Himawari.modules.disable import DisableAbleCommandHandler
+from Himawari.modules.helper_funcs.alternate import send_message, typing_action
 from Himawari.modules.helper_funcs.chat_status import (
     can_delete,
-    is_user_admin,
-    user_not_admin,
     is_bot_admin,
+    is_user_admin,
     user_admin,
+    user_not_admin,
 )
 from Himawari.modules.log_channel import loggable
-from Himawari.modules.connection import connected
 from Himawari.modules.sql.approve_sql import is_approved
-from Himawari.modules.helper_funcs.alternate import send_message, typing_action
-
-
 
 ad = AlphabetDetector()
 
@@ -119,7 +115,13 @@ REST_GROUP = 2
 
 # NOT ASYNC
 def restr_members(
-    bot, chat_id, members, messages=False, media=False, other=False, previews=False,
+    bot,
+    chat_id,
+    members,
+    messages=False,
+    media=False,
+    other=False,
+    previews=False,
 ):
     for mem in members:
         try:
@@ -137,7 +139,13 @@ def restr_members(
 
 # NOT ASYNC
 def unrestr_members(
-    bot, chat_id, members, messages=True, media=True, other=True, previews=True,
+    bot,
+    chat_id,
+    members,
+    messages=True,
+    media=True,
+    other=True,
+    previews=True,
 ):
     for mem in members:
         try:
@@ -219,7 +227,8 @@ def lock(update, context) -> str:
                     chat_id = conn
                     chat_name = chat.title
                     text = "Locked {} for all non-admins in {}!".format(
-                        ltype, chat_name,
+                        ltype,
+                        chat_name,
                     )
                 else:
                     if update.effective_message.chat.type == "private":
@@ -389,7 +398,7 @@ def del_lockables(update, context):
         if lockable == "rtl":
             if sql.is_locked(chat.id, lockable) and can_delete(chat, context.bot.id):
                 if message.caption:
-                    check = ad.detect_alphabet(u"{}".format(message.caption))
+                    check = ad.detect_alphabet("{}".format(message.caption))
                     if "ARABIC" in check:
                         try:
                             message.delete()
@@ -400,7 +409,7 @@ def del_lockables(update, context):
                                 LOGGER.exception("ERROR in lockables")
                         break
                 if message.text:
-                    check = ad.detect_alphabet(u"{}".format(message.text))
+                    check = ad.detect_alphabet("{}".format(message.text))
                     if "ARABIC" in check:
                         try:
                             message.delete()
@@ -589,13 +598,13 @@ The locks module allows you to lock away some common items in the \
 telegram world; the bot will automatically delete them!
 
 • /locktypes*:* Lists all possible locktypes
- 
+
 *Admins only:*
 
 • /lock <type>*:* Lock items of a certain type (not available in private)
 • /unlock <type>*:* Unlock items of a certain type (not available in private)
 • /locks*:* The current list of locks in this chat.
- 
+
 Locks can be used to restrict a group's users.
 eg:
 Locking urls will auto-delete all messages with urls, locking stickers will restrict all \
@@ -609,11 +618,13 @@ Locking bots will stop non-admins from adding bots to the chat.
 __mod_name__ = "Locks"
 
 LOCKTYPES_HANDLER = DisableAbleCommandHandler("locktypes", locktypes, run_async=True)
-LOCK_HANDLER = CommandHandler(
-    "lock", lock, pass_args=True, run_async=True)  # , filters=Filters.chat_type.groups)
+# , filters=Filters.chat_type.groups)
+LOCK_HANDLER = CommandHandler("lock", lock, pass_args=True, run_async=True)
 UNLOCK_HANDLER = CommandHandler(
-    "unlock", unlock, pass_args=True, run_async=True)  # , filters=Filters.chat_type.groups)
-LOCKED_HANDLER = CommandHandler("locks", list_locks, run_async=True)  # , filters=Filters.chat_type.groups)
+    "unlock", unlock, pass_args=True, run_async=True
+)  # , filters=Filters.chat_type.groups)
+# , filters=Filters.chat_type.groups)
+LOCKED_HANDLER = CommandHandler("locks", list_locks, run_async=True)
 
 dispatcher.add_handler(LOCK_HANDLER)
 dispatcher.add_handler(UNLOCK_HANDLER)
@@ -621,4 +632,8 @@ dispatcher.add_handler(LOCKTYPES_HANDLER)
 dispatcher.add_handler(LOCKED_HANDLER)
 
 dispatcher.add_handler(
-    MessageHandler(Filters.all & Filters.chat_type.groups, del_lockables, run_async=True), PERM_GROUP)
+    MessageHandler(
+        Filters.all & Filters.chat_type.groups, del_lockables, run_async=True
+    ),
+    PERM_GROUP,
+)

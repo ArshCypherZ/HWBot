@@ -21,7 +21,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-# if kanging please do not remove credits else i will turn off my api :) ~ ArshCypherZ
+# if kanging please do not remove credits else i will turn off my api :) ~
+# ArshCypherZ
 
 
 import asyncio

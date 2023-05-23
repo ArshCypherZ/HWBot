@@ -23,8 +23,10 @@ SOFTWARE.
 """
 
 import requests
-from Himawari.events import register
 from telethon import Button
+
+from Himawari.events import register
+
 
 @register(pattern="[/!]ud")
 async def ud_(e):
@@ -33,10 +35,14 @@ async def ud_(e):
     except IndexError:
         return await e.reply("Invalid Args")
     results = requests.get(
-        f"https://api.urbandictionary.com/v0/define?term={text}").json()
+        f"https://api.urbandictionary.com/v0/define?term={text}"
+    ).json()
     try:
         reply_txt = f'<bold>{text}</bold>\n\n{results["list"][0]["definition"]}\n\n<i>{results["list"][0]["example"]}</i>'
-    except:
+    except BaseException:
         reply_txt = "No results found."
-    await e.reply(reply_txt, buttons=Button.url("🔎 Google it!", f"https://www.google.com/search?q={text}"), parse_mode="html")
-   
+    await e.reply(
+        reply_txt,
+        buttons=Button.url("🔎 Google it!", f"https://www.google.com/search?q={text}"),
+        parse_mode="html",
+    )

@@ -21,37 +21,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-## thanks to Moezilla (Pranav) for this awesome code
+# thanks to Moezilla (Pranav) for this awesome code
 
-import Himawari.modules.mongo.is_karma_mongo as kk
-
-from Himawari.modules.sql import log_channel_sql as logsql
-import html
-
-from telegram import ParseMode
-from telegram import (InlineKeyboardButton,
-                      InlineKeyboardMarkup, ParseMode, Update)
-from telegram.ext import (CallbackContext, CallbackQueryHandler, CommandHandler)
+from pymongo import MongoClient
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode, Update
+from telegram.ext import CallbackContext, CallbackQueryHandler, CommandHandler
 from telegram.utils.helpers import mention_html
 
+from Himawari import MONGO_DB_URL, dispatcher
 from Himawari.modules.helper_funcs.chat_status import user_admin, user_admin_no_reply
-from Himawari import  dispatcher
-from Himawari.modules.log_channel import gloggable, loggable
+from Himawari.modules.log_channel import loggable
 
 bot_name = f"{dispatcher.bot.first_name}"
 
-from Himawari import MONGO_DB_URL
 
-from pymongo import MongoClient
-
-worddb = MongoClient(MONGO_DB_URL) 
+worddb = MongoClient(MONGO_DB_URL)
 k = worddb["Himalol"]["karma_status"]
- 
+
 
 @user_admin_no_reply
-def karmaadd(update: Update, context:CallbackContext):
-    query= update.callback_query
-    bot = context.bot
+def karmaadd(update: Update, context: CallbackContext):
+    query = update.callback_query
+    context.bot
     if query.data == "add_karma":
         chat = update.effective_chat
         done = k.insert_one({"chat_id": chat.id})
@@ -60,13 +51,12 @@ def karmaadd(update: Update, context:CallbackContext):
             f"{bot_name} Karma System Disabled by {mention_html(user.id, user.first_name)}.",
             parse_mode=ParseMode.HTML,
         )
-               
 
 
 @user_admin_no_reply
-def karmarem(update: Update, context:CallbackContext):
-    query= update.callback_query
-    bot = context.bot
+def karmarem(update: Update, context: CallbackContext):
+    query = update.callback_query
+    context.bot
     if query.data == "rem_karma":
         chat = update.effective_chat
         done = k.delete_one({"chat_id": chat.id})
@@ -74,7 +64,8 @@ def karmarem(update: Update, context:CallbackContext):
         update.effective_message.edit_text(
             f"{bot_name} Karma System Enabled by {mention_html(user.id, user.first_name)}.",
             parse_mode=ParseMode.HTML,
-        )           
+        )
+
 
 @user_admin
 @loggable
@@ -84,10 +75,9 @@ def karma_toggle(update: Update, context: CallbackContext):
     is_chatbot = k.find_one({"chat_id": chat.id})
     if is_chatbot:
         msg = "Karma Toggle\n Mode : DISABLE"
-        keyboard = InlineKeyboardMarkup([[
-            InlineKeyboardButton(
-                text="Enable",
-                callback_data=r"rem_karma")]])     
+        keyboard = InlineKeyboardMarkup(
+            [[InlineKeyboardButton(text="Enable", callback_data=r"rem_karma")]]
+        )
         message.reply_text(
             msg,
             reply_markup=keyboard,
@@ -95,19 +85,19 @@ def karma_toggle(update: Update, context: CallbackContext):
         )
     if not is_chatbot:
         msg = "Karma Toggle\n Mode : ENABLE"
-        keyboard = InlineKeyboardMarkup([[
-            InlineKeyboardButton(
-                text="Disable",
-                callback_data=r"add_karma")]])     
+        keyboard = InlineKeyboardMarkup(
+            [[InlineKeyboardButton(text="Disable", callback_data=r"add_karma")]]
+        )
         message.reply_text(
             msg,
             reply_markup=keyboard,
             parse_mode=ParseMode.HTML,
         )
 
-KARMA_STATUS_HANDLER = CommandHandler("karma", karma_toggle, run_async = True)
-ADD_KARMA_HANDLER = CallbackQueryHandler(karmaadd, pattern=r"add_karma", run_async = True)
-RM_KARMA_HANDLER = CallbackQueryHandler(karmarem, pattern=r"rem_karma", run_async = True)
+
+KARMA_STATUS_HANDLER = CommandHandler("karma", karma_toggle, run_async=True)
+ADD_KARMA_HANDLER = CallbackQueryHandler(karmaadd, pattern=r"add_karma", run_async=True)
+RM_KARMA_HANDLER = CallbackQueryHandler(karmarem, pattern=r"rem_karma", run_async=True)
 
 dispatcher.add_handler(ADD_KARMA_HANDLER)
 dispatcher.add_handler(KARMA_STATUS_HANDLER)

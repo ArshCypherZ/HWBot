@@ -25,8 +25,10 @@ SOFTWARE.
 import sys
 import traceback
 from functools import wraps
-from Himawari import pgram, SUPPORT_CHAT
+
 from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
+
+from Himawari import SUPPORT_CHAT, pgram
 
 
 def split_limits(text):
@@ -34,7 +36,7 @@ def split_limits(text):
         return [text]
 
     lines = text.splitlines(True)
-    small_msg = ''
+    small_msg = ""
     result = []
     for line in lines:
         if len(small_msg) + len(line) < 2048:
@@ -42,7 +44,7 @@ def split_limits(text):
         else:
             result.append(small_msg)
             small_msg = line
-        
+
     result.append(small_msg)
 
     return result
@@ -59,21 +61,20 @@ def capture_err(func):
         except Exception as err:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             errors = traceback.format_exception(
-                etype=exc_type, value=exc_obj, tb=exc_tb,
+                etype=exc_type,
+                value=exc_obj,
+                tb=exc_tb,
             )
             error_feedback = split_limits(
-                '**ERROR** | `{}` | `{}`\n\n```{}```\n\n```{}```\n'.format(
+                "**ERROR** | `{}` | `{}`\n\n```{}```\n\n```{}```\n".format(
                     message.from_user.id if message.from_user else 0,
                     message.chat.id if message.chat else 0,
                     message.text or message.caption,
-                    ''.join(errors),
+                    "".join(errors),
                 )
             )
             for x in error_feedback:
-                await pgram.send_message(
-                    SUPPORT_CHAT,
-                    x
-                )
+                await pgram.send_message(SUPPORT_CHAT, x)
             raise err
 
     return capture

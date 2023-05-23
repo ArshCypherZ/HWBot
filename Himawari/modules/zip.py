@@ -25,9 +25,13 @@ SOFTWARE.
 import os
 import time
 import zipfile
+from datetime import datetime
 
+from hachoir.metadata import extractMetadata
+from hachoir.parser import createParser
 from telethon import types
 from telethon.tl import functions
+from telethon.tl.types import DocumentAttributeVideo
 
 from Himawari import TEMP_DOWNLOAD_DIRECTORY
 from Himawari import telethn as client
@@ -36,7 +40,6 @@ from Himawari.events import register
 
 async def is_register_admin(chat, user):
     if isinstance(chat, (types.InputPeerChannel, types.InputChannel)):
-
         return isinstance(
             (
                 await client(functions.channels.GetParticipantRequest(chat, user))
@@ -44,7 +47,6 @@ async def is_register_admin(chat, user):
             (types.ChannelParticipantAdmin, types.ChannelParticipantCreator),
         )
     if isinstance(chat, types.InputPeerChat):
-
         ui = await client.get_peer_id(user)
         ps = (
             await client(functions.messages.GetFullChatRequest(chat.chat_id))
@@ -105,12 +107,6 @@ def zipdir(path, ziph):
             os.remove(os.path.join(root, file))
 
 
-from datetime import datetime
-
-from hachoir.metadata import extractMetadata
-from hachoir.parser import createParser
-from telethon.tl.types import DocumentAttributeVideo
-
 extracted = f"{TEMP_DOWNLOAD_DIRECTORY}extracted/"
 thumb_image_path = f"{TEMP_DOWNLOAD_DIRECTORY}/thumb_image.jpg"
 if not os.path.isdir(extracted):
@@ -119,7 +115,6 @@ if not os.path.isdir(extracted):
 
 async def is_register_admin(chat, user):
     if isinstance(chat, (types.InputPeerChannel, types.InputChannel)):
-
         return isinstance(
             (
                 await client(functions.channels.GetParticipantRequest(chat, user))
@@ -127,7 +122,6 @@ async def is_register_admin(chat, user):
             (types.ChannelParticipantAdmin, types.ChannelParticipantCreator),
         )
     if isinstance(chat, types.InputPeerChat):
-
         ui = await client.get_peer_id(user)
         ps = (
             await client(functions.messages.GetFullChatRequest(chat.chat_id))

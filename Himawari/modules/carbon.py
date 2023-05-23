@@ -22,14 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from asyncio import gather
 from io import BytesIO
 
-from pyrogram.types import Message
 from pyrogram import filters
 
-from Himawari import pgram, aiohttpsession as aiosession
+from Himawari import aiohttpsession as aiosession
+from Himawari import pgram
 from Himawari.utils.errors import capture_err
+
 
 async def make_carbon(code):
     url = "https://carbonara.vercel.app/api/cook"

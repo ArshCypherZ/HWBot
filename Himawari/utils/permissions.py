@@ -27,9 +27,9 @@ from functools import wraps
 from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
 from pyrogram.types import Message
 
-from Himawari import SUDO_USERS
+from Himawari import SUDO_USERS, pgram
 from Himawari.utils.pluginhelp import member_permissions
-from Himawari import pgram
+
 
 async def authorised(func, subFunc2, client, message, *args, **kwargs):
     chatID = message.chat.id
@@ -72,9 +72,7 @@ def adminsOnly(permission):
             permissions = await member_permissions(chatID, userID)
             if userID not in SUDO_USERS and permission not in permissions:
                 return await unauthorised(message, permission, subFunc2)
-            return await authorised(
-                func, subFunc2, client, message, *args, **kwargs
-            )
+            return await authorised(func, subFunc2, client, message, *args, **kwargs)
 
         return subFunc2
 

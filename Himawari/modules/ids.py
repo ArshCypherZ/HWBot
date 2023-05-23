@@ -22,17 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import html
-import asyncio
-from pyrogram import *
-from pyrogram.raw.types import *
-from pyrogram.errors.exceptions.flood_420 import FloodWait
-from Himawari import pgram
 from pyrogram import filters
 
-import logging
+from Himawari import pgram
 
-                
 
 @pgram.on_message(filters.command("id"))
 async def getid(client, message):
@@ -46,7 +39,7 @@ async def getid(client, message):
 
     if not message.command:
         message.command = message.text.split()
-        
+
     if not message.command:
         message.command = message.text.split()
 
@@ -61,7 +54,11 @@ async def getid(client, message):
 
     text += f"**[Chat ID:](https://t.me/{chat.username})** `{chat.id}`\n\n"
 
-    if not getattr(reply, "empty", True) and not message.forward_from_chat and not reply.sender_chat:
+    if (
+        not getattr(reply, "empty", True)
+        and not message.forward_from_chat
+        and not reply.sender_chat
+    ):
         text += (
             f"**[Replied Message ID:]({reply.link})** `{message.reply_to_message.id}`\n"
         )
@@ -70,12 +67,12 @@ async def getid(client, message):
     if reply and reply.forward_from_chat:
         text += f"The forwarded channel, {reply.forward_from_chat.title}, has an id of `{reply.forward_from_chat.id}`\n\n"
         print(reply.forward_from_chat)
-    
+
     if reply and reply.sender_chat:
         text += f"ID of the replied chat/channel, is `{reply.sender_chat.id}`"
         print(reply.sender_chat)
 
     await message.reply_text(
-       text,
-       disable_web_page_preview=True,
-   )   
+        text,
+        disable_web_page_preview=True,
+    )

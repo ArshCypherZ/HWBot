@@ -22,15 +22,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from Himawari import telethn
-import os
-from Himawari import DEV_USERS
-from telethon.sync import events
 import asyncio
-from markdown import markdown
-from bs4 import BeautifulSoup
-import jikanpy
+import os
+import random
 from datetime import datetime
+
+import jikanpy
+import requests
+from bs4 import BeautifulSoup
+from markdown import markdown
+from telethon.sync import events
+
+from Himawari import DEV_USERS, telethn
+
 
 def md_to_text(md):
     html = markdown(md)
@@ -45,7 +49,7 @@ async def reply_id(event):
     if event.reply_to_msg_id:
         reply_to_id = event.reply_to_msg_id
     return reply_to_id
-  
+
 
 async def edit_or_reply(
     event,
@@ -58,7 +62,7 @@ async def edit_or_reply(
     noformat=False,
     linktext=None,
     caption=None,
-):  # sourcery no-metrics    
+):  # sourcery no-metrics
     link_preview = link_preview or False
     reply_to = await event.get_reply_message()
     if len(text) < 4096 and not deflink:
@@ -100,10 +104,9 @@ async def edit_or_reply(
     await event.client.send_file(event.chat_id, file_name, caption=caption)
     await event.delete()
     os.remove(file_name)
-    
-    
 
-async def edit_delete(event, text, time=None, parse_mode=None, link_preview=None):    
+
+async def edit_delete(event, text, time=None, parse_mode=None, link_preview=None):
     parse_mode = parse_mode or "md"
     link_preview = link_preview or False
     time = time or 5
@@ -121,23 +124,20 @@ async def edit_delete(event, text, time=None, parse_mode=None, link_preview=None
             text, link_preview=link_preview, parse_mode=parse_mode
         )
     await asyncio.sleep(time)
-    return await himaevent.delete() 
+    return await himaevent.delete()
 
-
-import random
-import requests
 
 @telethn.on(events.NewMessage(pattern="^[!/]gif"))
 async def some(event):
     try:
-        inpt = event.text.split(' ',maxsplit=1)[1]
+        inpt = event.text.split(" ", maxsplit=1)[1]
     except IndexError:
-        return await event.reply('Usage: /gif <query>')
+        return await event.reply("Usage: /gif <query>")
     """Sends random gifs of your query"""
     reply_to_id = await reply_id(event)
     count = 1
     if ";" in inpt:
-        inpt, count = inpt.split(";") 
+        inpt, count = inpt.split(";")
     if int(count) < 0 and int(count) > 20:
         await edit_delete(event, "`Give value in range 1-20`")
     himaevent = await edit_or_reply(event, "`Sending gif....`")
@@ -156,8 +156,9 @@ async def some(event):
             reply_to=reply_to_id,
         )
     await himaevent.delete()
-    
-#schedule for anime
+
+
+# schedule for anime
 
 weekdays = {
     "monday": 0,
@@ -174,18 +175,21 @@ def get_weekday(dayid):
     for key, value in weekdays.items():
         if value == dayid:
             return key
-        
+
+
 async def get_anime_schedule(weekid):
     "get anime schedule"
     dayname = get_weekday(weekid)
-    result = f"✙ **Time Zone: Japan**\n**Scheduled anime for {dayname.title()} are : **\n\n"
+    result = (
+        f"✙ **Time Zone: Japan**\n**Scheduled anime for {dayname.title()} are : **\n\n"
+    )
     async with jikanpy.AioJikan() as animesession:
         scheduled_list = (await animesession.schedule(day=dayname)).get(dayname)
         for a_name in scheduled_list:
             result += f"• [{a_name['title']}]({a_name['url']})\n"
-    return result, dayname       
-        
-    
+    return result, dayname
+
+
 @telethn.on(events.NewMessage(pattern="^[!/]schedule ?(.*)"))
 async def aschedule_fetch(event):
     "To get list of animes scheduled on that day"

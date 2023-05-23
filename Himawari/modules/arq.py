@@ -24,7 +24,7 @@ SOFTWARE.
 
 from pyrogram import filters
 
-from Himawari import pgram, arq, BOT_USERNAME
+from Himawari import BOT_USERNAME, arq, pgram
 
 
 @pgram.on_message(filters.command("arq"))
@@ -59,6 +59,4 @@ async def arq_stats(_, message):
 
 **@{BOT_USERNAME} Some Modules Running On ARQ**
 """
-    await message.reply_text(
-        statistics, disable_web_page_preview=True
-    )
+    await message.reply_text(statistics, disable_web_page_preview=True)

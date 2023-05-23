@@ -24,9 +24,9 @@ SOFTWARE.
 
 import threading
 
-from sqlalchemy import func, distinct, Column, String, UnicodeText, BigInteger
+from sqlalchemy import BigInteger, Column, String, UnicodeText, distinct, func
 
-from Himawari.modules.sql import SESSION, BASE
+from Himawari.modules.sql import BASE, SESSION
 
 
 class BlackListFilters(BASE):
@@ -147,7 +147,9 @@ def set_blacklist_strength(chat_id, blacklist_type, value):
         curr_setting = SESSION.query(BlacklistSettings).get(str(chat_id))
         if not curr_setting:
             curr_setting = BlacklistSettings(
-                chat_id, blacklist_type=int(blacklist_type), value=value,
+                chat_id,
+                blacklist_type=int(blacklist_type),
+                value=value,
             )
 
         curr_setting.blacklist_type = int(blacklist_type)

@@ -27,12 +27,14 @@ import json
 import os
 from typing import Optional
 
+from telegram import ParseMode, TelegramError, Update
+from telegram.ext import CallbackContext, CommandHandler
+from telegram.utils.helpers import mention_html
+
 from Himawari import (
     DEV_USERS,
     OWNER_ID,
     SUDO_USERS,
-    SUPPORT_CHAT,
-    UPDATES_CHANNEL,
     SUPPORT_USERS,
     WHITELIST_USERS,
     dispatcher,
@@ -44,9 +46,6 @@ from Himawari.modules.helper_funcs.chat_status import (
 )
 from Himawari.modules.helper_funcs.extraction import extract_user
 from Himawari.modules.log_channel import gloggable
-from telegram import ParseMode, TelegramError, Update
-from telegram.ext import CallbackContext, CommandHandler, run_async
-from telegram.utils.helpers import mention_html
 
 ELEVATED_USERS_FILE = os.path.join(os.getcwd(), "Himawari/elevated_users.json")
 
@@ -57,6 +56,7 @@ def check_user_id(user_id: int, context: CallbackContext) -> Optional[str]:
         return "That...is a chat! baka ka omae?"
 
     return "This does not work that way." if user_id == bot.id else None
+
 
 @dev_plus
 @gloggable
@@ -99,7 +99,6 @@ def addsudo(update: Update, context: CallbackContext) -> str:
     update.effective_message.reply_text(
         f"{rt}\nSuccessfully made best friendship with {user_member.first_name} !"
     )
-
 
     log_message = (
         f"#SUDO\n"
@@ -158,7 +157,6 @@ def addsupport(
         f"{rt}\n{user_member.first_name}, we can be friends ;)"
     )
 
-
     log_message = (
         f"#SUPPORT\n"
         f"<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))}\n"
@@ -213,7 +211,6 @@ def addwhitelist(update: Update, context: CallbackContext) -> str:
         f"{rt}\nSuccessfully promoted {user_member.first_name} to a ranked Spiral!"
     )
 
-
     log_message = (
         f"#WHITELIST\n"
         f"<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))} \n"
@@ -261,7 +258,9 @@ def removesudo(update: Update, context: CallbackContext) -> str:
             log_message = f"<b>{html.escape(chat.title)}:</b>\n{log_message}"
 
         return log_message
-    message.reply_text("This user is not a our besto friendo, you must have misunderstood Senpai!")
+    message.reply_text(
+        "This user is not a our besto friendo, you must have misunderstood Senpai!"
+    )
     return ""
 
 
@@ -343,12 +342,12 @@ def removewhitelist(update: Update, context: CallbackContext) -> str:
     return ""
 
 
-
 @whitelist_plus
 def whitelistlist(update: Update, context: CallbackContext):
     reply = "<b>Spiral:</b>\n\n"
     m = update.effective_message.reply_text(
-        "<code>Gathering intel from Spiral HQ...</code>", parse_mode=ParseMode.HTML,
+        "<code>Gathering intel from Spiral HQ...</code>",
+        parse_mode=ParseMode.HTML,
     )
     bot = context.bot
     for each_user in WHITELIST_USERS:
@@ -366,7 +365,8 @@ def whitelistlist(update: Update, context: CallbackContext):
 def supportlist(update: Update, context: CallbackContext):
     bot = context.bot
     m = update.effective_message.reply_text(
-        "<code>Gathering intel from Spiral HQ..</code>", parse_mode=ParseMode.HTML,
+        "<code>Gathering intel from Spiral HQ..</code>",
+        parse_mode=ParseMode.HTML,
     )
     reply = "<b>Friends:</b>\n\n"
     for each_user in SUPPORT_USERS:
@@ -383,7 +383,8 @@ def supportlist(update: Update, context: CallbackContext):
 def sudolist(update: Update, context: CallbackContext):
     bot = context.bot
     m = update.effective_message.reply_text(
-        "<code>Gathering intel from Spiral HQ..</code>", parse_mode=ParseMode.HTML,
+        "<code>Gathering intel from Spiral HQ..</code>",
+        parse_mode=ParseMode.HTML,
     )
     true_sudo = list(set(SUDO_USERS) - set(DEV_USERS))
     reply = "<b>Besto Friendos:</b>\n\n"
@@ -401,7 +402,8 @@ def sudolist(update: Update, context: CallbackContext):
 def devlist(update: Update, context: CallbackContext):
     bot = context.bot
     m = update.effective_message.reply_text(
-        "<code>Gathering intel from Spiral HQ..</code>", parse_mode=ParseMode.HTML,
+        "<code>Gathering intel from Spiral HQ..</code>",
+        parse_mode=ParseMode.HTML,
     )
     true_dev = list(set(DEV_USERS) - {OWNER_ID})
     reply = "<b>Family Members:</b>\n\n"
@@ -416,13 +418,27 @@ def devlist(update: Update, context: CallbackContext):
 
 
 SUDO_HANDLER = CommandHandler(("addsudo", "addbestfriend"), addsudo, run_async=True)
-SUPPORT_HANDLER = CommandHandler(("addsupport", "addfriend"), addsupport, run_async=True)
-WHITELIST_HANDLER = CommandHandler(("Spiral", "addwhitelist"), addwhitelist, run_async=True)
-UNSUDO_HANDLER = CommandHandler(("removesudo", "rmbestfriend"), removesudo, run_async=True)
-UNSUPPORT_HANDLER = CommandHandler(("removesupport", "rmfriend"), removesupport, run_async=True)
-UNWHITELIST_HANDLER = CommandHandler(("removewhitelist", "rmSpiral"), removewhitelist, run_async=True)
-WHITELISTLIST_HANDLER = CommandHandler(["whitelistlist", "SpiralS"], whitelistlist, run_async=True)
-SUPPORTLIST_HANDLER = CommandHandler(["supportlist", "friends"], supportlist, run_async=True)
+SUPPORT_HANDLER = CommandHandler(
+    ("addsupport", "addfriend"), addsupport, run_async=True
+)
+WHITELIST_HANDLER = CommandHandler(
+    ("Spiral", "addwhitelist"), addwhitelist, run_async=True
+)
+UNSUDO_HANDLER = CommandHandler(
+    ("removesudo", "rmbestfriend"), removesudo, run_async=True
+)
+UNSUPPORT_HANDLER = CommandHandler(
+    ("removesupport", "rmfriend"), removesupport, run_async=True
+)
+UNWHITELIST_HANDLER = CommandHandler(
+    ("removewhitelist", "rmSpiral"), removewhitelist, run_async=True
+)
+WHITELISTLIST_HANDLER = CommandHandler(
+    ["whitelistlist", "SpiralS"], whitelistlist, run_async=True
+)
+SUPPORTLIST_HANDLER = CommandHandler(
+    ["supportlist", "friends"], supportlist, run_async=True
+)
 SUDOLIST_HANDLER = CommandHandler(["sudolist", "bestfriends"], sudolist, run_async=True)
 DEVLIST_HANDLER = CommandHandler(["devlist", "devs"], devlist, run_async=True)
 

@@ -24,8 +24,9 @@ SOFTWARE.
 
 import threading
 
+from sqlalchemy import BigInteger, Boolean, Column, String, UnicodeText
+
 from Himawari.modules.sql import BASE, SESSION
-from sqlalchemy import Boolean, Column, BigInteger, String, UnicodeText
 
 
 class GloballyBannedUsers(BASE):

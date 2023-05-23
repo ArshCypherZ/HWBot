@@ -23,7 +23,6 @@ SOFTWARE.
 """
 
 import socket
-
 from asyncio import get_running_loop
 from functools import partial
 
@@ -43,6 +42,4 @@ def _netcat(host, port, content):
 
 async def paste(content):
     loop = get_running_loop()
-    return await loop.run_in_executor(
-        None, partial(_netcat, "ezup.dev", 9999, content)
-    )
+    return await loop.run_in_executor(None, partial(_netcat, "ezup.dev", 9999, content))

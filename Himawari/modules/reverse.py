@@ -24,15 +24,14 @@ SOFTWARE.
 
 import os
 import re
-import requests
 import urllib
-import urllib.request
 import urllib.parse
+import urllib.request
+from urllib.error import HTTPError, URLError
 
-from urllib.error import URLError, HTTPError
+import requests
 from bs4 import BeautifulSoup
-
-from telegram import Update, InputMediaPhoto, TelegramError
+from telegram import InputMediaPhoto, TelegramError, Update
 from telegram.ext import CallbackContext
 
 from Himawari import dispatcher
@@ -69,7 +68,7 @@ def reverse(update: Update, context: CallbackContext):
             txt = args[0]
             try:
                 lim = int(txt)
-            except:
+            except BaseException:
                 lim = 2
         else:
             lim = 2
@@ -79,7 +78,7 @@ def reverse(update: Update, context: CallbackContext):
             img_link = splatargs[1]
             try:
                 lim = int(splatargs[2])
-            except:
+            except BaseException:
                 lim = 2
         elif len(splatargs) == 2:
             img_link = splatargs[1]
@@ -188,7 +187,7 @@ def ParseSauce(googleurl):
         for bess in soup.findAll("a", {"class": "PBorbe"}):
             url = "https://www.google.com" + bess.get("href")
             results["override"] = url
-    except:
+    except BaseException:
         pass
 
     for similar_image in soup.findAll("input", {"class": "gLFyf"}):
@@ -224,6 +223,7 @@ def scam(imgspage, lim):
             break
 
     return imglinks
+
 
 REVERSE_HANDLER = DisableAbleCommandHandler(
     ["grs", "reverse", "pp"], reverse, pass_args=True, run_async=True

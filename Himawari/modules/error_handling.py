@@ -22,17 +22,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import traceback
-import requests
 import html
+import io
 import random
 import sys
-import pretty_errors
-import io
+import traceback
 
-from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
+import pretty_errors
+import requests
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import CallbackContext, CommandHandler
-from Himawari import dispatcher, DEV_USERS, ERROR_LOGS
+
+from Himawari import DEV_USERS, ERROR_LOGS, dispatcher
 
 pretty_errors.mono()
 
@@ -48,7 +49,7 @@ class ErrorsDict(dict):
         self.raw.append(error)
         error.identifier = "".join(random.choices("ABCDEFGHIJKLMNOPQRSTUVWXYZ", k=5))
         for e in self:
-            if type(e) is type(error) and e.args == error.args:
+            if isinstance(e, type(error)) and e.args == error.args:
                 self[e] += 1
                 return True
         self[error] = 0
@@ -70,41 +71,46 @@ def error_callback(update: Update, context: CallbackContext):
         stringio = io.StringIO()
         pretty_errors.output_stderr = stringio
         output = pretty_errors.excepthook(
-            type(context.error), context.error, context.error.__traceback__,
+            type(context.error),
+            context.error,
+            context.error.__traceback__,
         )
         pretty_errors.output_stderr = sys.stderr
         pretty_error = stringio.getvalue()
         stringio.close()
-    except:
+    except BaseException:
         pretty_error = "Failed to create pretty error."
     tb_list = traceback.format_exception(
-        None, context.error, context.error.__traceback__,
+        None,
+        context.error,
+        context.error.__traceback__,
     )
     tb = "".join(tb_list)
     pretty_message = f'{pretty_error}\n-------------------------------------------------------------------------------\nAn exception was raised while handling an update\nUser: {update.effective_user.id}\nChat: {update.effective_chat.title if update.effective_chat else ""} {update.effective_chat.id if update.effective_chat else ""}\nCallback data: {update.callback_query.data if update.callback_query else "None"}\nMessage: {update.effective_message.text if update.effective_message else "No message"}\n\nFull Traceback: {tb}'
 
     key = requests.post(
-        "https://hastebin.com/documents", data=pretty_message.encode("UTF-8"),
+        "https://hastebin.com/documents",
+        data=pretty_message.encode("UTF-8"),
     ).json()
     e = html.escape(f"{context.error}")
-    if not key.get('key'):
+    if not key.get("key"):
         with open("error.txt", "w+") as f:
             f.write(pretty_message)
         context.bot.send_document(
             ERROR_LOGS,
-                open("error.txt", "rb"),
-                caption=f"#{context.error.identifier}\n<b>An unknown error occured:</b>\n<code>{e}</code>",
-                parse_mode="html",
+            open("error.txt", "rb"),
+            caption=f"#{context.error.identifier}\n<b>An unknown error occured:</b>\n<code>{e}</code>",
+            parse_mode="html",
         )
         return
-    key = key.get('key')
+    key = key.get("key")
     url = f"https://hastebin.com/{key}"
     context.bot.send_message(
         ERROR_LOGS,
-            text=f"#{context.error.identifier}\n<b>An unknown error occured:</b>\n<code>{e}</code>",
-            reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("HasteBin", url=url)]],
-            ),
+        text=f"#{context.error.identifier}\n<b>An unknown error occured:</b>\n<code>{e}</code>",
+        reply_markup=InlineKeyboardMarkup(
+            [[InlineKeyboardButton("HasteBin", url=url)]],
+        ),
         parse_mode="html",
     )
 
@@ -115,7 +121,7 @@ def list_errors(update: Update, context: CallbackContext):
     e = dict(sorted(errors.items(), key=lambda item: item[1], reverse=True))
     msg = "<b>Errors List:</b>\n"
     for x, value in e.items():
-        msg += f'• <code>{x}:</code> <b>{value}</b> #{x.identifier}\n'
+        msg += f"• <code>{x}:</code> <b>{value}</b> #{x.identifier}\n"
     msg += f"{len(errors)} have occurred since startup."
     if len(msg) > 4096:
         with open("errors_msg.txt", "w+") as f:

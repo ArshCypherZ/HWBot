@@ -26,23 +26,29 @@ import logging
 import os
 import sys
 import time
-import spamwatch
-import httpx
-import telegram.ext as tg
-from redis import StrictRedis
 
-from pyrogram import Client
-from telethon import TelegramClient
-from telethon.sessions import MemorySession
+import httpx
+import pymongo
+import spamwatch
+import telegram.ext as tg
+from aiohttp import ClientSession
 from motor import motor_asyncio
 from odmantic import AIOEngine
 from pymongo import MongoClient
+from pyrogram import Client
+from pyrogram.errors.exceptions.bad_request_400 import ChannelInvalid, PeerIdInvalid
 from Python_ARQ import ARQ
-from aiohttp import ClientSession
-from pyrogram.errors.exceptions.bad_request_400 import PeerIdInvalid, ChannelInvalid
-from telegraph import Telegraph
+from redis import StrictRedis
 from telegram import Chat
-import pymongo
+from telegraph import Telegraph
+from telethon import TelegramClient
+from telethon.sessions import MemorySession
+
+from Himawari.modules.helper_funcs.handlers import (
+    CustomCommandHandler,
+    CustomMessageHandler,
+    CustomRegexHandler,
+)
 
 StartTime = time.time()
 
@@ -62,7 +68,7 @@ if sys.version_info[0] < 3 or sys.version_info[1] < 6:
     )
     sys.exit(1)
 
-ENV = bool(os.environ.get("ENV", None)) # set to true if using heroku
+ENV = bool(os.environ.get("ENV", None))  # set to true if using heroku
 
 if ENV:
     TOKEN = os.environ.get("TOKEN", None)
@@ -84,24 +90,28 @@ if ENV:
         raise Exception("Your support users list does not contain valid integers.")
 
     try:
-        WHITELIST_USERS = {int(x) for x in os.environ.get("WHITELIST_USERS", "").split()}
+        WHITELIST_USERS = {
+            int(x) for x in os.environ.get("WHITELIST_USERS", "").split()
+        }
     except ValueError:
         raise Exception("Your whitelisted users list does not contain valid integers.")
 
-    INFOPIC = bool(os.environ.get("INFOPIC", False))  
-    EVENT_LOGS = os.environ.get("EVENT_LOGS", None)  
+    INFOPIC = bool(os.environ.get("INFOPIC", False))
+    EVENT_LOGS = os.environ.get("EVENT_LOGS", None)
     ERROR_LOGS = os.environ.get("ERROR_LOGS", None)
     ARQ_API_URL = os.environ.get("ARQ_API_URL", None)
     ARQ_API_KEY = os.environ.get("ARQ_API_KEY", None)
     URL = os.environ.get("URL", None)
-    API_ID = os.environ.get("API_ID", None) 
-    API_HASH = os.environ.get("API_HASH", None) 
-    DB_URL = os.environ.get("DATABASE_URL") 
-    LOAD = os.environ.get("LOAD", "").split() 
+    API_ID = os.environ.get("API_ID", None)
+    API_HASH = os.environ.get("API_HASH", None)
+    DB_URL = os.environ.get("DATABASE_URL")
+    LOAD = os.environ.get("LOAD", "").split()
     NO_LOAD = os.environ.get("NO_LOAD", "").split()
     DEL_CMDS = bool(os.environ.get("DEL_CMDS", False))
     STRICT_GBAN = bool(os.environ.get("STRICT_GBAN", None))
-    TEMP_DOWNLOAD_DIRECTORY = os.environ.get("TEMP_DOWNLOAD_DIRECTORY", "./")  # Don't Change
+    TEMP_DOWNLOAD_DIRECTORY = os.environ.get(
+        "TEMP_DOWNLOAD_DIRECTORY", "./"
+    )  # Don't Change
     REM_BG_API_KEY = os.environ.get("REM_BG_API_KEY", None)
     MONGO_DB_URL = os.environ.get("MONGO_DB_URL", None)
     REDIS_URL = os.environ.get("REDIS_URL", None)
@@ -112,7 +122,7 @@ if ENV:
     HEROKU_APP_NAME = os.environ.get("HEROKU_APP_NAME", True)
     HEROKU_API_KEY = os.environ.get("HEROKU_API_KEY", True)
     BOT_NAME = os.environ.get("BOT_NAME", "")
-    BOT_API_URL = os.environ.get('BOT_API_URL', "https://api.telegram.org/bot")
+    BOT_API_URL = os.environ.get("BOT_API_URL", "https://api.telegram.org/bot")
     MONGO_DB = "Himawari"
 
 else:
@@ -143,7 +153,7 @@ else:
 
     INFOPIC = Config.INFOPIC
     URL = "https://meow.herokuapp.com"
-    EVENT_LOGS = Config.EVENT_LOGS 
+    EVENT_LOGS = Config.EVENT_LOGS
     ERROR_LOGS = Config.ERROR_LOGS
     API_ID = Config.API_ID
     API_HASH = Config.API_HASH
@@ -165,7 +175,7 @@ else:
     BOT_USERNAME = Config.BOT_USERNAME
     BOT_NAME = Config.BOT_NAME
     DEL_CMDS = Config.DEL_CMDS
-        
+
 
 SUDO_USERS.add(OWNER_ID)
 DEV_USERS.add(OWNER_ID)
@@ -181,8 +191,8 @@ except BaseException:
     raise Exception("Your redis server is not alive, please check again.")
 
 finally:
-   REDIS.ping()
-   LOGGER.info("Your redis server is now alive!")
+    REDIS.ping()
+    LOGGER.info("Your redis server is now alive!")
 
 
 if not SPAMWATCH_API:
@@ -191,7 +201,7 @@ if not SPAMWATCH_API:
 else:
     try:
         sw = spamwatch.Client(SPAMWATCH_API)
-    except:
+    except BaseException:
         sw = None
         LOGGER.warning("[ERROR]: Can't connect to SpamWatch!")
 
@@ -204,8 +214,14 @@ print("[Himawari] Project Maintained By: @SpiralTechDivision")
 print("[Himawari]: Telegraph Installing")
 telegraph = Telegraph()
 print("[Hima]: Telegraph Account Creating")
-telegraph.create_account(short_name='Himawari')
-updater = tg.Updater(token=TOKEN, base_url=BOT_API_URL, workers=8, request_kwargs={"read_timeout": 10, "connect_timeout": 10}, use_context=True)           
+telegraph.create_account(short_name="Himawari")
+updater = tg.Updater(
+    token=TOKEN,
+    base_url=BOT_API_URL,
+    workers=8,
+    request_kwargs={"read_timeout": 10, "connect_timeout": 10},
+    use_context=True,
+)
 print("[Hima]: TELETHON CLIENT STARTING")
 telethn = TelegramClient(MemorySession(), API_ID, API_HASH)
 
@@ -267,11 +283,6 @@ WHITELIST_USERS = list(WHITELIST_USERS)
 SUPPORT_USERS = list(SUPPORT_USERS)
 
 # Load at end to ensure all prev variables have been set
-from Himawari.modules.helper_funcs.handlers import (
-    CustomCommandHandler,
-    CustomMessageHandler,
-    CustomRegexHandler,
-)
 
 # make sure the regex handler can take extra kwargs
 tg.RegexHandler = CustomRegexHandler

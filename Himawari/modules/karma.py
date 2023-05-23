@@ -21,23 +21,22 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-## thanks to Moezilla (Pranav) for this awesome code
 import asyncio
-from Himawari.utils.permissions import adminsOnly
-from Himawari import pgram as app, OWNER_ID, db
-from Himawari.utils.errors import capture_err
+
+# thanks to Moezilla (Pranav) for this awesome code
+from pymongo import MongoClient
+from pyrogram import filters
+
+from Himawari import MONGO_DB_URL
+from Himawari import pgram as app
 from Himawari.modules.mongo.karma_mongo import (
     alpha_to_int,
     get_karma,
     get_karmas,
     int_to_alpha,
-    is_karma_on,
-    karma_off,
-    karma_on,
     update_karma,
 )
-from pyrogram import filters
-
+from Himawari.utils.errors import capture_err
 
 regex_upvote = r"^((?i)\+|\+\+|\+1|thx|tnx|ty|thank you|thanx|thanks|pro|cool|good|👍|nice|noice|piro)$"
 regex_downvote = r"^(\-|\-\-|\-1|👎|noob|Noob|gross|fuck off)$"
@@ -46,26 +45,15 @@ karma_positive_group = 3
 karma_negative_group = 4
 
 
-from Himawari import MONGO_DB_URL
-
-from pymongo import MongoClient
-
-worddb = MongoClient(MONGO_DB_URL) 
+worddb = MongoClient(MONGO_DB_URL)
 k = worddb["Himalol"]["karma_status"]
-
- 
 
 
 async def is_admins(chat_id: int):
     return [
         member.user.id
-        async for member in app.get_chat_members(
-            chat_id, filter="administrators"
-        )
+        async for member in app.get_chat_members(chat_id, filter="administrators")
     ]
-
-
-
 
 
 @app.on_message(
@@ -80,7 +68,7 @@ async def is_admins(chat_id: int):
 )
 async def upvote(_, message):
     chat_id = message.chat.id
-    is_karma = k.find_one({"chat_id": chat_id})    
+    is_karma = k.find_one({"chat_id": chat_id})
     if not is_karma:
         if not message.reply_to_message.from_user:
             return
@@ -90,21 +78,18 @@ async def upvote(_, message):
             return
         user_id = message.reply_to_message.from_user.id
         user_mention = message.reply_to_message.from_user.mention
-        current_karma = await get_karma(
-            chat_id, await int_to_alpha(user_id)
-        )
+        current_karma = await get_karma(chat_id, await int_to_alpha(user_id))
         if current_karma:
-            current_karma = current_karma['karma']
+            current_karma = current_karma["karma"]
             karma = current_karma + 1
         else:
             karma = 1
         new_karma = {"karma": karma}
-        await update_karma(
-            chat_id, await int_to_alpha(user_id), new_karma
-        )
+        await update_karma(chat_id, await int_to_alpha(user_id), new_karma)
         await message.reply_text(
             f"Incremented Karma of {user_mention} By 1 \nTotal Points: {karma}"
         )
+
 
 @app.on_message(
     filters.text
@@ -118,7 +103,7 @@ async def upvote(_, message):
 )
 async def downvote(_, message):
     chat_id = message.chat.id
-    is_karma = k.find_one({"chat_id": chat_id})    
+    is_karma = k.find_one({"chat_id": chat_id})
     if not is_karma:
         if not message.reply_to_message.from_user:
             return
@@ -184,8 +169,6 @@ async def karma(_, message):
         karma = await get_karma(chat_id, await int_to_alpha(user_id))
         karma = karma["karma"] if karma else 0
         await message.reply_text(f"**Total Point :** {karma}")
-
-
 
 
 __mod_name__ = "Karma"

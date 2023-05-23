@@ -30,7 +30,7 @@ from pyrogram.types import (
     Message,
 )
 
-from Himawari import BOT_NAME
+from Himawari import BOT_NAME, pgram
 
 # By @TroJanzHEX
 from Himawari.utils.resources.ImageEditor.edit_1 import (  # pylint:disable=import-error
@@ -79,22 +79,23 @@ from Himawari.utils.resources.ImageEditor.edit_5 import (  # pylint:disable=impo
     scanlineglitch_4,
     scanlineglitch_5,
 )
-from Himawari import pgram
 
 lel = 00000000
 # pylint:disable=import-error
+
+
 @pgram.on_message(filters.command(["edit", "editor"]))
 async def photo(client: pgram, message: Message):
     try:
         if not message.reply_to_message.photo:
             await client.send_message(message.chat.id, "Reply to an image man!")
             return
-    except:
+    except BaseException:
         return
     global lel
     try:
         lel = message.from_user.id
-    except:
+    except BaseException:
         return
     try:
         await client.send_message(
@@ -115,9 +116,7 @@ async def photo(client: pgram, message: Message):
                     [
                         InlineKeyboardButton(text="Sticker", callback_data="stick"),
                         InlineKeyboardButton(text="Rotate", callback_data="rotate"),
-                        InlineKeyboardButton(
-                            text="Contrast", callback_data="contrast"
-                        ),
+                        InlineKeyboardButton(text="Contrast", callback_data="contrast"),
                     ],
                     [
                         InlineKeyboardButton(text="Sepia", callback_data="sepia"),
@@ -312,14 +311,10 @@ async def cb_handler(client: pgram, query: CallbackQuery):
                     [
                         [
                             InlineKeyboardButton(text="Red", callback_data="red"),
-                            InlineKeyboardButton(
-                                text="Green", callback_data="green"
-                            ),
+                            InlineKeyboardButton(text="Green", callback_data="green"),
                         ],
                         [
-                            InlineKeyboardButton(
-                                text="Black", callback_data="black"
-                            ),
+                            InlineKeyboardButton(text="Black", callback_data="black"),
                             InlineKeyboardButton(text="Blue", callback_data="blue"),
                         ],
                     ]

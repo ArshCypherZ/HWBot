@@ -23,11 +23,12 @@ SOFTWARE.
 """
 
 import wikipedia
+from telegram import ParseMode, Update
+from telegram.ext import CallbackContext
+from wikipedia.exceptions import DisambiguationError, PageError
+
 from Himawari import dispatcher
 from Himawari.modules.disable import DisableAbleCommandHandler
-from telegram import ParseMode, Update
-from telegram.ext import CallbackContext, run_async
-from wikipedia.exceptions import DisambiguationError, PageError
 
 
 def wiki(update: Update, context: CallbackContext):
@@ -63,7 +64,9 @@ def wiki(update: Update, context: CallbackContext):
                 )
         else:
             update.message.reply_text(
-                result, parse_mode=ParseMode.HTML, disable_web_page_preview=True,
+                result,
+                parse_mode=ParseMode.HTML,
+                disable_web_page_preview=True,
             )
 
 

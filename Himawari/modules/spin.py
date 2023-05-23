@@ -23,24 +23,18 @@ SOFTWARE.
 """
 
 import html
-from typing import Optional, List
+from typing import List
 
-from telegram import Chat, Update, Bot, User
+from telegram import Bot, Update
 from telegram.error import BadRequest
 from telegram.ext import CommandHandler, Filters, MessageHandler
 from telegram.ext.dispatcher import run_async
 from telegram.utils.helpers import mention_html
 
 from Himawari import dispatcher
-from Himawari.modules.helper_funcs.chat_status import (
-    bot_admin,
-    user_admin,
-    can_pin,
-    can_delete
-)
+from Himawari.modules.helper_funcs.chat_status import bot_admin, can_pin, user_admin
 from Himawari.modules.log_channel import loggable
 from Himawari.modules.sql import pin_sql as sql
-
 
 PMW_GROUP = 12
 
@@ -59,15 +53,11 @@ def pin(bot: Bot, update: Update, args: List[str]) -> str:
 
     if prev_message and is_group:
         is_silent = (
-            args[0].lower() not in ['notify', 'loud', 'violent']
-            if args
-            else True
+            args[0].lower() not in ["notify", "loud", "violent"] if args else True
         )
         try:
             bot.pinChatMessage(
-                chat.id,
-                prev_message.message_id,
-                disable_notification=is_silent
+                chat.id, prev_message.message_id, disable_notification=is_silent
             )
         except BadRequest as excp:
             if excp.message != "Chat_not_modified":
@@ -112,7 +102,9 @@ def anti_channel_pin(bot: Bot, update: Update, args: List[str]) -> str:
 
     if args[0].lower() in ("on", "yes"):
         sql.add_acp_o(str(chat.id), True)
-        update.effective_message.reply_text("I'll try to unpin Telegram Channel messages!")
+        update.effective_message.reply_text(
+            "I'll try to unpin Telegram Channel messages!"
+        )
         return f"<b>{html.escape(chat.title)}:</b>\n#ANTI_CHANNEL_PIN\n<b>Admin:</b> {mention_html(user.id, user.first_name)}\nHas toggled ANTI CHANNEL PIN to <code>ON</code>."
     elif args[0].lower() in ("off", "no"):
         sql.add_acp_o(str(chat.id), False)
@@ -138,7 +130,9 @@ def clean_linked_channel(bot: Bot, update: Update, args: List[str]) -> str:
 
     if args[0].lower() in ("on", "yes"):
         sql.add_ldp_m(str(chat.id), True)
-        update.effective_message.reply_text("I'll try to delete Telegram Channel messages!")
+        update.effective_message.reply_text(
+            "I'll try to delete Telegram Channel messages!"
+        )
         return f"<b>{html.escape(chat.title)}:</b>\n#CLEAN_CHANNEL_MESSAGES\n<b>Admin:</b> {mention_html(user.id, user.first_name)}\nHas toggled DELETE CHANNEL MESSAGES to <code>ON</code>."
     elif args[0].lower() in ("off", "no"):
         sql.add_ldp_m(str(chat.id), False)
@@ -161,27 +155,23 @@ def amwltro_conreko(bot: Bot, update: Update):
         if sctg.suacpmo:
             try:
                 bot.unpin_chat_message(chat.id)
-            except:
+            except BaseException:
                 pass
             pin_chat_message(bot, chat.id, sctg.message_id, True)
         if sctg.scldpmo:
             try:
                 message.delete()
-            except:
+            except BaseException:
                 pass
             pin_chat_message(bot, chat.id, sctg.message_id, True)
 
 
 def pin_chat_message(bot, chat_id, message_id, is_silent):
     try:
-        bot.pinChatMessage(
-            chat_id,
-            message_id,
-            disable_notification=is_silent
-        )
-    except BadRequest as excp:
+        bot.pinChatMessage(chat_id, message_id, disable_notification=is_silent)
+    except BadRequest:
         """else:
-            raise"""
+        raise"""
 
 
 __help__ = """
@@ -206,9 +196,15 @@ __mod_name__ = "Pins"
 
 PIN_HANDLER = CommandHandler("pin", pin, pass_args=True, filters=Filters.group)
 UNPIN_HANDLER = CommandHandler("unpin", unpin, filters=Filters.group)
-ATCPIN_HANDLER = CommandHandler("antichannelpin", anti_channel_pin, pass_args=True, filters=Filters.group)
-CLCLDC_HANDLER = CommandHandler("cleanlinked", clean_linked_channel, pass_args=True, filters=Filters.group)
-AMWLTRO_HANDLER = MessageHandler(Filters.forwarded & Filters.group, amwltro_conreko, edited_updates=False)
+ATCPIN_HANDLER = CommandHandler(
+    "antichannelpin", anti_channel_pin, pass_args=True, filters=Filters.group
+)
+CLCLDC_HANDLER = CommandHandler(
+    "cleanlinked", clean_linked_channel, pass_args=True, filters=Filters.group
+)
+AMWLTRO_HANDLER = MessageHandler(
+    Filters.forwarded & Filters.group, amwltro_conreko, edited_updates=False
+)
 
 dispatcher.add_handler(PIN_HANDLER)
 dispatcher.add_handler(UNPIN_HANDLER)

@@ -30,10 +30,10 @@ import traceback
 
 import pretty_errors
 import requests
-from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import CallbackContext, CommandHandler
 
-from Himawari import dispatcher, DEV_USERS, ERROR_LOGS
+from Himawari import DEV_USERS, ERROR_LOGS, dispatcher
 
 pretty_errors.mono()
 
@@ -49,7 +49,7 @@ class ErrorsDict(dict):
         self.raw.append(error)
         error.identifier = "".join(random.choices("ABCDEFGHIJKLMNOPQRSTUVWXYZ", k=5))
         for e in self:
-            if type(e) is type(error) and e.args == error.args:
+            if isinstance(e, type(error)) and e.args == error.args:
                 self[e] += 1
                 return True
         self[error] = 0
@@ -77,7 +77,7 @@ def error_callback(update: Update, context: CallbackContext):
             pretty_errors.output_stderr = sys.stderr
             pretty_error = stringio.getvalue()
             stringio.close()
-        except:
+        except BaseException:
             pretty_error = "Failed to create pretty error."
         tb_list = traceback.format_exception(
             None,

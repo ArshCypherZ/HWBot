@@ -22,26 +22,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import os
 
-from telethon.tl.types import ChatBannedRights
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from telethon import functions
-from telethon import types
+from telethon import functions, types
+from telethon.tl.types import ChatBannedRights
 
-from Himawari import telethn as tbot, dispatcher
+from Himawari import dispatcher
+from Himawari import telethn as tbot
 from Himawari.events import register
 from Himawari.modules.sql.nightmode_sql import (
     add_nightmode,
-    rmnightmode,
     get_all_chat_id,
     is_nightmode_indb,
+    rmnightmode,
 )
 
 
 async def is_register_admin(chat, user):
     if isinstance(chat, (types.InputPeerChannel, types.InputChannel)):
-
         return isinstance(
             (
                 await tbot(functions.channels.GetParticipantRequest(chat, user))
@@ -49,7 +47,6 @@ async def is_register_admin(chat, user):
             (types.ChannelParticipantAdmin, types.ChannelParticipantCreator),
         )
     elif isinstance(chat, types.InputPeerChat):
-
         ui = await tbot.get_peer_id(user)
         ps = (
             await tbot(functions.messages.GetFullChatRequest(chat.chat_id))

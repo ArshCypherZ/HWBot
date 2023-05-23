@@ -22,8 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import importlib
 import collections
+import importlib
+
+from telegram import ParseMode, Update
+from telegram.ext import CallbackContext, CommandHandler
 
 from Himawari import dispatcher, telethn
 from Himawari.__main__ import (
@@ -38,9 +41,6 @@ from Himawari.__main__ import (
     USER_SETTINGS,
 )
 from Himawari.modules.helper_funcs.chat_status import dev_plus, sudo_plus
-from telegram import ParseMode, Update
-from telegram.ext import CallbackContext, CommandHandler, run_async
-
 
 
 @dev_plus
@@ -48,12 +48,13 @@ def load(update: Update, context: CallbackContext):
     message = update.effective_message
     text = message.text.split(" ", 1)[1]
     load_messasge = message.reply_text(
-        f"Attempting to load module : <b>{text}</b>", parse_mode=ParseMode.HTML,
+        f"Attempting to load module : <b>{text}</b>",
+        parse_mode=ParseMode.HTML,
     )
 
     try:
         imported_module = importlib.import_module(f"Himawari.modules.{text}")
-    except:
+    except BaseException:
         load_messasge.edit_text("Does that module even exist?")
         return
 
@@ -112,18 +113,18 @@ def load(update: Update, context: CallbackContext):
     )
 
 
-
 @dev_plus
 def unload(update: Update, context: CallbackContext):
     message = update.effective_message
     text = message.text.split(" ", 1)[1]
     unload_messasge = message.reply_text(
-        f"Attempting to unload module : <b>{text}</b>", parse_mode=ParseMode.HTML,
+        f"Attempting to unload module : <b>{text}</b>",
+        parse_mode=ParseMode.HTML,
     )
 
     try:
         imported_module = importlib.import_module(f"Himawari.modules.{text}")
-    except:
+    except BaseException:
         unload_messasge.edit_text("Does that module even exist?")
         return
 
@@ -178,9 +179,9 @@ def unload(update: Update, context: CallbackContext):
         USER_SETTINGS.pop(imported_module.__mod_name__.lower())
 
     unload_messasge.edit_text(
-        f"Successfully unloaded module : <b>{text}</b>", parse_mode=ParseMode.HTML,
+        f"Successfully unloaded module : <b>{text}</b>",
+        parse_mode=ParseMode.HTML,
     )
-
 
 
 @sudo_plus

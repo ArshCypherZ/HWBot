@@ -44,12 +44,12 @@ if is_module_loaded(FILENAME):
     def loggable(func):
         @wraps(func)
         def log_action(
-                update: Update,
-                context: CallbackContext,
-                job_queue: JobQueue = None,
-                *args,
-                **kwargs,
-            ):
+            update: Update,
+            context: CallbackContext,
+            job_queue: JobQueue = None,
+            *args,
+            **kwargs,
+        ):
             result = (
                 func(update, context, job_queue, *args, **kwargs)
                 if job_queue
@@ -97,7 +97,10 @@ if is_module_loaded(FILENAME):
         return glog_action
 
     def send_log(
-        context: CallbackContext, log_chat_id: str, orig_chat_id: str, result: str,
+        context: CallbackContext,
+        log_chat_id: str,
+        orig_chat_id: str,
+        result: str,
     ):
         bot = context.bot
         try:
@@ -110,7 +113,8 @@ if is_module_loaded(FILENAME):
         except BadRequest as excp:
             if excp.message == "Chat not found":
                 bot.send_message(
-                    orig_chat_id, "This log channel has been deleted - unsetting.",
+                    orig_chat_id,
+                    "This log channel has been deleted - unsetting.",
                 )
                 sql.stop_chat_logging(orig_chat_id)
             else:
@@ -124,7 +128,6 @@ if is_module_loaded(FILENAME):
                     + "\n\nFormatting has been disabled due to an unexpected error.",
                 )
 
-    
     @user_admin
     def logging(update: Update, context: CallbackContext):
         bot = context.bot
@@ -142,7 +145,6 @@ if is_module_loaded(FILENAME):
         else:
             message.reply_text("No log channel has been set for this group!")
 
-    
     @user_admin
     def setlog(update: Update, context: CallbackContext):
         bot = context.bot
@@ -184,7 +186,6 @@ if is_module_loaded(FILENAME):
                 " - forward the /setlog to the group\n",
             )
 
-    
     @user_admin
     def unsetlog(update: Update, context: CallbackContext):
         bot = context.bot
@@ -193,7 +194,8 @@ if is_module_loaded(FILENAME):
 
         if log_channel := sql.stop_chat_logging(chat.id):
             bot.send_message(
-                log_channel, f"Channel has been unlinked from {chat.title}",
+                log_channel,
+                f"Channel has been unlinked from {chat.title}",
             )
             message.reply_text("Log channel has been un-set.")
 
@@ -211,7 +213,6 @@ if is_module_loaded(FILENAME):
             log_channel_info = dispatcher.bot.get_chat(log_channel)
             return f"This group has all it's logs sent to: {escape_markdown(log_channel_info.title)} (`{log_channel}`)"
         return "No log channel is set for this group!"
-
 
     LOG_HANDLER = CommandHandler("logchannel", logging, run_async=True)
     SET_LOG_HANDLER = CommandHandler("setlog", setlog, run_async=True)

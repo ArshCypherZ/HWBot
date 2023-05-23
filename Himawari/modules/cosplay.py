@@ -24,17 +24,22 @@ SOFTWARE.
 
 import requests
 from telethon import events
+
 from Himawari import telethn as meow
+
 
 @meow.on(events.NewMessage(pattern="^/cosplay"))
 async def waifu(event):
-  r = requests.get("https://waifu-api.vercel.app").json() #api credit- @YASH_SHARMA_1807 on telegram
-  await event.reply(file=r)
-  
+    # api credit- @YASH_SHARMA_1807 on telegram
+    r = requests.get("https://waifu-api.vercel.app").json()
+    await event.reply(file=r)
+
+
 @meow.on(events.NewMessage(pattern="^/lewd"))
 async def waifu(event):
-  r = requests.get("https://waifu-api.vercel.app/items/1").json()
-  await event.reply(file=r)
+    r = requests.get("https://waifu-api.vercel.app/items/1").json()
+    await event.reply(file=r)
+
 
 __mod_name__ = "Cosplay"
 __help__ = """

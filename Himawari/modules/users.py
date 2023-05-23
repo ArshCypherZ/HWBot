@@ -26,13 +26,16 @@ import contextlib
 from io import BytesIO
 from time import sleep
 
-import Himawari.modules.sql.users_sql as sql
-from Himawari import DEV_USERS, LOGGER as log, OWNER_ID, dispatcher
-from Himawari.modules.helper_funcs.chat_status import dev_plus, sudo_plus
-from Himawari.modules.sql.users_sql import get_all_users
 from telegram import TelegramError, Update
 from telegram.error import BadRequest
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler
+
+import Himawari.modules.sql.users_sql as sql
+from Himawari import DEV_USERS
+from Himawari import LOGGER as log
+from Himawari import OWNER_ID, dispatcher
+from Himawari.modules.helper_funcs.chat_status import dev_plus, sudo_plus
+from Himawari.modules.sql.users_sql import get_all_users
 
 USERS_GROUP = 4
 CHAT_GROUP = 5
@@ -157,7 +160,9 @@ def log_user(update: Update, _: CallbackContext):
                 with contextlib.suppress(AttributeError):
                     sql.update_user(entity.user.id, entity.user.username)
     if msg.sender_chat and not msg.is_automatic_forward:
-        sql.update_user(msg.sender_chat.id, msg.sender_chat.username, chat.id, chat.title)
+        sql.update_user(
+            msg.sender_chat.id, msg.sender_chat.username, chat.id, chat.title
+        )
 
     if msg.new_chat_members:
         for user in msg.new_chat_members:
@@ -174,11 +179,11 @@ def chats(update: Update, context: CallbackContext):
     for chat in all_chats:
         try:
             curr_chat = context.bot.getChat(chat.chat_id)
-            bot_member = curr_chat.get_member(context.bot.id)
+            curr_chat.get_member(context.bot.id)
             chat_members = curr_chat.get_member_count(context.bot.id)
             chatfile += f"{P}. {chat.chat_name} | {chat.chat_id} | {chat_members}\n"
             P += 1
-        except:
+        except BaseException:
             pass
 
     with BytesIO(str.encode(chatfile)) as output:
@@ -211,7 +216,6 @@ def __stats__():
 
 def __migrate__(old_chat_id, new_chat_id):
     sql.migrate_chat(old_chat_id, new_chat_id)
-
 
 
 BROADCAST_HANDLER = CommandHandler(

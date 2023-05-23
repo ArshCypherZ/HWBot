@@ -24,10 +24,11 @@ SOFTWARE.
 
 import random
 
+from telegram import Update
+from telegram.ext import CallbackContext
+
 from Himawari import dispatcher
 from Himawari.modules.disable import DisableAbleCommandHandler
-from telegram import Update
-from telegram.ext import CallbackContext, run_async
 
 reactions = [
     "( ͡° ͜ʖ ͡°)",

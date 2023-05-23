@@ -22,10 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from Himawari.events import register
 from io import BytesIO
+
 from requests import get
 from telethon import events
+
+from Himawari.events import register
+
 
 @register(pattern="^/write")
 async def writer(m: events.NewMessage):

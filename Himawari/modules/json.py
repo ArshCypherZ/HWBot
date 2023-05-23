@@ -26,14 +26,12 @@ import io
 
 from telethon.tl import functions, types
 
-
-from Himawari.events import register
 from Himawari import telethn
+from Himawari.events import register
 
 
 async def is_register_admin(chat, user):
     if isinstance(chat, (types.InputPeerChannel, types.InputChannel)):
-
         return isinstance(
             (
                 await telethn(functions.channels.GetParticipantRequest(chat, user))
@@ -41,7 +39,6 @@ async def is_register_admin(chat, user):
             (types.ChannelParticipantAdmin, types.ChannelParticipantCreator),
         )
     if isinstance(chat, types.InputPeerChat):
-
         ui = await telethn.get_peer_id(user)
         ps = (
             await telethn(functions.messages.GetFullChatRequest(chat.chat_id))

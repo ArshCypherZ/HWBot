@@ -22,17 +22,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from telethon import events, Button, custom
+from telethon import Button
+
+from Himawari import BOT_NAME
+from Himawari import telethn as tbot
 from Himawari.events import register
-from Himawari import telethn as tbot, SUPPORT_CHAT, UPDATES_CHANNEL, BOT_NAME
+
 HIMAWARI = "https://telegra.ph/file/9dfcdab5244a61b323210.jpg"
+
+
 @register(pattern=("/alive"))
 async def awake(event):
-  STB = event.sender.first_name
-  STB = f"**I m {BOT_NAME}** \n\n" + "**I'm Working Properly**\n\n"
-  STB += "**Python Version : 3.10.6**\n\n"
-  STB += "**python-Telegram-Bot : 13.12**\n\n"
-  BUTTON = [[Button.url("Support", "https://t.me/{SUPPORT_CHAT}"), Button.url("Updates", "https://t.me/{UPDATES_CHANNEL}")]]
-  await tbot.send_file(event.chat_id, HIMAWARI, caption=STB,  buttons=BUTTON)
+    STB = event.sender.first_name
+    STB = f"**I m {BOT_NAME}** \n\n" + "**I'm Working Properly**\n\n"
+    STB += "**Python Version : 3.10.6**\n\n"
+    STB += "**python-Telegram-Bot : 13.12**\n\n"
+    BUTTON = [
+        [
+            Button.url("Support", "https://t.me/{SUPPORT_CHAT}"),
+            Button.url("Updates", "https://t.me/{UPDATES_CHANNEL}"),
+        ]
+    ]
+    await tbot.send_file(event.chat_id, HIMAWARI, caption=STB, buttons=BUTTON)
 
-  # thanks to stb the gay
+    # thanks to stb the gay

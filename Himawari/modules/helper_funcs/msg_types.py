@@ -24,8 +24,9 @@ SOFTWARE.
 
 from enum import IntEnum, unique
 
-from Himawari.modules.helper_funcs.string_handling import button_markdown_parser
 from telegram import Message
+
+from Himawari.modules.helper_funcs.string_handling import button_markdown_parser
 
 
 @unique
@@ -45,7 +46,8 @@ def get_note_type(msg: Message):  # sourcery no-metrics
     content = None
     text = ""
     raw_text = msg.text or msg.caption
-    args = raw_text.split(None, 2)  # use python's maxsplit to separate cmd and args
+    # use python's maxsplit to separate cmd and args
+    args = raw_text.split(None, 2)
     note_name = args[1]
 
     buttons = []
@@ -76,7 +78,8 @@ def get_note_type(msg: Message):  # sourcery no-metrics
             data_type = Types.DOCUMENT
 
         elif msg.reply_to_message.photo:
-            content = msg.reply_to_message.photo[-1].file_id  # last elem = best quality
+            # last elem = best quality
+            content = msg.reply_to_message.photo[-1].file_id
             text, buttons = button_markdown_parser(msgtext, entities=entities)
             data_type = Types.PHOTO
 
@@ -104,7 +107,8 @@ def get_welcome_type(msg: Message):  # sourcery no-metrics
     content = None
     text = ""
     raw_text = msg.text or msg.caption
-    args = raw_text.split(None, 1)  # use python's maxsplit to separate cmd and args
+    # use python's maxsplit to separate cmd and args
+    args = raw_text.split(None, 1)
 
     buttons = []
     # determine what the contents of the filter are - text, image, sticker, etc
@@ -163,7 +167,6 @@ def get_welcome_type(msg: Message):  # sourcery no-metrics
 
 
 def get_filter_type(msg: Message):
-
     if not msg.reply_to_message and msg.text and len(msg.text.split()) >= 3:
         content = None
         text = msg.text.split(None, 2)[2]
@@ -189,7 +192,8 @@ def get_filter_type(msg: Message):
         data_type = Types.DOCUMENT
 
     elif msg.reply_to_message and msg.reply_to_message.photo:
-        content = msg.reply_to_message.photo[-1].file_id  # last elem = best quality
+        # last elem = best quality
+        content = msg.reply_to_message.photo[-1].file_id
         text = msg.reply_to_message.caption
         data_type = Types.PHOTO
 

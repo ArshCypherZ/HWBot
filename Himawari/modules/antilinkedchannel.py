@@ -24,14 +24,14 @@ SOFTWARE.
 
 import html
 
-from telegram import Update, TelegramError
+from telegram import TelegramError, Update
 from telegram.ext import CallbackContext
 from telegram.ext.filters import Filters
-from Himawari.modules.helper_funcs.chat_status import bot_admin, bot_can_delete
 
-from Himawari.modules.helper_funcs.decorators import Himawaricmd, Himawarimsg
-from Himawari.modules.helper_funcs.anonymous import user_admin, AdminPerms
 import Himawari.modules.sql.antilinkedchannel_sql as sql
+from Himawari.modules.helper_funcs.anonymous import AdminPerms, user_admin
+from Himawari.modules.helper_funcs.chat_status import bot_admin, bot_can_delete
+from Himawari.modules.helper_funcs.decorators import Himawaricmd, Himawarimsg
 
 
 @Himawaricmd(command="cleanlinked", group=112)
@@ -82,6 +82,7 @@ def eliminate_linked_channel_msg(update: Update, _: CallbackContext):
     except TelegramError:
         return
 
+
 @Himawaricmd(command="antichannelpin", group=114)
 @bot_admin
 @user_admin(AdminPerms.CAN_RESTRICT_MEMBERS)
@@ -101,10 +102,14 @@ def set_antipinchannel(update: Update, context: CallbackContext):
 
             else:
                 sql.enable_pin(chat.id)
-                message.reply_html(f"Enabled anti channel pin in {html.escape(chat.title)}")
+                message.reply_html(
+                    f"Enabled anti channel pin in {html.escape(chat.title)}"
+                )
         elif s in ["off", "no"]:
             sql.disable_pin(chat.id)
-            message.reply_html(f"Disabled anti channel pin in {html.escape(chat.title)}")
+            message.reply_html(
+                f"Disabled anti channel pin in {html.escape(chat.title)}"
+            )
         else:
             message.reply_text(f"Unrecognized arguments {s}")
         return
@@ -113,7 +118,9 @@ def set_antipinchannel(update: Update, context: CallbackContext):
     )
 
 
-@Himawarimsg(Filters.is_automatic_forward | Filters.status_update.pinned_message, group=113)
+@Himawarimsg(
+    Filters.is_automatic_forward | Filters.status_update.pinned_message, group=113
+)
 def eliminate_linked_channel_msg(update: Update, _: CallbackContext):
     message = update.effective_message
     chat = update.effective_chat

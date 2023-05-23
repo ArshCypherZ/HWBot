@@ -22,20 +22,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from typing import Dict, List
 from math import ceil
+from typing import Dict, List
 
-from Himawari import NO_LOAD
 from telegram import (
     MAX_MESSAGE_LENGTH,
     Bot,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
-    ParseMode,
     InlineQueryResultArticle,
     InputTextMessageContent,
+    ParseMode,
 )
 from telegram.error import TelegramError
+
+from Himawari import NO_LOAD
 
 
 class EqInlineKeyboardButton(InlineKeyboardButton):
@@ -128,7 +129,6 @@ def article(
     reply_markup: InlineKeyboardMarkup = None,
     disable_web_page_preview: bool = False,
 ) -> InlineQueryResultArticle:
-
     return InlineQueryResultArticle(
         id=uuid4(),
         title=title,
@@ -140,7 +140,6 @@ def article(
         ),
         reply_markup=reply_markup,
     )
-
 
 
 def send_to_list(

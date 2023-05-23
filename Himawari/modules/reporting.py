@@ -24,10 +24,6 @@ SOFTWARE.
 
 import html
 
-from Himawari import LOGGER, SUDO_USERS, WHITELIST_USERS, dispatcher
-from Himawari.modules.helper_funcs.chat_status import user_admin, user_not_admin
-from Himawari.modules.log_channel import loggable
-from Himawari.modules.sql import reporting_sql as sql
 from telegram import Chat, InlineKeyboardButton, InlineKeyboardMarkup, ParseMode, Update
 from telegram.error import BadRequest, Unauthorized
 from telegram.ext import (
@@ -36,13 +32,16 @@ from telegram.ext import (
     CommandHandler,
     Filters,
     MessageHandler,
-    run_async,
 )
 from telegram.utils.helpers import mention_html
 
+from Himawari import LOGGER, SUDO_USERS, WHITELIST_USERS, dispatcher
+from Himawari.modules.helper_funcs.chat_status import user_admin, user_not_admin
+from Himawari.modules.log_channel import loggable
+from Himawari.modules.sql import reporting_sql as sql
+
 REPORT_GROUP = 12
 REPORT_IMMUNE_USERS = SUDO_USERS + WHITELIST_USERS
-
 
 
 @user_admin
@@ -88,7 +87,6 @@ def report_setting(update: Update, context: CallbackContext):
         )
 
 
-
 @user_not_admin
 @loggable
 def report(update: Update, context: CallbackContext) -> str:
@@ -121,7 +119,6 @@ def report(update: Update, context: CallbackContext) -> str:
             return ""
 
         if chat.username and chat.type == Chat.SUPERGROUP:
-
             reported = f"{mention_html(user.id, user.first_name)} reported {mention_html(reported_user.id, reported_user.first_name)} to the admins!"
 
             msg = (
@@ -174,7 +171,9 @@ def report(update: Update, context: CallbackContext) -> str:
                 try:
                     if chat.type != Chat.SUPERGROUP:
                         bot.send_message(
-                            admin.user.id, msg + link, parse_mode=ParseMode.HTML,
+                            admin.user.id,
+                            msg + link,
+                            parse_mode=ParseMode.HTML,
                         )
 
                         if should_forward:
@@ -186,7 +185,9 @@ def report(update: Update, context: CallbackContext) -> str:
                                 message.forward(admin.user.id)
                     if not chat.username:
                         bot.send_message(
-                            admin.user.id, msg + link, parse_mode=ParseMode.HTML,
+                            admin.user.id,
+                            msg + link,
+                            parse_mode=ParseMode.HTML,
                         )
 
                         if should_forward:
@@ -299,8 +300,12 @@ __help__ = """
 """
 
 SETTING_HANDLER = CommandHandler("reports", report_setting, run_async=True)
-REPORT_HANDLER = CommandHandler("report", report, filters=Filters.chat_type.groups, run_async=True)
-ADMIN_REPORT_HANDLER = MessageHandler(Filters.regex(r"(?i)@admins(s)?"), report, run_async=True)
+REPORT_HANDLER = CommandHandler(
+    "report", report, filters=Filters.chat_type.groups, run_async=True
+)
+ADMIN_REPORT_HANDLER = MessageHandler(
+    Filters.regex(r"(?i)@admins(s)?"), report, run_async=True
+)
 REPORT_BUTTON_USER_HANDLER = CallbackQueryHandler(buttons, pattern=r"report_")
 
 dispatcher.add_handler(REPORT_BUTTON_USER_HANDLER)

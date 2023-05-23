@@ -24,17 +24,22 @@ SOFTWARE.
 
 from typing import List, Optional
 
-from Himawari import LOGGER
-from Himawari.modules.users import get_user_id
 from telegram import Message, MessageEntity
 from telegram.error import BadRequest
+
+from Himawari import LOGGER
+from Himawari.modules.users import get_user_id
 
 
 def id_from_reply(message):
     prev_message = message.reply_to_message
     if not prev_message:
         return None, None
-    user_id = prev_message.sender_chat.id if prev_message.sender_chat else prev_message.from_user.id
+    user_id = (
+        prev_message.sender_chat.id
+        if prev_message.sender_chat
+        else prev_message.from_user.id
+    )
     res = message.text.split(None, 1)
     return (user_id, "") if len(res) < 2 else (user_id, res[1])
 
@@ -44,7 +49,8 @@ def extract_user(message: Message, args: List[str]) -> Optional[int]:
 
 
 def extract_user_and_text(
-    message: Message, args: List[str],
+    message: Message,
+    args: List[str],
 ) -> (Optional[int], Optional[str]):
     prev_message = message.reply_to_message
     split_text = message.text.split(None, 1)
@@ -115,7 +121,8 @@ def extract_text(message) -> str:
 
 
 def extract_unt_fedban(
-    message: Message, args: List[str],
+    message: Message,
+    args: List[str],
 ) -> (Optional[int], Optional[str]):
     prev_message = message.reply_to_message
     split_text = message.text.split(None, 1)
@@ -164,7 +171,8 @@ def extract_unt_fedban(
         message.bot.get_chat(user_id)
     except BadRequest as excp:
         if excp.message in ("User_id_invalid", "Chat not found") and not isinstance(
-            user_id, int,
+            user_id,
+            int,
         ):
             message.reply_text(
                 "I don't seem to have interacted with this user before "

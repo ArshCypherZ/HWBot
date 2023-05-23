@@ -24,10 +24,11 @@ SOFTWARE.
 
 import subprocess
 
-from Himawari import LOGGER, dispatcher
-from Himawari.modules.helper_funcs.chat_status import dev_plus
 from telegram import ParseMode, Update
 from telegram.ext import CallbackContext, CommandHandler
+
+from Himawari import LOGGER, dispatcher
+from Himawari.modules.helper_funcs.chat_status import dev_plus
 
 
 @dev_plus
@@ -39,7 +40,10 @@ def shell(update: Update, context: CallbackContext):
         return
     cmd = cmd[1]
     process = subprocess.Popen(
-        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True,
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        shell=True,
     )
     stdout, stderr = process.communicate()
     reply = ""

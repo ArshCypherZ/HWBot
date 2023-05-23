@@ -25,10 +25,11 @@ SOFTWARE.
 import ast
 import threading
 
+from sqlalchemy import BigInteger, Boolean, Column, String, UnicodeText
+from telegram.error import BadRequest, Unauthorized
+
 from Himawari import dispatcher
 from Himawari.modules.sql import BASE, SESSION
-from sqlalchemy import Boolean, Column, BigInteger, String, UnicodeText
-from telegram.error import BadRequest, Unauthorized
 
 
 class Federations(BASE):
@@ -480,7 +481,12 @@ def set_frules(fed_id, rules):
         FEDERATION_BYNAME[fed_name]["frules"] = fed_rules
         # Set on database
         fed = Federations(
-            str(owner_id), fed_name, str(fed_id), fed_rules, fed_log, str(fed_members),
+            str(owner_id),
+            fed_name,
+            str(fed_id),
+            fed_rules,
+            fed_log,
+            str(fed_members),
         )
         SESSION.merge(fed)
         SESSION.commit()
@@ -500,13 +506,19 @@ def fban_user(fed_id, user_id, first_name, last_name, user_name, reason, time):
                 SESSION.delete(I)
 
         r = BansF(
-            str(fed_id), str(user_id), first_name, last_name, user_name, reason, time,
+            str(fed_id),
+            str(user_id),
+            first_name,
+            last_name,
+            user_name,
+            reason,
+            time,
         )
 
         SESSION.add(r)
         try:
             SESSION.commit()
-        except:
+        except BaseException:
             SESSION.rollback()
             return False
         finally:
@@ -556,7 +568,7 @@ def multi_fban_user(
             print(counter)
     try:
         SESSION.commit()
-    except:
+    except BaseException:
         SESSION.rollback()
         return False
     finally:
@@ -574,7 +586,7 @@ def un_fban_user(fed_id, user_id):
                 SESSION.delete(I)
         try:
             SESSION.commit()
-        except:
+        except BaseException:
             SESSION.rollback()
             return False
         finally:
@@ -614,7 +626,6 @@ def get_all_fban_users_target(fed_id, user_id):
 
 
 def get_all_fban_users_global():
-    list_fbanned = FEDERATION_BANNED_USERID
     total = []
     for x in list(FEDERATION_BANNED_USERID):
         total.extend(iter(FEDERATION_BANNED_USERID[x]))
@@ -622,7 +633,6 @@ def get_all_fban_users_global():
 
 
 def get_all_feds_users_global():
-    list_fed = FEDERATION_BYFEDID
     return [FEDERATION_BYFEDID[x] for x in list(FEDERATION_BYFEDID)]
 
 
@@ -684,7 +694,12 @@ def set_fed_log(fed_id, chat_id):
         FEDERATION_BYNAME[fed_name]["flog"] = fed_log
         # Set on database
         fed = Federations(
-            str(owner_id), fed_name, str(fed_id), fed_rules, fed_log, str(fed_members),
+            str(owner_id),
+            fed_name,
+            str(fed_id),
+            fed_rules,
+            fed_log,
+            str(fed_members),
         )
         SESSION.merge(fed)
         SESSION.commit()
@@ -701,7 +716,7 @@ def subs_fed(fed_id, my_fed):
         SESSION.merge(subsfed)  # merge to avoid duplicate key issues
         SESSION.commit()
         global FEDS_SUBSCRIBER, MYFEDS_SUBSCRIBER
-        #Temporary Data For Subbed Feds
+        # Temporary Data For Subbed Feds
         if FEDS_SUBSCRIBER.get(fed_id, set()) == set():
             FEDS_SUBSCRIBER[fed_id] = {my_fed}
         else:
@@ -862,9 +877,7 @@ def __load_feds_subscriber():
             try:
                 MYFEDS_SUBSCRIBER[x.fed_subs] += [x.fed_id]
             except KeyError:
-                if getsubs := SESSION.query(FedSubs).get(
-                    (x.fed_id, x.fed_subs)
-                ):
+                if getsubs := SESSION.query(FedSubs).get((x.fed_id, x.fed_subs)):
                     SESSION.delete(getsubs)
                     SESSION.commit()
 

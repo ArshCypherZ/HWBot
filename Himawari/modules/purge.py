@@ -25,6 +25,7 @@ SOFTWARE.
 import time
 
 from telethon import events
+
 from Himawari import telethn
 from Himawari.modules.helper_funcs.telethn.chatstatus import (
     can_delete_messages,
@@ -38,7 +39,8 @@ async def purge_messages(event):
         return
 
     if not await user_is_admin(
-        user_id=event.sender_id, message=event,
+        user_id=event.sender_id,
+        message=event,
     ) and event.from_id not in [1087968824]:
         await event.reply("Only Admins are allowed to use this command")
         return
@@ -63,9 +65,9 @@ async def purge_messages(event):
 
     try:
         await event.client.delete_messages(event.chat_id, messages)
-    except:
+    except BaseException:
         pass
-    time_ = time.perf_counter() - start
+    time.perf_counter() - start
     text = "shhh!"
     await event.respond(text, parse_mode="markdown")
 
@@ -75,7 +77,8 @@ async def delete_messages(event):
         return
 
     if not await user_is_admin(
-        user_id=event.sender_id, message=event,
+        user_id=event.sender_id,
+        message=event,
     ) and event.from_id not in [1087968824]:
         await event.reply("Only Admins are allowed to use this command")
         return

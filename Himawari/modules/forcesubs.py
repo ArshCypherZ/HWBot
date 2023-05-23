@@ -207,14 +207,14 @@ __help__ = """
 *Only creator*
 
 - Add me in your group as admin
-- Add me in your channel as admin 
- 
+- Add me in your channel as admin
+
 *Commmands*
 - /fsub {channel username} - To turn on and setup the channel.
 - /fsub - To get the current settings.
 - /fsub disable - To turn off ForceSubscribe..
 
-If you disable fsub, you need to set again for working.. /fsub {channel username} 
+If you disable fsub, you need to set again for working.. /fsub {channel username}
 
 - /fsub clear - To unmute all members who muted by me.
 """

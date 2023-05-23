@@ -23,21 +23,26 @@ SOFTWARE.
 """
 
 
-from Himawari import telethn as client, DEV_USERS
-import io, traceback
+import io
 import sys
+import traceback
+
 from telethon.sync import events
 
-#telethon eval
+from Himawari import telethn as client
 
-@client.on(events.NewMessage(from_users=[5132406765],pattern="^/te ?(.*)")) #add owner/dev id here
+# telethon eval
+
+
+# add owner/dev id here
+@client.on(events.NewMessage(from_users=[5132406765], pattern="^/te ?(.*)"))
 async def eval(event):
     if event.fwd_from:
         return
     cmd = "".join(event.message.message.split(maxsplit=1)[1:])
     if not cmd:
         return
-    catevent= await client.send_message(event.chat.id,"Running ...", reply_to=event)
+    catevent = await client.send_message(event.chat.id, "Running ...", reply_to=event)
     old_stderr = sys.stderr
     old_stdout = sys.stdout
     redirected_output = sys.stdout = io.StringIO()
@@ -74,6 +79,7 @@ async def eval(event):
             )
     else:
         await catevent.edit(final_output)
+
 
 async def aexec(code, smessatatus):
     message = event = smessatatus

@@ -22,16 +22,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import os
 import datetime
+import os
 
-from telethon import events
 from telegram import Update
-from telegram.ext import CallbackContext, CommandHandler, run_async
-from Himawari import telethn, dispatcher
+from telegram.ext import CallbackContext, CommandHandler
+from telethon import events
+
+from Himawari import dispatcher, telethn
 from Himawari.modules.helper_funcs.chat_status import dev_plus
 
 DEBUG_MODE = False
+
 
 @dev_plus
 def debug(update: Update, context: CallbackContext):

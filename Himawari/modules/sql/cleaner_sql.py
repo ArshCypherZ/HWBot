@@ -24,7 +24,7 @@ SOFTWARE.
 
 import threading
 
-from sqlalchemy import Column, UnicodeText, Boolean
+from sqlalchemy import Boolean, Column, UnicodeText
 
 from Himawari.modules.sql import BASE, SESSION
 
@@ -98,7 +98,6 @@ def chat_ignore_command(chat_id, ignore):
         ignored = SESSION.query(CleanerBlueTextChat).get((str(chat_id), ignore))
 
         if not ignored:
-
             if str(chat_id) not in CLEANER_CHATS:
                 CLEANER_CHATS.setdefault(
                     str(chat_id), {"setting": False, "commands": set()}
@@ -171,13 +170,9 @@ def is_command_ignored(chat_id, command):
     if command.lower() in GLOBAL_IGNORE_COMMANDS:
         return True
 
-    return str(
-        chat_id
-    ) in CLEANER_CHATS and command.lower() in CLEANER_CHATS.get(
+    return str(chat_id) in CLEANER_CHATS and command.lower() in CLEANER_CHATS.get(
         str(chat_id)
-    ).get(
-        "commands"
-    )
+    ).get("commands")
 
 
 def is_enabled(chat_id):

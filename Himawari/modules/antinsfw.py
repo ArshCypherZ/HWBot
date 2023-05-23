@@ -23,12 +23,13 @@ SOFTWARE.
 """
 
 from os import remove
+
 from pyrogram import filters
 
-from Himawari import SUDO_USERS, BOT_USERNAME, arq, pgram
+from Himawari import BOT_USERNAME, SUDO_USERS, arq, pgram
+from Himawari.modules.mongo.nsfw_mongo import is_nsfw_on, nsfw_off, nsfw_on
 from Himawari.utils.errors import capture_err
 from Himawari.utils.permissions import adminsOnly
-from Himawari.modules.mongo.nsfw_mongo import is_nsfw_on, nsfw_off, nsfw_on
 
 
 async def get_file_id_from_message(message):
@@ -162,13 +163,13 @@ async def nsfw_scan_command(_, message):
     )
 
 
-@pgram.on_message(filters.command(["antinsfw", f"antinsfw@{BOT_USERNAME}"]) & ~filters.private)
+@pgram.on_message(
+    filters.command(["antinsfw", f"antinsfw@{BOT_USERNAME}"]) & ~filters.private
+)
 @adminsOnly("can_change_info")
 async def nsfw_enable_disable(_, message):
     if len(message.command) != 2:
-        await message.reply_text(
-            "Usage: /antinsfw [on/off]"
-        )
+        await message.reply_text("Usage: /antinsfw [on/off]")
         return
     status = message.text.split(None, 1)[1].strip()
     status = status.lower()
@@ -182,20 +183,15 @@ async def nsfw_enable_disable(_, message):
         await nsfw_off(chat_id)
         await message.reply_text("Disabled AntiNSFW System.")
     else:
-        await message.reply_text(
-            "Unknown Suffix, Use /antinsfw [on/off]"
-        )
+        await message.reply_text("Unknown Suffix, Use /antinsfw [on/off]")
 
-        
         __help__ = """
-        
+
         Helps in detecting NSFW material and removing it (may not work sometimes)
-        
+
         *Usage:*
-        
+
         • /antinsfw [on/off]: Enables Anti-NSFW system
         • /nsfwscan <reply to message>: Scans the file replied to
-        
+
         """
-        
-        __mod_name__ = "Anti-NSFW"

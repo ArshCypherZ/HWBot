@@ -24,8 +24,9 @@ SOFTWARE.
 
 import threading
 
+from sqlalchemy import BigInteger, Column, String, UnicodeText, distinct, func
+
 from Himawari.modules.sql import BASE, SESSION
-from sqlalchemy import Column, BigInteger, String, UnicodeText, distinct, func
 
 
 class StickersFilters(BASE):
@@ -88,9 +89,7 @@ def add_to_stickers(chat_id, trigger):
 
 def rm_from_stickers(chat_id, trigger):
     with STICKERS_FILTER_INSERTION_LOCK:
-        if stickers_filt := SESSION.query(StickersFilters).get(
-            (str(chat_id), trigger)
-        ):
+        if stickers_filt := SESSION.query(StickersFilters).get((str(chat_id), trigger)):
             if trigger in CHAT_STICKERS.get(str(chat_id), set()):  # sanity check
                 CHAT_STICKERS.get(str(chat_id), set()).remove(trigger)
 
@@ -146,7 +145,9 @@ def set_blacklist_strength(chat_id, blacklist_type, value):
         curr_setting = SESSION.query(StickerSettings).get(str(chat_id))
         if not curr_setting:
             curr_setting = StickerSettings(
-                chat_id, blacklist_type=int(blacklist_type), value=value,
+                chat_id,
+                blacklist_type=int(blacklist_type),
+                value=value,
             )
 
         curr_setting.blacklist_type = int(blacklist_type)

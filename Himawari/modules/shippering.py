@@ -23,28 +23,29 @@ SOFTWARE.
 """
 
 import random
+from datetime import datetime
+
+from pyrogram import filters
 
 from Himawari import pgram
-from Himawari.utils.errors import capture_err
 from Himawari.modules.mongo.couples_mongo import get_couple, save_couple
-from pyrogram import filters
-from datetime import datetime
+from Himawari.utils.errors import capture_err
 
 
 # Date and time
 def dt():
     now = datetime.now()
     dt_string = now.strftime("%d/%m/%Y %H:%M")
-    return dt_string.split(' ')
+    return dt_string.split(" ")
 
 
 def dt_tom():
     return (
-        str(int(dt()[0].split('/')[0]) + 1)
+        str(int(dt()[0].split("/")[0]) + 1)
         + "/"
-        + dt()[0].split('/')[1]
+        + dt()[0].split("/")[1]
         + "/"
-        + dt()[0].split('/')[2]
+        + dt()[0].split("/")[2]
     )
 
 
@@ -79,28 +80,19 @@ async def couple(_, message):
             couple_selection_message = f"""**Couple of the day:**
 {c1_mention} + {c2_mention} = 💗
 __New couple of the day may be chosen at 12AM {tomorrow}__"""
-            await pgram.send_message(
-                message.chat.id,
-                text=couple_selection_message
-            )
-            couple = {
-                "c1_id": c1_id,
-                "c2_id": c2_id
-            }
+            await pgram.send_message(message.chat.id, text=couple_selection_message)
+            couple = {"c1_id": c1_id, "c2_id": c2_id}
             await save_couple(chat_id, today, couple)
 
         else:
-            c1_id = int(is_selected['c1_id'])
-            c2_id = int(is_selected['c2_id'])
+            c1_id = int(is_selected["c1_id"])
+            c2_id = int(is_selected["c2_id"])
             c1_name = (await pgram.get_users(c1_id)).first_name
             c2_name = (await pgram.get_users(c2_id)).first_name
             couple_selection_message = f"""Couple of the day:
 [{c1_name}](tg://openmessage?user_id={c1_id}) + [{c2_name}](tg://openmessage?user_id={c2_id}) = 💜
 __New couple of the day may be chosen at 12AM {tomorrow}__"""
-            await pgram.send_message(
-                message.chat.id,
-                text=couple_selection_message
-            )
+            await pgram.send_message(message.chat.id, text=couple_selection_message)
     except Exception as e:
         print(e)
         await message.reply_text(e)

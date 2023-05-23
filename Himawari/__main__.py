@@ -23,38 +23,14 @@ SOFTWARE.
 """
 
 import html
-import json
 import importlib
-import time
+import json
 import re
+import time
 import traceback
-import Himawari.modules.sql.users_sql as sql
 from sys import argv
 
-from typing import Optional
-from Himawari import (
-    LOGGER,
-    OWNER_ID,
-    URL,
-    TOKEN,
-    SUPPORT_CHAT,
-    UPDATES_CHANNEL,
-    dispatcher,
-    StartTime,
-    telethn,
-    updater,
-    pgram,
-    BOT_USERNAME,
-    BOT_NAME
-    )
-
-# needed to dynamically load modules
-# NOTE: Module order is not guaranteed, specify that in the config file!
-from Himawari.modules import ALL_MODULES
-from Himawari.modules.helper_funcs.chat_status import is_user_admin
-from Himawari.modules.helper_funcs.alternate import typing_action
-from Himawari.modules.helper_funcs.misc import paginate_modules
-from Himawari.modules.disable import DisableAbleCommandHandler
+from pyrogram import idle
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode, Update
 from telegram.error import (
     BadRequest,
@@ -64,17 +40,33 @@ from telegram.error import (
     TimedOut,
     Unauthorized,
 )
-from telegram.ext import (
-    CallbackContext,
-    CallbackQueryHandler,
-    CommandHandler,
-    Filters,
-    MessageHandler,
+from telegram.ext import CallbackContext, CallbackQueryHandler, Filters, MessageHandler
+from telegram.ext.dispatcher import DispatcherHandlerStop
+from telegram.utils.helpers import escape_markdown
+
+import Himawari.modules.sql.users_sql as sql
+from Himawari import (
+    BOT_NAME,
+    BOT_USERNAME,
+    LOGGER,
+    OWNER_ID,
+    SUPPORT_CHAT,
+    TOKEN,
+    UPDATES_CHANNEL,
+    StartTime,
+    dispatcher,
+    pgram,
+    telethn,
+    updater,
 )
 
-from telegram.ext.dispatcher import DispatcherHandlerStop, run_async
-from telegram.utils.helpers import escape_markdown
-from pyrogram import Client, idle
+# needed to dynamically load modules
+# NOTE: Module order is not guaranteed, specify that in the config file!
+from Himawari.modules import ALL_MODULES
+from Himawari.modules.disable import DisableAbleCommandHandler
+from Himawari.modules.helper_funcs.alternate import typing_action
+from Himawari.modules.helper_funcs.chat_status import is_user_admin
+from Himawari.modules.helper_funcs.misc import paginate_modules
 
 
 def get_readable_time(seconds: int) -> str:
@@ -101,6 +93,7 @@ def get_readable_time(seconds: int) -> str:
 
     return ping_time
 
+
 HELP_MSG = "Click the button below to get help menu in your pm hihi~"
 START_MSG = "*Hie Onichwannnn~ UwU* I am well and alive ;)"
 
@@ -110,7 +103,7 @@ START_IMG = "https://telegra.ph/file/eb8617465e7a62650f862.jpg"
 PM_START_TEXT = f"""
   ⫸ [{BOT_NAME}](https://telegra.ph/file/7ba6536e75495cdc6ceb1.jpg) ⫷
 Konnichiwa, I am {BOT_NAME}
- 
+
 I am an Anime themed group management bot with some fun extras ;)
 
 Want to see my powers? hehe, use /help or commands button below."""
@@ -118,7 +111,7 @@ Want to see my powers? hehe, use /help or commands button below."""
 
 GROUP_START_TEXT = """
 I'm awake already Onichan!
-Haven't slept since: {} 
+Haven't slept since: {}
 """
 
 buttons = [
@@ -134,9 +127,7 @@ buttons = [
         ),
     ],
     [
-        InlineKeyboardButton(
-            text="Support 🥂", url=f"https://t.me/{SUPPORT_CHAT}"
-        ),
+        InlineKeyboardButton(text="Support 🥂", url=f"https://t.me/{SUPPORT_CHAT}"),
         InlineKeyboardButton(
             text="Updates 🏃‍♂️", url=f"https://t.me/{UPDATES_CHANNEL}"
         ),
@@ -152,7 +143,7 @@ HELP_STRINGS = """
 • /settings:
    - in PM: will send you your settings for all supported modules.
    - in a group: will redirect you to pm, with all that chat's settings.
-• You can also navigate between the help menu by clicking on left-right arrow.   
+• You can also navigate between the help menu by clicking on left-right arrow.
 """
 
 DONATE_STRING = """PM @nyagurl for donating :)"""
@@ -258,7 +249,8 @@ def start(update: Update, context: CallbackContext):
                     escape_markdown(first_name),
                     escape_markdown(uptime),
                     sql.num_users(),
-                    sql.num_chats()),                        
+                    sql.num_chats(),
+                ),
                 reply_markup=InlineKeyboardMarkup(buttons),
                 parse_mode=ParseMode.MARKDOWN,
                 timeout=60,
@@ -290,19 +282,23 @@ def start(update: Update, context: CallbackContext):
             ),
         )
 
+
 def error_handler(update, context):
     """Log the error and send a telegram message to notify the developer."""
-    # Log the error before we do anything else, so we can see it even if something breaks.
+    # Log the error before we do anything else, so we can see it even if
+    # something breaks.
     LOGGER.error(msg="Exception while handling an update:", exc_info=context.error)
 
     # traceback.format_exception returns the usual python message about an exception, but as a
-    # list of strings rather than a single string, so we have to join them together.
+    # list of strings rather than a single string, so we have to join them
+    # together.
     tb_list = traceback.format_exception(
         None, context.error, context.error.__traceback__
     )
     tb = "".join(tb_list)
 
-    # Build the message with some markup and additional information about what happened.
+    # Build the message with some markup and additional information about what
+    # happened.
     message = (
         "An exception was raised while handling an update\n"
         "<pre>update = {}</pre>\n\n"
@@ -337,7 +333,7 @@ def error_callback(update, context):
     except NetworkError:
         pass
         # handle other connection problems
-    except ChatMigrated as e:
+    except ChatMigrated:
         pass
         # the chat_id of a group has changed, use e.new_chat_id instead
     except TelegramError:
@@ -398,10 +394,11 @@ def help_button(update, context):
 
         # ensure no spinny white circle
         context.bot.answer_callback_query(query.id)
-            # query.message.delete()
+        # query.message.delete()
 
     except BadRequest:
         pass
+
 
 def himawari_callback_data(update, context):
     query = update.callback_query
@@ -413,27 +410,30 @@ def himawari_callback_data(update, context):
             disable_web_page_preview=True,
             reply_markup=InlineKeyboardMarkup(
                 [
-                 [
-                     InlineKeyboardButton(text="⫷", callback_data="himawari_prev"),
-                    InlineKeyboardButton(text="Back", callback_data="himawari_back"),
-                     InlineKeyboardButton(text="⫸", callback_data="himawari_next")
-                 ]
+                    [
+                        InlineKeyboardButton(text="⫷", callback_data="himawari_prev"),
+                        InlineKeyboardButton(
+                            text="Back", callback_data="himawari_back"
+                        ),
+                        InlineKeyboardButton(text="⫸", callback_data="himawari_next"),
+                    ]
                 ]
             ),
         )
     elif query.data == "himawari_back":
         first_name = update.effective_user.first_name
         query.message.edit_text(
-                PM_START_TEXT.format(
-                    escape_markdown(context.bot.first_name),
-                    escape_markdown(first_name),
-                    escape_markdown(uptime),
-                    sql.num_users(),
-                    sql.num_chats()),
-                reply_markup=InlineKeyboardMarkup(buttons),
-                parse_mode=ParseMode.MARKDOWN,
-                timeout=60,
-                disable_web_page_preview=False,
+            PM_START_TEXT.format(
+                escape_markdown(context.bot.first_name),
+                escape_markdown(first_name),
+                escape_markdown(uptime),
+                sql.num_users(),
+                sql.num_chats(),
+            ),
+            reply_markup=InlineKeyboardMarkup(buttons),
+            parse_mode=ParseMode.MARKDOWN,
+            timeout=60,
+            disable_web_page_preview=False,
         )
 
 
@@ -444,7 +444,6 @@ def get_help(update, context):
 
     # ONLY send help in PM
     if chat.type != chat.PRIVATE:
-
         update.effective_message.reply_photo(
             HELP_IMG,
             HELP_MSG,
@@ -474,7 +473,6 @@ def get_help(update, context):
 
     else:
         send_help(chat.id, HELP_STRINGS)
-
 
 
 def send_settings(chat_id, user_id, user=False):
@@ -665,19 +663,28 @@ def migrate_chats(update: Update, context: CallbackContext):
 
     LOGGER.info("Successfully migrated!")
     raise DispatcherHandlerStop
-    
+
+
 def main():
     start_handler = DisableAbleCommandHandler("start", start, run_async=True)
 
     help_handler = DisableAbleCommandHandler("help", get_help, run_async=True)
-    help_callback_handler = CallbackQueryHandler(help_button, pattern=r"help_.*", run_async=True)
+    help_callback_handler = CallbackQueryHandler(
+        help_button, pattern=r"help_.*", run_async=True
+    )
 
     settings_handler = DisableAbleCommandHandler("settings", get_settings)
-    settings_callback_handler = CallbackQueryHandler(settings_button, pattern=r"stngs_", run_async=True)
+    settings_callback_handler = CallbackQueryHandler(
+        settings_button, pattern=r"stngs_", run_async=True
+    )
 
-    data_callback_handler = CallbackQueryHandler(himawari_callback_data, pattern=r"himawari_", run_async=True)
+    data_callback_handler = CallbackQueryHandler(
+        himawari_callback_data, pattern=r"himawari_", run_async=True
+    )
     donate_handler = DisableAbleCommandHandler("donate", donate, run_async=True)
-    migrate_handler = MessageHandler(Filters.status_update.migrate, migrate_chats, run_async=True)
+    migrate_handler = MessageHandler(
+        Filters.status_update.migrate, migrate_chats, run_async=True
+    )
 
     dispatcher.add_handler(start_handler)
     dispatcher.add_handler(help_handler)
@@ -689,9 +696,14 @@ def main():
     dispatcher.add_handler(donate_handler)
 
     dispatcher.add_error_handler(error_callback)
-    
+
     LOGGER.info("Himawari started, Using long polling.")
-    updater.start_polling(timeout=15, read_latency=4, drop_pending_updates=True, allowed_updates=Update.ALL_TYPES)
+    updater.start_polling(
+        timeout=15,
+        read_latency=4,
+        drop_pending_updates=True,
+        allowed_updates=Update.ALL_TYPES,
+    )
     if len(argv) in {1, 3, 4}:
         telethn.run_until_disconnected()
     else:

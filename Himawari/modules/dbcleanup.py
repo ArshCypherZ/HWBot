@@ -22,21 +22,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+from time import sleep
+
+from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram.error import BadRequest, Unauthorized
+from telegram.ext import CallbackContext, CallbackQueryHandler, CommandHandler
+
 import Himawari.modules.sql.global_bans_sql as gban_sql
 import Himawari.modules.sql.users_sql as user_sql
-
-from time import sleep
 from Himawari import DEV_USERS, OWNER_ID, dispatcher
 from Himawari.modules.helper_funcs.chat_status import dev_plus
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.error import BadRequest, Unauthorized
-from telegram.ext import (
-    CallbackContext,
-    CallbackQueryHandler,
-    CommandHandler,
-    run_async,
-)
-from telegram import Bot, Update
+
 
 def get_muted_chats(bot: Bot, update: Update, leave: bool = False):
     chat_id = update.effective_chat.id
@@ -46,7 +42,6 @@ def get_muted_chats(bot: Bot, update: Update, leave: bool = False):
     progress_message = None
 
     for chat in chats:
-
         if ((100 * chats.index(chat)) / len(chats)) > progress:
             progress_bar = f"{progress}% completed in getting muted chats."
             if progress_message:
@@ -54,7 +49,7 @@ def get_muted_chats(bot: Bot, update: Update, leave: bool = False):
                     bot.editMessageText(
                         progress_bar, chat_id, progress_message.message_id
                     )
-                except:
+                except BaseException:
                     pass
             else:
                 progress_message = bot.sendMessage(chat_id, progress_bar)
@@ -70,7 +65,7 @@ def get_muted_chats(bot: Bot, update: Update, leave: bool = False):
             chat_list.append(cid)
     try:
         progress_message.delete()
-    except:
+    except BaseException:
         pass
 
     if not leave:
@@ -79,10 +74,11 @@ def get_muted_chats(bot: Bot, update: Update, leave: bool = False):
         sleep(0.1)
         try:
             bot.leaveChat(muted_chat, timeout=120)
-        except:
+        except BaseException:
             pass
         user_sql.rem_chat(muted_chat)
     return muted_chats
+
 
 def get_invalid_chats(update: Update, context: CallbackContext, remove: bool = False):
     bot = context.bot
@@ -93,15 +89,16 @@ def get_invalid_chats(update: Update, context: CallbackContext, remove: bool = F
     progress_message = None
 
     for chat in chats:
-
         if ((100 * chats.index(chat)) / len(chats)) > progress:
             progress_bar = f"{progress}% completed in getting invalid chats."
             if progress_message:
                 try:
                     bot.editMessageText(
-                        progress_bar, chat_id, progress_message.message_id,
+                        progress_bar,
+                        chat_id,
+                        progress_message.message_id,
                     )
-                except:
+                except BaseException:
                     pass
             else:
                 progress_message = bot.sendMessage(chat_id, progress_bar)
@@ -116,7 +113,7 @@ def get_invalid_chats(update: Update, context: CallbackContext, remove: bool = F
             chat_list.append(cid)
     try:
         progress_message.delete()
-    except:
+    except BaseException:
         pass
 
     if not remove:
@@ -149,7 +146,6 @@ def get_invalid_gban(update: Update, context: CallbackContext, remove: bool = Fa
     return ungbanned_users
 
 
-
 @dev_plus
 def dbcleanup(update: Update, context: CallbackContext):
     msg = update.effective_message
@@ -166,9 +162,9 @@ def dbcleanup(update: Update, context: CallbackContext):
     buttons = [[InlineKeyboardButton("Cleanup DB", callback_data="db_cleanup")]]
 
     update.effective_message.reply_text(
-        reply, reply_markup=InlineKeyboardMarkup(buttons),
+        reply,
+        reply_markup=InlineKeyboardMarkup(buttons),
     )
-
 
 
 def callback_button(update: Update, context: CallbackContext):

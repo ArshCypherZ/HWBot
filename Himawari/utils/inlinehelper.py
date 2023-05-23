@@ -22,8 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import socket
 import json
+import socket
 import sys
 from random import randint
 from time import time
@@ -42,7 +42,7 @@ from pyrogram.types import (
 )
 from search_engine_parser import GoogleSearch
 
-from Himawari import BOT_USERNAME, OWNER_ID, pgram, arq
+from Himawari import BOT_USERNAME, OWNER_ID, arq, pgram
 from Himawari.utils.pluginhelpers import convert_seconds_to_minutes as time_convert
 from Himawari.utils.pluginhelpers import fetch
 

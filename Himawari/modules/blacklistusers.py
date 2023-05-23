@@ -23,6 +23,12 @@ SOFTWARE.
 """
 
 import html
+
+from telegram import ParseMode, Update
+from telegram.error import BadRequest
+from telegram.ext import CallbackContext, CommandHandler
+from telegram.utils.helpers import mention_html
+
 import Himawari.modules.sql.blacklistusers_sql as sql
 from Himawari import (
     DEV_USERS,
@@ -33,19 +39,13 @@ from Himawari import (
     dispatcher,
 )
 from Himawari.modules.helper_funcs.chat_status import dev_plus
-from Himawari.modules.helper_funcs.extraction import (
-    extract_user,
-    extract_user_and_text,
-)
+from Himawari.modules.helper_funcs.extraction import extract_user, extract_user_and_text
 from Himawari.modules.log_channel import gloggable
-from telegram import ParseMode, Update
-from telegram.error import BadRequest
-from telegram.ext import CallbackContext, CommandHandler, run_async
-from telegram.utils.helpers import mention_html
 
-BLACKLISTWHITELIST = [OWNER_ID] + DEV_USERS + SUDO_USERS + WHITELIST_USERS + SUPPORT_USERS
+BLACKLISTWHITELIST = (
+    [OWNER_ID] + DEV_USERS + SUDO_USERS + WHITELIST_USERS + SUPPORT_USERS
+)
 BLABLEUSERS = [OWNER_ID] + DEV_USERS
-
 
 
 @dev_plus
@@ -89,7 +89,6 @@ def bl_user(update: Update, context: CallbackContext) -> str:
     return log_message
 
 
-
 @dev_plus
 @gloggable
 def unbl_user(update: Update, context: CallbackContext) -> str:
@@ -115,7 +114,6 @@ def unbl_user(update: Update, context: CallbackContext) -> str:
         raise
 
     if sql.is_user_blacklisted(user_id):
-
         sql.unblacklist_user(user_id)
         message.reply_text("*notices user*")
         return f"#UNBLACKLIST\n<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))}\n<b>User:</b> {mention_html(target_user.id, html.escape(target_user.first_name))}"

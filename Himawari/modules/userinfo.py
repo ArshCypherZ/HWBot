@@ -24,7 +24,7 @@ SOFTWARE.
 
 import html
 
-from telegram import Update, ParseMode, MAX_MESSAGE_LENGTH
+from telegram import MAX_MESSAGE_LENGTH, ParseMode, Update
 from telegram.ext.dispatcher import CallbackContext
 from telegram.utils.helpers import escape_markdown
 
@@ -35,7 +35,7 @@ from Himawari.modules.helper_funcs.decorators import Himawaricmd
 from Himawari.modules.helper_funcs.extraction import extract_user
 
 
-@Himawaricmd(command='me', pass_args=True)
+@Himawaricmd(command="me", pass_args=True)
 def about_me(update: Update, context: CallbackContext):
     args = context.args
     bot = context.bot
@@ -59,7 +59,7 @@ def about_me(update: Update, context: CallbackContext):
         )
 
 
-@Himawaricmd(command='setme')
+@Himawaricmd(command="setme")
 def set_about_me(update: Update, context: CallbackContext):
     bot = context.bot
     message = update.effective_message
@@ -89,7 +89,7 @@ def set_about_me(update: Update, context: CallbackContext):
             )
 
 
-@Himawaricmd(command='bio', pass_args=True)
+@Himawaricmd(command="bio", pass_args=True)
 def about_bio(update: Update, context: CallbackContext):
     args = context.args
     bot = context.bot
@@ -125,9 +125,9 @@ def about_bio(update: Update, context: CallbackContext):
         sender_id = update.effective_user.id
 
         if (
-                user_id == bot.id
-                and sender_id not in SUDO_USERS
-                and sender_id not in DEV_USERS
+            user_id == bot.id
+            and sender_id not in SUDO_USERS
+            and sender_id not in DEV_USERS
         ):
             message.reply_text(
                 "Erm... yeah, I only trust my family or best friends to set my bio."
@@ -141,7 +141,9 @@ def about_bio(update: Update, context: CallbackContext):
         if len(bio) == 2:
             if len(bio[1]) < MAX_MESSAGE_LENGTH // 4:
                 sql.set_user_bio(user_id, bio[1])
-                message.reply_text(f"Updated {repl_message.from_user.first_name}'s bio!")
+                message.reply_text(
+                    f"Updated {repl_message.from_user.first_name}'s bio!"
+                )
             else:
                 message.reply_text(
                     f"A bio needs to be under {MAX_MESSAGE_LENGTH // 4} characters! You tried to set {len(bio[1])}."
@@ -150,7 +152,7 @@ def about_bio(update: Update, context: CallbackContext):
         message.reply_text("Reply to someone's message to set their bio!")
 
 
-@Himawaricmd(command='setbio')
+@Himawaricmd(command="setbio")
 def set_about_bio(update: Update, context: CallbackContext):
     message = update.effective_message
     sender_id = update.effective_user.id
@@ -178,14 +180,15 @@ def set_about_bio(update: Update, context: CallbackContext):
             return
 
         text = message.text
-        bio = text.split(
-            None, 1
-        )  # use python's maxsplit to only remove the cmd, hence keeping newlines.
+        # use python's maxsplit to only remove the cmd, hence keeping newlines.
+        bio = text.split(None, 1)
 
         if len(bio) == 2:
             if len(bio[1]) < MAX_MESSAGE_LENGTH // 4:
                 sql.set_user_bio(user_id, bio[1])
-                message.reply_text(f"Updated {repl_message.from_user.first_name}'s bio!")
+                message.reply_text(
+                    f"Updated {repl_message.from_user.first_name}'s bio!"
+                )
             else:
                 message.reply_text(
                     f"Bio needs to be under {MAX_MESSAGE_LENGTH // 4} characters! You tried to set {len(bio[1])}."
@@ -205,5 +208,6 @@ def __user_info__(user_id):
         return f"\n<b>About user:</b>\n{me}\n"
     else:
         return "\n"
+
 
 __mod_name__ = "Bios/Abouts"

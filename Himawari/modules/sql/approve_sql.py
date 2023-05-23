@@ -24,7 +24,7 @@ SOFTWARE.
 
 import threading
 
-from sqlalchemy import Column, String, BigInteger
+from sqlalchemy import BigInteger, Column, String
 
 from Himawari.modules.sql import BASE, SESSION
 
@@ -63,9 +63,7 @@ def is_approved(chat_id, user_id):
 
 def disapprove(chat_id, user_id):
     with APPROVE_INSERTION_LOCK:
-        if disapprove_user := SESSION.query(Approvals).get(
-            (str(chat_id), user_id)
-        ):
+        if disapprove_user := SESSION.query(Approvals).get((str(chat_id), user_id)):
             SESSION.delete(disapprove_user)
             SESSION.commit()
             return True

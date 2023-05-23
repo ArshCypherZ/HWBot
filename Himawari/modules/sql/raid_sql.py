@@ -23,14 +23,19 @@ SOFTWARE.
 """
 
 import threading
+
 from sqlalchemy import Column, String
+
 from Himawari.modules.sql import BASE, SESSION
+
+
 class RaidChats(BASE):
     __tablename__ = "raid_chats"
     chat_id = Column(String(14), primary_key=True)
 
     def __init__(self, chat_id):
         self.chat_id = chat_id
+
 
 RaidChats.__table__.create(checkfirst=True)
 INSERTION_LOCK = threading.RLock()
@@ -43,6 +48,7 @@ def is_raid(chat_id):
     finally:
         SESSION.close()
 
+
 def set_raid(chat_id):
     with INSERTION_LOCK:
         raidchat = SESSION.query(RaidChats).get(str(chat_id))
@@ -50,6 +56,7 @@ def set_raid(chat_id):
             raidchat = RaidChats(str(chat_id))
         SESSION.add(raidchat)
         SESSION.commit()
+
 
 def rem_raid(chat_id):
     with INSERTION_LOCK:

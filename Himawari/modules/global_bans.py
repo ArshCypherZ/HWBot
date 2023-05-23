@@ -24,23 +24,15 @@ SOFTWARE.
 
 import html
 import time
-
 from datetime import datetime
 from io import BytesIO
 
-from telegram import ParseMode, Update, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import ParseMode, Update
 from telegram.error import BadRequest, TelegramError, Unauthorized
-from telegram.ext import (
-    CallbackContext,
-    CommandHandler,
-    Filters,
-    MessageHandler,
-    run_async
-)
+from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler
 from telegram.utils.helpers import mention_html
 
 import Himawari.modules.sql.global_bans_sql as sql
-from Himawari.modules.sql.users_sql import get_user_com_chats
 from Himawari import (
     DEV_USERS,
     EVENT_LOGS,
@@ -50,19 +42,17 @@ from Himawari import (
     SUPPORT_CHAT,
     SUPPORT_USERS,
     WHITELIST_USERS,
-    sw,
     dispatcher,
+    sw,
 )
 from Himawari.modules.helper_funcs.chat_status import (
     is_user_admin,
     support_plus,
     user_admin,
 )
-from Himawari.modules.helper_funcs.extraction import (
-    extract_user,
-    extract_user_and_text,
-)
+from Himawari.modules.helper_funcs.extraction import extract_user, extract_user_and_text
 from Himawari.modules.helper_funcs.misc import send_to_list
+from Himawari.modules.sql.users_sql import get_user_com_chats
 
 GBAN_ENFORCE_GROUP = 6
 
@@ -150,7 +140,6 @@ def gban(update: Update, context: CallbackContext):
         return
 
     if sql.is_user_gbanned(user_id):
-
         if not reason:
             message.reply_text(
                 "This user is already gbanned; I'd change the reason, but you haven't given me one...",
@@ -202,8 +191,13 @@ def gban(update: Update, context: CallbackContext):
 
     if EVENT_LOGS:
         try:
-            log = bot.send_message(EVENT_LOGS, log_message, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
-        except BadRequest as excp:
+            log = bot.send_message(
+                EVENT_LOGS,
+                log_message,
+                parse_mode=ParseMode.HTML,
+                disable_web_page_preview=True,
+            )
+        except BadRequest:
             log = bot.send_message(
                 EVENT_LOGS,
                 log_message
@@ -240,7 +234,9 @@ def gban(update: Update, context: CallbackContext):
                     )
                 else:
                     send_to_list(
-                        bot, SUDO_USERS + SUPPORT_USERS, f"Could not gban due to: {excp.message}",
+                        bot,
+                        SUDO_USERS + SUPPORT_USERS,
+                        f"Could not gban due to: {excp.message}",
                     )
                 sql.ungban_user(user_id)
                 return
@@ -275,7 +271,7 @@ def gban(update: Update, context: CallbackContext):
             f"</b>Appeal Chat:</b> @{SUPPORT_CHAT}",
             parse_mode=ParseMode.HTML,
         )
-    except:
+    except BaseException:
         pass  # bot probably blocked by user
 
 
@@ -326,8 +322,13 @@ def ungban(update: Update, context: CallbackContext):
 
     if EVENT_LOGS:
         try:
-            log = bot.send_message(EVENT_LOGS, log_message, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
-        except BadRequest as excp:
+            log = bot.send_message(
+                EVENT_LOGS,
+                log_message,
+                parse_mode=ParseMode.HTML,
+                disable_web_page_preview=True,
+            )
+        except BadRequest:
             log = bot.send_message(
                 EVENT_LOGS,
                 log_message
@@ -363,7 +364,8 @@ def ungban(update: Update, context: CallbackContext):
                     )
                 else:
                     bot.send_message(
-                        OWNER_ID, f"Could not un-gban due to: {excp.message}",
+                        OWNER_ID,
+                        f"Could not un-gban due to: {excp.message}",
                     )
                 return
         except TelegramError:
@@ -415,13 +417,12 @@ def gbanlist(update: Update, context: CallbackContext):
 
 
 def check_and_ban(update, user_id, should_message=True):
-
     if user_id in WHITELIST_USERS:
         sw_ban = None
     else:
         try:
             sw_ban = sw.get_ban(int(user_id))
-        except:
+        except BaseException:
             sw_ban = None
 
     if sw_ban:
@@ -553,9 +554,13 @@ GBAN_HANDLER = CommandHandler("gban", gban, run_async=True)
 UNGBAN_HANDLER = CommandHandler("ungban", ungban, run_async=True)
 GBAN_LIST = CommandHandler("gbanlist", gbanlist, run_async=True)
 
-GBAN_STATUS = CommandHandler("antispam", gbanstat, filters=Filters.chat_type.groups, run_async=True)
+GBAN_STATUS = CommandHandler(
+    "antispam", gbanstat, filters=Filters.chat_type.groups, run_async=True
+)
 
-GBAN_ENFORCER = MessageHandler(Filters.all & Filters.chat_type.groups, enforce_gban, run_async=True)
+GBAN_ENFORCER = MessageHandler(
+    Filters.all & Filters.chat_type.groups, enforce_gban, run_async=True
+)
 
 dispatcher.add_handler(GBAN_HANDLER)
 dispatcher.add_handler(UNGBAN_HANDLER)

@@ -23,7 +23,9 @@ SOFTWARE.
 """
 
 from io import BytesIO
+
 from Himawari import aiohttpsession
+
 
 async def make_carbon(code):
     url = "https://carbonara.vercel.app/api/cook"

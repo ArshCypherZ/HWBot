@@ -18,27 +18,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+import html
 import json
 import re
-import html
-import requests
-import Himawari.modules.sql.kuki_sql as sql
-
 from time import sleep
-from telegram import (CallbackQuery, Chat, InlineKeyboardButton,
-                      InlineKeyboardMarkup, ParseMode, Update, User)
-from telegram.ext import (CallbackContext, CallbackQueryHandler, CommandHandler,
-                          Filters, MessageHandler,
-                          )
+
+import requests
+from telegram import (
+    CallbackQuery,
+    Chat,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    ParseMode,
+    Update,
+    User,
+)
 from telegram.error import BadRequest, RetryAfter, Unauthorized
+from telegram.ext import (
+    CallbackContext,
+    CallbackQueryHandler,
+    CommandHandler,
+    Filters,
+    MessageHandler,
+)
 from telegram.utils.helpers import mention_html
 
-from Himawari.modules.helper_funcs.filters import CustomFilters
-from Himawari.modules.helper_funcs.chat_status import user_admin, user_admin_no_reply
+import Himawari.modules.sql.kuki_sql as sql
 from Himawari import dispatcher
+from Himawari.modules.helper_funcs.chat_status import user_admin, user_admin_no_reply
+from Himawari.modules.helper_funcs.filters import CustomFilters
 from Himawari.modules.log_channel import gloggable
 
- 
+
 @user_admin_no_reply
 @gloggable
 def kukirm(update: Update, context: CallbackContext) -> str:
@@ -48,7 +59,7 @@ def kukirm(update: Update, context: CallbackContext) -> str:
         user_id = match[1]
         chat: Optional[Chat] = update.effective_chat
         if is_kuki := sql.rem_kuki(chat.id):
-            is_kuki = sql.rem_kuki(user_id)
+            sql.rem_kuki(user_id)
             return (
                 f"<b>{html.escape(chat.title)}:</b>\n"
                 f"AI_DISABLED\n"
@@ -60,6 +71,7 @@ def kukirm(update: Update, context: CallbackContext) -> str:
 
     return ""
 
+
 @user_admin_no_reply
 @gloggable
 def kukiadd(update: Update, context: CallbackContext) -> str:
@@ -69,7 +81,7 @@ def kukiadd(update: Update, context: CallbackContext) -> str:
         user_id = match[1]
         chat: Optional[Chat] = update.effective_chat
         if is_kuki := sql.set_kuki(chat.id):
-            is_kuki = sql.set_kuki(user_id)
+            sql.set_kuki(user_id)
             return (
                 f"<b>{html.escape(chat.title)}:</b>\n"
                 f"AI_ENABLE\n"
@@ -81,25 +93,25 @@ def kukiadd(update: Update, context: CallbackContext) -> str:
 
     return ""
 
+
 @user_admin
 @gloggable
 def kuki(update: Update, context: CallbackContext):
-    user = update.effective_user
+    update.effective_user
     message = update.effective_message
     msg = "Choose an option"
-    keyboard = InlineKeyboardMarkup([[
-        InlineKeyboardButton(
-            text="Enable Chatbot",
-            callback_data="add_chat({})")],
-       [
-        InlineKeyboardButton(
-            text="Disable Chatbot",
-            callback_data="rm_chat({})")]])
+    keyboard = InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton(text="Enable Chatbot", callback_data="add_chat({})")],
+            [InlineKeyboardButton(text="Disable Chatbot", callback_data="rm_chat({})")],
+        ]
+    )
     message.reply_text(
         msg,
         reply_markup=keyboard,
         parse_mode=ParseMode.HTML,
     )
+
 
 def kuki_message(context: CallbackContext, message):
     reply_message = message.reply_to_message
@@ -110,7 +122,7 @@ def kuki_message(context: CallbackContext, message):
             return True
     else:
         return False
-        
+
 
 def chatbot(update: Update, context: CallbackContext):
     message = update.effective_message
@@ -126,11 +138,14 @@ def chatbot(update: Update, context: CallbackContext):
         Message = message.text
         meow = Message.replace(" ", "%20") if " " in Message else Message
         bot.send_chat_action(chat_id, action="typing")
-        kukiurl = requests.get(f'https://bakufuapi.vercel.app/api/chatbot/cleverbot?name=Himawari&owner=Arsh&message={meow}')
+        kukiurl = requests.get(
+            f"https://bakufuapi.vercel.app/api/chatbot/cleverbot?name=Himawari&owner=Arsh&message={meow}"
+        )
         Kuki = json.loads(kukiurl.text)
-        kuki = Kuki['reply']
+        kuki = Kuki["reply"]
         sleep(0.3)
         message.reply_text(kuki, timeout=60)
+
 
 def list_all_chats(update: Update, context: CallbackContext):
     chats = sql.get_all_kuki_chats()
@@ -146,6 +161,7 @@ def list_all_chats(update: Update, context: CallbackContext):
             sleep(e.retry_after)
     update.effective_message.reply_text(text, parse_mode="HTML")
 
+
 __help__ = """
 Chatbot utilizes the Bakufu's Chatbot API which allows Himawari to talk and provide a more interactive group chat experience.
 *Admins only Commands*:
@@ -160,10 +176,14 @@ CHATBOTK_HANDLER = CommandHandler("chatbot", kuki, run_async=True)
 ADD_CHAT_HANDLER = CallbackQueryHandler(kukiadd, pattern=r"add_chat", run_async=True)
 RM_CHAT_HANDLER = CallbackQueryHandler(kukirm, pattern=r"rm_chat", run_async=True)
 CHATBOT_HANDLER = MessageHandler(
-    Filters.text & (~Filters.regex(r"^#[^\s]+") & ~Filters.regex(r"^!")
-                    & ~Filters.regex(r"^\/")), chatbot, run_async=True)
+    Filters.text
+    & (~Filters.regex(r"^#[^\s]+") & ~Filters.regex(r"^!") & ~Filters.regex(r"^\/")),
+    chatbot,
+    run_async=True,
+)
 LIST_ALL_CHATS_HANDLER = CommandHandler(
-    "allchats", list_all_chats, filters=CustomFilters.dev_filter, run_async=True)
+    "allchats", list_all_chats, filters=CustomFilters.dev_filter, run_async=True
+)
 
 dispatcher.add_handler(ADD_CHAT_HANDLER)
 dispatcher.add_handler(CHATBOTK_HANDLER)

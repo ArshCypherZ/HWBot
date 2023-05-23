@@ -24,32 +24,28 @@ SOFTWARE.
 
 import html
 import os
+from typing import Optional
 
-from telegram import ParseMode, Update, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode, Update
 from telegram.error import BadRequest
 from telegram.ext import CallbackContext, CallbackQueryHandler, CommandHandler, Filters
 from telegram.utils.helpers import mention_html
-from typing import Optional
 
-from Himawari import SUDO_USERS, dispatcher, LOGGER
+from Himawari import LOGGER, SUDO_USERS, dispatcher
 from Himawari.modules.disable import DisableAbleCommandHandler
+from Himawari.modules.helper_funcs.alternate import send_message
 from Himawari.modules.helper_funcs.chat_status import (
+    ADMIN_CACHE,
     bot_admin,
     can_pin,
     can_promote,
-    is_user_admin,
-    user_can_promote,
     connection_status,
+    is_user_admin,
     user_admin,
-    ADMIN_CACHE,
+    user_can_promote,
 )
-
-from Himawari.modules.helper_funcs.extraction import (
-    extract_user,
-    extract_user_and_text,
-)
+from Himawari.modules.helper_funcs.extraction import extract_user, extract_user_and_text
 from Himawari.modules.log_channel import loggable
-from Himawari.modules.helper_funcs.alternate import send_message
 
 
 def user_can_changeinfo(chat, user_admin, id):
@@ -83,8 +79,8 @@ def set_sticker(update: Update, context: CallbackContext):
             msg.reply_text(f"Error! {excp.message}.")
     else:
         msg.reply_text("You need to reply to some sticker to set chat sticker set!")
-       
-    
+
+
 @bot_admin
 @user_admin
 def setchatpic(update: Update, context: CallbackContext):
@@ -118,8 +114,9 @@ def setchatpic(update: Update, context: CallbackContext):
             if os.path.isfile("gpic.png"):
                 os.remove("gpic.png")
     else:
-            msg.reply_text('Reply to some photo or file to set new chat pic!')
-        
+        msg.reply_text("Reply to some photo or file to set new chat pic!")
+
+
 @bot_admin
 @user_admin
 def rmchatpic(update: Update, context: CallbackContext):
@@ -136,7 +133,8 @@ def rmchatpic(update: Update, context: CallbackContext):
     except BadRequest as excp:
         msg.reply_text(f"Error! {excp.message}.")
         return
-    
+
+
 @bot_admin
 @user_admin
 def set_desc(update: Update, context: CallbackContext):
@@ -158,8 +156,9 @@ def set_desc(update: Update, context: CallbackContext):
         context.bot.set_chat_description(chat.id, desc)
         msg.reply_text(f"Successfully updated chat description in {chat.title}!")
     except BadRequest as excp:
-        msg.reply_text(f"Error! {excp.message}.")        
-        
+        msg.reply_text(f"Error! {excp.message}.")
+
+
 @bot_admin
 @user_admin
 def setchat_title(update: Update, context: CallbackContext):
@@ -186,8 +185,8 @@ def setchat_title(update: Update, context: CallbackContext):
     except BadRequest as excp:
         msg.reply_text(f"Error! {excp.message}.")
         return
-        
-        
+
+
 @connection_status
 @bot_admin
 @can_promote
@@ -221,10 +220,10 @@ def promote(update: Update, context: CallbackContext) -> str:
 
     try:
         user_member = chat.get_member(user_id)
-    except:
+    except BaseException:
         return
 
-    if user_member.status in ('administrator', 'creator'):
+    if user_member.status in ("administrator", "creator"):
         message.reply_text("How am I meant to promote someone that's already an admin?")
         return
 
@@ -239,7 +238,7 @@ def promote(update: Update, context: CallbackContext) -> str:
         bot.promoteChatMember(
             chat.id,
             user_id,
-           # can_change_info=bot_member.can_change_info,
+            # can_change_info=bot_member.can_change_info,
             can_post_messages=bot_member.can_post_messages,
             can_edit_messages=bot_member.can_edit_messages,
             can_delete_messages=bot_member.can_delete_messages,
@@ -269,7 +268,7 @@ def promote(update: Update, context: CallbackContext) -> str:
                     InlineKeyboardButton(
                         text="🔄 AdminCache",
                         callback_data=f"admin_refresh_{user_member.user.id}",
-                    )
+                    ),
                 ],
             ],
         ),
@@ -310,10 +309,10 @@ def fullpromote(update: Update, context: CallbackContext) -> str:
 
     try:
         user_member = chat.get_member(user_id)
-    except:
+    except BaseException:
         return
 
-    if user_member.status in ('administrator', 'creator'):
+    if user_member.status in ("administrator", "creator"):
         message.reply_text("How am I meant to promote someone that's already an admin?")
         return
 
@@ -359,13 +358,14 @@ def fullpromote(update: Update, context: CallbackContext) -> str:
                     InlineKeyboardButton(
                         text="🔄 AdminCache",
                         callback_data=f"admin_refresh_{user_member.user.id}",
-                    )
+                    ),
                 ],
             ],
         ),
     )
 
     return f"<b>{html.escape(chat.title)}:</b>\n#FULLPROMOTED\n<b>Admin:</b> {mention_html(user.id, user.first_name)}\n<b>User:</b> {mention_html(user_member.user.id, user_member.user.first_name)}"
+
 
 @connection_status
 @bot_admin
@@ -400,10 +400,10 @@ def lowpromote(update: Update, context: CallbackContext) -> str:
 
     try:
         user_member = chat.get_member(user_id)
-    except:
+    except BaseException:
         return
 
-    if user_member.status in ('administrator', 'creator'):
+    if user_member.status in ("administrator", "creator"):
         message.reply_text("How am I meant to promote someone that's already an admin?")
         return
 
@@ -443,7 +443,7 @@ def lowpromote(update: Update, context: CallbackContext) -> str:
                     InlineKeyboardButton(
                         text="AdminCache",
                         callback_data=f"admin_refresh_{user_member.user.id}",
-                    )
+                    ),
                 ],
             ],
         ),
@@ -474,7 +474,7 @@ def demote(update: Update, context: CallbackContext) -> Optional[str]:
 
     try:
         user_member = chat.get_member(user_id)
-    except:
+    except BaseException:
         return
 
     if user_member.status == "creator":
@@ -543,7 +543,7 @@ def set_title(update: Update, context: CallbackContext):
     user_id, title = extract_user_and_text(message, args)
     try:
         user_member = chat.get_member(user_id)
-    except:
+    except BaseException:
         return
 
     if not user_id:
@@ -602,16 +602,14 @@ def set_title(update: Update, context: CallbackContext):
 def pin(update: Update, context: CallbackContext) -> str:
     chat = update.effective_chat
 
-    is_group = chat.type not in ('private', 'channel')
+    is_group = chat.type not in ("private", "channel")
     prev_message = update.effective_message.reply_to_message
 
     if prev_message and is_group:
         args = context.args
 
         is_silent = (
-            args[0].lower() in ('notify', 'loud', 'violent')
-            if len(args) >= 1
-            else True
+            args[0].lower() in ("notify", "loud", "violent") if len(args) >= 1 else True
         )
         bot = context.bot
         try:
@@ -666,12 +664,19 @@ def pinned(update: Update, context: CallbackContext) -> str:
             message_link = f"https://t.me/c/{link_chat_id}/{pinned_id}"
 
         msg.reply_text(
-            f'Pinned on {html.escape(chat.title)}.',
+            f"Pinned on {html.escape(chat.title)}.",
             reply_to_message_id=msg_id,
             parse_mode=ParseMode.HTML,
             disable_web_page_preview=True,
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton(text="Pinned Message", url=f"https://t.me/{link_chat_id}/{pinned_id}")]]
+                [
+                    [
+                        InlineKeyboardButton(
+                            text="Pinned Message",
+                            url=f"https://t.me/{link_chat_id}/{pinned_id}",
+                        )
+                    ]
+                ]
             ),
         )
 
@@ -680,6 +685,7 @@ def pinned(update: Update, context: CallbackContext) -> str:
             f"There is no pinned message in <b>{html.escape(chat.title)}!</b>",
             parse_mode=ParseMode.HTML,
         )
+
 
 @bot_admin
 @user_admin
@@ -707,7 +713,7 @@ def invite(update: Update, context: CallbackContext):
 
 @connection_status
 def adminlist(update, context):
-    chat = update.effective_chat  ## type: Optional[Chat] -> unused variable
+    chat = update.effective_chat  # type: Optional[Chat] -> unused variable
     user = update.effective_user  # type: Optional[User]
     args = context.args  # -> unused variable
     bot = context.bot
@@ -716,7 +722,7 @@ def adminlist(update, context):
         send_message(update.effective_message, "This command only works in Groups.")
         return
 
-    chat = update.effective_chat
+    update.effective_chat
     chat_id = update.effective_chat.id
     chat_name = update.effective_message.chat.title  # -> unused variable
 
@@ -796,25 +802,26 @@ def adminlist(update, context):
             text += f"\n<code> • </code>{admin}"
         text += "\n"
 
-            #text += "\n🤖 Bots:"
-            #for each_bot in bot_admin_list:
-            #text += "\n<code> • </code>{}".format(each_bot)
+        # text += "\n🤖 Bots:"
+        # for each_bot in bot_admin_list:
+        # text += "\n<code> • </code>{}".format(each_bot)
 
     try:
         msg.edit_text(text, parse_mode=ParseMode.HTML)
     except BadRequest:  # if original message is deleted
         return
 
-#if user.is_bot:
 
-            #bot_admin_list.append(name)
+# if user.is_bot:
 
-          #  administrators.remove(admin)
+# bot_admin_list.append(name)
 
-#text += "Bottos:"
+#  administrators.remove(admin)
 
-    #for each_bot in bot_admin_list:
-    
+# text += "Bottos:"
+
+# for each_bot in bot_admin_list:
+
 
 @user_admin
 @user_can_promote
@@ -841,7 +848,7 @@ def promote_button(update: Update, context: CallbackContext):
                     can_restrict_members=False,
                     can_pin_messages=False,
                     can_promote_members=False,
-                    #can_manage_voice_chats=False
+                    # can_manage_voice_chats=False
                 )
                 query.message.delete()
                 bot.answer_callback_query(
@@ -864,7 +871,6 @@ def promote_button(update: Update, context: CallbackContext):
             LOGGER.exception("Exception in promote buttons. %s", str(query.data))
 
 
-
 __help__ = """
 Here is the help for the *Admins* module:
 
@@ -872,14 +878,14 @@ Here is the help for the *Admins* module:
 
 ✥ Pins:
 
- • /pin: silently pins the message replied to 
+ • /pin: silently pins the message replied to
 
  • /unpin: unpins the currently pinned message
 
  • /pinned: to get the current pinned message
 
  • /unpinall: to unpin all messages in the chat
- 
+
 
 ✥ Promote and Titles:
 
@@ -894,17 +900,17 @@ Here is the help for the *Admins* module:
 ✥ Others:
 
  • /setgtitle <new title>: sets chat title
- 
+
  • /setdesc <description>: sets chat's description
- 
+
  • /setsticker <reply to sticker>: sets sticker pack in a supergroup
- 
+
  • /setgpic <reply to a picture>: sets group's profile photo
- 
+
  • /delgpic: Removes group's profile photo
- 
+
  • /admins: Shows admin list in the chat
- 
+
  • /invitelink: Gets invite link of that chat
 
 *Moderation*:
@@ -950,34 +956,56 @@ Here is the help for the *Admins* module:
 ✥ Rules:
 
  • /rules: get the rules for this chat
- 
+
  • /setrules <your rules here>: set the rules for this chat
- 
+
  • /clearrules: clear the rules for this chat.
 """
-SET_DESC_HANDLER = CommandHandler("setdesc", set_desc, filters=Filters.chat_type.groups, run_async=True)
-SET_STICKER_HANDLER = CommandHandler("setsticker", set_sticker, filters=Filters.chat_type.groups, run_async=True)
-SETCHATPIC_HANDLER = CommandHandler("setgpic", setchatpic, filters=Filters.chat_type.groups, run_async=True)
-RMCHATPIC_HANDLER = CommandHandler("delgpic", rmchatpic, filters=Filters.chat_type.groups, run_async=True)
-SETCHAT_TITLE_HANDLER = CommandHandler("setgtitle", setchat_title, filters=Filters.chat_type.groups, run_async=True)
+SET_DESC_HANDLER = CommandHandler(
+    "setdesc", set_desc, filters=Filters.chat_type.groups, run_async=True
+)
+SET_STICKER_HANDLER = CommandHandler(
+    "setsticker", set_sticker, filters=Filters.chat_type.groups, run_async=True
+)
+SETCHATPIC_HANDLER = CommandHandler(
+    "setgpic", setchatpic, filters=Filters.chat_type.groups, run_async=True
+)
+RMCHATPIC_HANDLER = CommandHandler(
+    "delgpic", rmchatpic, filters=Filters.chat_type.groups, run_async=True
+)
+SETCHAT_TITLE_HANDLER = CommandHandler(
+    "setgtitle", setchat_title, filters=Filters.chat_type.groups, run_async=True
+)
 
 ADMINLIST_HANDLER = DisableAbleCommandHandler("admins", adminlist, run_async=True)
 
-PIN_HANDLER = CommandHandler("pin", pin, filters=Filters.chat_type.groups, run_async=True)
-UNPIN_HANDLER = CommandHandler("unpin", unpin, filters=Filters.chat_type.groups, run_async=True)
-PINNED_HANDLER = CommandHandler("pinned", pinned, filters=Filters.chat_type.groups, run_async=True)
+PIN_HANDLER = CommandHandler(
+    "pin", pin, filters=Filters.chat_type.groups, run_async=True
+)
+UNPIN_HANDLER = CommandHandler(
+    "unpin", unpin, filters=Filters.chat_type.groups, run_async=True
+)
+PINNED_HANDLER = CommandHandler(
+    "pinned", pinned, filters=Filters.chat_type.groups, run_async=True
+)
 
 INVITE_HANDLER = DisableAbleCommandHandler("invitelink", invite, run_async=True)
 
 PROMOTE_HANDLER = DisableAbleCommandHandler("promote", promote, run_async=True)
-FULLPROMOTE_HANDLER = DisableAbleCommandHandler("fullpromote", fullpromote, run_async=True)
+FULLPROMOTE_HANDLER = DisableAbleCommandHandler(
+    "fullpromote", fullpromote, run_async=True
+)
 LOWPROMOTE_HANDLER = DisableAbleCommandHandler("lowpromote", lowpromote, run_async=True)
 DEMOTE_HANDLER = DisableAbleCommandHandler("demote", demote, run_async=True)
-PROMOTE_CALLBACK_HANDLER = CallbackQueryHandler(promote_button, pattern=r"admin_", run_async=True)
+PROMOTE_CALLBACK_HANDLER = CallbackQueryHandler(
+    promote_button, pattern=r"admin_", run_async=True
+)
 
 
 SET_TITLE_HANDLER = CommandHandler("title", set_title, run_async=True)
-ADMIN_REFRESH_HANDLER = CommandHandler("admincache", refresh_admin, filters=Filters.chat_type.groups, run_async=True)
+ADMIN_REFRESH_HANDLER = CommandHandler(
+    "admincache", refresh_admin, filters=Filters.chat_type.groups, run_async=True
+)
 
 dispatcher.add_handler(SET_DESC_HANDLER)
 dispatcher.add_handler(SET_STICKER_HANDLER)
@@ -999,19 +1027,14 @@ dispatcher.add_handler(ADMIN_REFRESH_HANDLER)
 
 __mod_name__ = "Admins"
 __command_list__ = [
-    "setdesc"
-    "setsticker"
-    "setgpic"
-    "delgpic"
-    "setgtitle"
-    "adminlist",
-    "admins", 
-    "invitelink", 
-    "promote", 
-    "fullpromote", 
-    "lowpromote", 
-    "demote", 
-    "admincache"
+    "setdesc" "setsticker" "setgpic" "delgpic" "setgtitle" "adminlist",
+    "admins",
+    "invitelink",
+    "promote",
+    "fullpromote",
+    "lowpromote",
+    "demote",
+    "admincache",
 ]
 __handlers__ = [
     SET_DESC_HANDLER,
@@ -1026,8 +1049,8 @@ __handlers__ = [
     PROMOTE_CALLBACK_HANDLER,
     INVITE_HANDLER,
     PROMOTE_HANDLER,
-    FULLPROMOTE_HANDLER, 
-    LOWPROMOTE_HANDLER, 
+    FULLPROMOTE_HANDLER,
+    LOWPROMOTE_HANDLER,
     DEMOTE_HANDLER,
     SET_TITLE_HANDLER,
     ADMIN_REFRESH_HANDLER,

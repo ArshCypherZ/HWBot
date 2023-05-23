@@ -27,10 +27,10 @@ import os
 
 from pyrogram import filters
 from pyrogram.types import Message
-from Himawari.core.sections import section
+from telegram import ParseMode
 
 from Himawari import pgram
-from telegram import ParseMode
+from Himawari.core.sections import section
 
 
 async def get_chat_info(chat, already=False):
@@ -67,14 +67,11 @@ async def get_chat_info(chat, already=False):
     return [caption, photo_id]
 
 
-
 @pgram.on_message(filters.command("ginfo"))
 async def chat_info_func(_, message: Message):
     try:
         if len(message.command) > 2:
-            return await message.reply_text(
-                "**Usage:**/ginfo [USERNAME|ID]"
-            )
+            return await message.reply_text("**Usage:**/ginfo [USERNAME|ID]")
 
         if len(message.command) == 1:
             chat = message.chat.id
@@ -82,17 +79,22 @@ async def chat_info_func(_, message: Message):
             chat = message.text.split(None, 1)[1]
 
         m = await message.reply_text("Processing")
-        
 
         info_caption, photo_id = await get_chat_info(chat)
         if not photo_id:
-            return await m.edit(info_caption, disable_web_page_preview=True, parse_mode=ParseMode.MARKDOWN)
+            return await m.edit(
+                info_caption,
+                disable_web_page_preview=True,
+                parse_mode=ParseMode.MARKDOWN,
+            )
 
         photo = await pgram.download_media(photo_id)
-        await message.reply_photo(photo, caption=info_caption, quote=False, parse_mode=ParseMode.MARKDOWN)
+        await message.reply_photo(
+            photo, caption=info_caption, quote=False, parse_mode=ParseMode.MARKDOWN
+        )
 
         await m.delete()
         os.remove(photo)
     except Exception as e:
         await m.edit(e),
-        parse_mode=ParseMode.MARKDOWN
+        ParseMode.MARKDOWN

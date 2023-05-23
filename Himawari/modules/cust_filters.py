@@ -24,36 +24,34 @@ SOFTWARE.
 
 import re
 from html import escape
-from typing import Optional
 
 import telegram
-from telegram import Chat, ParseMode, InlineKeyboardMarkup, Message, InlineKeyboardButton
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from telegram.error import BadRequest
-from telegram.ext import (
-    DispatcherHandlerStop,
-    Filters,
-)
-from telegram.utils.helpers import mention_html, escape_markdown
+from telegram.ext import DispatcherHandlerStop, Filters
+from telegram.utils.helpers import escape_markdown, mention_html
 
-from Himawari import dispatcher, LOGGER as log, SUDO_USERS
+from Himawari import LOGGER as log
+from Himawari import SUDO_USERS, dispatcher
+from Himawari.modules.connection import connected
+from Himawari.modules.helper_funcs.alternate import send_message, typing_action
+from Himawari.modules.helper_funcs.anonymous import AdminPerms, user_admin
+from Himawari.modules.helper_funcs.decorators import (
+    Himawaricallback,
+    Himawaricmd,
+    Himawarimsg,
+)
 from Himawari.modules.helper_funcs.extraction import extract_text
 from Himawari.modules.helper_funcs.filters import CustomFilters
 from Himawari.modules.helper_funcs.misc import build_keyboard_parser
 from Himawari.modules.helper_funcs.msg_types import get_filter_type
 from Himawari.modules.helper_funcs.string_handling import (
-    split_quotes,
     button_markdown_parser,
     escape_invalid_curly_brackets,
     markdown_to_html,
+    split_quotes,
 )
 from Himawari.modules.sql import cust_filters_sql as sql
-
-from Himawari.modules.connection import connected
-
-from Himawari.modules.helper_funcs.alternate import send_message, typing_action
-from Himawari.modules.helper_funcs.decorators import Himawaricmd, Himawarimsg, Himawaricallback
-
-from Himawari.modules.helper_funcs.anonymous import user_admin, AdminPerms
 
 HANDLER_GROUP = 10
 
@@ -71,7 +69,7 @@ ENUM_FUNC_MAP = {
 
 
 @typing_action
-@Himawaricmd(command='filters', admin_ok=True)
+@Himawaricmd(command="filters", admin_ok=True)
 def list_handlers(update, context):
     chat = update.effective_chat
     user = update.effective_user
@@ -116,7 +114,7 @@ def list_handlers(update, context):
 
 
 # NOT ASYNC BECAUSE DISPATCHER HANDLER RAISED
-@Himawaricmd(command='filter', run_async=False)
+@Himawaricmd(command="filter", run_async=False)
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
 @typing_action
 def filters(update, context):  # sourcery no-metrics
@@ -154,7 +152,8 @@ def filters(update, context):  # sourcery no-metrics
         extracted = split_quotes(args[1])
         if len(extracted) < 1:
             return
-        # set trigger -> lower, so as to avoid adding duplicate filters with different cases
+        # set trigger -> lower, so as to avoid adding duplicate filters with
+        # different cases
         keyword = extracted[0].lower()
 
     # Add the filter
@@ -240,7 +239,7 @@ def filters(update, context):  # sourcery no-metrics
 
 
 # NOT ASYNC BECAUSE DISPATCHER HANDLER RAISED
-@Himawaricmd(command='stop', run_async=False)
+@Himawaricmd(command="stop", run_async=False)
 @user_admin(AdminPerms.CAN_CHANGE_INFO)
 @typing_action
 def stop_filter(update, context):
@@ -456,9 +455,7 @@ def reply_filter(update, context):  # sourcery no-metrics
                             )
                         except BadRequest as excp:
                             log.exception(f"Error in filters: {excp.message}")
-                        log.warning(
-                            "Message %s could not be parsed", str(filt.reply)
-                        )
+                        log.warning("Message %s could not be parsed", str(filt.reply))
                         log.exception(
                             "Could not parse filter %s in chat %s",
                             str(filt.keyword),
@@ -466,7 +463,7 @@ def reply_filter(update, context):  # sourcery no-metrics
                         )
 
             else:
-                    # LEGACY - all new filters will have has_markdown set to True.
+                # LEGACY - all new filters will have has_markdown set to True.
                 try:
                     send_message(update.effective_message, filt.reply)
                 except BadRequest as excp:
@@ -590,14 +587,14 @@ __help__ = """
 • /filters*:* List all active filters saved in the chat.
 
 *Admin only:*
-  
+
 • /filter <keyword> <reply message>*:* Add a filter to this chat. The bot will now reply that message whenever 'keyword' is mentioned. If you reply to a sticker with a keyword, the bot will reply with that sticker.
 
 NOTE: all filter 'keywords' are in lowercase. If you want your keyword to be a sentence, use quotes. eg: /filter "hey there, How you doin?"
 
 Separate diff replies by `%%%` to get random replies
 
-*Example:* 
+*Example:*
  `/filter "filtername"
  Reply 1
  %%%

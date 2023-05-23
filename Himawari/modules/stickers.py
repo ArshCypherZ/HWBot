@@ -22,26 +22,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import os
 import math
-import urllib.request as urllib
+import os
 import textwrap
-from PIL import Image, ImageFont, ImageDraw
+import urllib.request as urllib
 from html import escape
-from cloudscraper import CloudScraper
-from bs4 import BeautifulSoup
 from urllib.parse import quote as urlquote
-from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram import TelegramError, Update
+
+from bs4 import BeautifulSoup
+from cloudscraper import CloudScraper
+from PIL import Image, ImageDraw, ImageFont
+from telegram import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    ParseMode,
+    TelegramError,
+    Update,
+)
 from telegram.ext import CallbackContext, CallbackQueryHandler
 from telegram.utils.helpers import mention_html
-from Himawari import dispatcher
-from Himawari.modules.disable import DisableAbleCommandHandler 
-from Himawari.events import register as himawari
 
-from src.covert import convert_gif 
+from Himawari import dispatcher
+from Himawari.events import register as himawari
+from Himawari.modules.disable import DisableAbleCommandHandler
+from src.covert import convert_gif
+
 combot_stickers_url = "https://combot.org/telegram/stickers?q="
- 
+
+
 def stickerid(update: Update, context: CallbackContext):
     msg = update.effective_message
     if msg.reply_to_message and msg.reply_to_message.sticker:
@@ -59,43 +67,50 @@ def stickerid(update: Update, context: CallbackContext):
             + f"{mention_html(msg.from_user.id, msg.from_user.first_name)}"
             + ", Please reply to sticker message to get id sticker",
             parse_mode=ParseMode.HTML,
-        ) 
+        )
 
- 
+
 scraper = CloudScraper()
+
+
 def get_cbs_data(query, page, user_id):
     # returns (text, buttons)
-    text = scraper.get(f'{combot_stickers_url}{urlquote(query)}&page={page}').text
-    soup = BeautifulSoup(text, 'lxml')
-    div = soup.find('div', class_='page__container')
-    packs = div.find_all('a', class_='sticker-pack__btn')
-    titles = div.find_all('div', 'sticker-pack__title')
+    text = scraper.get(f"{combot_stickers_url}{urlquote(query)}&page={page}").text
+    soup = BeautifulSoup(text, "lxml")
+    div = soup.find("div", class_="page__container")
+    packs = div.find_all("a", class_="sticker-pack__btn")
+    titles = div.find_all("div", "sticker-pack__title")
     has_prev_page = has_next_page = None
-    highlighted_page = div.find('a', class_='pagination__link is-active')
+    highlighted_page = div.find("a", class_="pagination__link is-active")
     if highlighted_page is not None and user_id is not None:
         highlighted_page = highlighted_page.parent
         has_prev_page = highlighted_page.previous_sibling.previous_sibling is not None
         has_next_page = highlighted_page.next_sibling.next_sibling is not None
     buttons = []
     if has_prev_page:
-        buttons.append(InlineKeyboardButton(text='⟨', callback_data=f'cbs_{page - 1}_{user_id}'))
+        buttons.append(
+            InlineKeyboardButton(text="⟨", callback_data=f"cbs_{page - 1}_{user_id}")
+        )
     if has_next_page:
-        buttons.append(InlineKeyboardButton(text='⟩', callback_data=f'cbs_{page + 1}_{user_id}'))
+        buttons.append(
+            InlineKeyboardButton(text="⟩", callback_data=f"cbs_{page + 1}_{user_id}")
+        )
     buttons = InlineKeyboardMarkup([buttons]) if buttons else None
-    text = f'Stickers for <code>{escape(query)}</code>:\nPage: {page}'
+    text = f"Stickers for <code>{escape(query)}</code>:\nPage: {page}"
     if packs and titles:
         for pack, title in zip(packs, titles):
-            link = pack['href']
+            link = pack["href"]
             text += f"\n• <a href='{link}'>{escape(title.get_text())}</a>"
     elif page == 1:
-        text = 'No results found, try a different term'
+        text = "No results found, try a different term"
     else:
         text += "\n\nInterestingly, there's nothing here."
     return text, buttons
- 
+
+
 def cb_sticker(update: Update, context: CallbackContext):
     msg = update.effective_message
-    query = ' '.join(msg.text.split()[1:])
+    query = " ".join(msg.text.split()[1:])
     if not query:
         msg.reply_text("Provide some term to search for a sticker pack.")
         return
@@ -105,18 +120,20 @@ def cb_sticker(update: Update, context: CallbackContext):
     user_id = msg.from_user.id if msg.from_user else None
     text, buttons = get_cbs_data(query, 1, user_id)
     msg.reply_text(text, parse_mode=ParseMode.HTML, reply_markup=buttons)
- 
+
+
 def cbs_callback(update: Update, context: CallbackContext):
     query = update.callback_query
-    _, page, user_id = query.data.split('_', 2)
+    _, page, user_id = query.data.split("_", 2)
     if int(user_id) != query.from_user.id:
-        query.answer('Not for you', cache_time=60 * 60)
+        query.answer("Not for you", cache_time=60 * 60)
         return
-    search_query = query.message.text.split('\n', 1)[0].split(maxsplit=2)[2][:-1]
+    search_query = query.message.text.split("\n", 1)[0].split(maxsplit=2)[2][:-1]
     text, buttons = get_cbs_data(search_query, int(page), query.from_user.id)
     query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=buttons)
     query.answer()
- 
+
+
 def getsticker(update: Update, context: CallbackContext):
     msg = update.effective_message
     if msg.reply_to_message and msg.reply_to_message.sticker:
@@ -124,7 +141,7 @@ def getsticker(update: Update, context: CallbackContext):
         bot = context.bot
         chat_id = update.effective_chat.id
         with BytesIO() as file:
-            file.name = 'sticker.png'
+            file.name = "sticker.png"
             new_file = bot.get_file(file_id)
             new_file.download(out=file)
             file.seek(0)
@@ -132,7 +149,9 @@ def getsticker(update: Update, context: CallbackContext):
     else:
         update.effective_message.reply_text(
             "Please reply to a sticker for me to upload its PNG.",
-        )  
+        )
+
+
 def kang(update, context):
     msg = update.effective_message
     user = update.effective_user
@@ -159,12 +178,12 @@ def kang(update, context):
                 packname_found = 1
         except TelegramError as e:
             if e.message == "Stickerset_invalid":
-                packname_found = 1 
-            
+                packname_found = 1
+
     kangsticker = "kangsticker.png"
     is_animated = False
-    is_video = False 
-# convert gif method
+    is_video = False
+    # convert gif method
     is_gif = False
     file_id = ""
 
@@ -177,7 +196,10 @@ def kang(update, context):
             file_id = msg.reply_to_message.sticker.file_id
         elif msg.reply_to_message.photo:
             file_id = msg.reply_to_message.photo[-1].file_id
-        elif msg.reply_to_message.document and not msg.reply_to_message.document.mime_type == "video/mp4":
+        elif (
+            msg.reply_to_message.document
+            and not msg.reply_to_message.document.mime_type == "video/mp4"
+        ):
             file_id = msg.reply_to_message.document.file_id
         elif msg.reply_to_message.animation:
             file_id = msg.reply_to_message.animation.file_id
@@ -194,7 +216,6 @@ def kang(update, context):
         elif is_gif:
             kang_file.download("kang.mp4")
             convert_gif("kang.mp4")
-
 
         if args:
             sticker_emoji = str(args[0])
@@ -254,7 +275,6 @@ def kang(update, context):
                 )
 
             except OSError as e:
-
                 print(e)
                 return
 
@@ -396,7 +416,7 @@ def kang(update, context):
                         parse_mode=ParseMode.HTML,
                     )
                 print(e)
-               
+
         elif is_video or is_gif:
             packname = "video" + str(user.id) + "_by_" + context.bot.username
             packname_found = 0
@@ -473,7 +493,7 @@ def kang(update, context):
                         parse_mode=ParseMode.HTML,
                     )
                 print(e)
- 
+
     elif args:
         try:
             try:
@@ -578,22 +598,21 @@ def kang(update, context):
             print(e)
     else:
         packs_text = "*Please reply to a sticker, or image to kang it!*\n"
-        if packnum > 0:        
+        if packnum > 0:
             firstpackname = "a" + str(user.id) + "_by_" + context.bot.username
             for i in range(0, packnum + 1):
                 if i == 0:
                     packs = f"t.me/addstickers/{firstpackname}"
-                else: 
+                else:
                     packs = f"t.me/addstickers/{packname}"
-        else:               
+        else:
             packs = f"t.me/addstickers/{packname}"
-          
+
         edited_keyboard = InlineKeyboardMarkup(
             [
-             [
-              InlineKeyboardButton(
-               text="Sticker Pack", url=f"{packs}"),
-             ],
+                [
+                    InlineKeyboardButton(text="Sticker Pack", url=f"{packs}"),
+                ],
             ]
         )
         msg.reply_text(
@@ -608,7 +627,7 @@ def kang(update, context):
             os.remove("kangsticker.webm")
         elif os.path.isfile("kang.mp4"):
             os.remove("kang.mp4")
-    except:
+    except BaseException:
         pass
 
 
@@ -710,7 +729,8 @@ def makepack_internal(
         )
     else:
         msg.reply_text("Failed to create sticker pack. Possibly due to blek mejik.")
-            
+
+
 def getsticker(update: Update, context: CallbackContext):
     bot = context.bot
     msg = update.effective_message
@@ -726,11 +746,12 @@ def getsticker(update: Update, context: CallbackContext):
             "Please reply to a sticker for me to upload its PNG."
         )
 
+
 def getvidsticker(update: Update, context: CallbackContext):
     bot = context.bot
     msg = update.effective_message
     chat_id = update.effective_chat.id
-    if msg.reply_to_message and msg.reply_to_message.sticker: 
+    if msg.reply_to_message and msg.reply_to_message.sticker:
         file_id = msg.reply_to_message.sticker.file_id
         new_file = bot.get_file(file_id)
         new_file.download("sticker.mp4")
@@ -738,10 +759,10 @@ def getvidsticker(update: Update, context: CallbackContext):
         os.remove("sticker.mp4")
     else:
         update.effective_message.reply_text(
-         "Please reply to a video sticker to upload its MP4."
-         )
+            "Please reply to a video sticker to upload its MP4."
+        )
 
-        
+
 def delsticker(update, context):
     msg = update.effective_message
     if msg.reply_to_message and msg.reply_to_message.sticker:
@@ -752,6 +773,7 @@ def delsticker(update, context):
         update.effective_message.reply_text(
             "Please reply to sticker message to del sticker"
         )
+
 
 def video(update: Update, context: CallbackContext):
     bot = context.bot
@@ -767,9 +789,8 @@ def video(update: Update, context: CallbackContext):
         update.effective_message.reply_text(
             "Please reply to a gif for me to get it's video."
         )
-        
-        
-        
+
+
 @himawari(pattern="^/mmf ?(.*)")
 async def handler(event):
     if event.fwd_from:
@@ -795,7 +816,6 @@ async def handler(event):
 async def drawText(image_path, text):
     img = Image.open(image_path)
     os.remove(image_path)
-    shadowcolor = "black"
     i_width, i_height = img.size
     if os.name == "nt":
         fnt = "ariel.ttf"
@@ -812,36 +832,39 @@ async def drawText(image_path, text):
     if upper_text:
         for u_text in textwrap.wrap(upper_text, width=15):
             u_width, u_height = draw.textsize(u_text, font=m_font)
-            draw.text(xy=(((i_width - u_width) / 2) - 2, int((current_h / 640)
+            draw.text(
+                xy=(((i_width - u_width) / 2) - 2, int((current_h / 640) * i_width)),
+                text=u_text,
+                font=m_font,
+                fill=(0, 0, 0),
+            )
 
-                                                             * i_width)), text=u_text, font=m_font, fill=(0, 0, 0))
+            draw.text(
+                xy=(((i_width - u_width) / 2) + 2, int((current_h / 640) * i_width)),
+                text=u_text,
+                font=m_font,
+                fill=(0, 0, 0),
+            )
+            draw.text(
+                xy=((i_width - u_width) / 2, int(((current_h / 640) * i_width)) - 2),
+                text=u_text,
+                font=m_font,
+                fill=(0, 0, 0),
+            )
 
-            draw.text(xy=(((i_width - u_width) / 2) + 2, int((current_h / 640)
+            draw.text(
+                xy=(((i_width - u_width) / 2), int(((current_h / 640) * i_width)) + 2),
+                text=u_text,
+                font=m_font,
+                fill=(0, 0, 0),
+            )
 
-                                                             * i_width)), text=u_text, font=m_font, fill=(0, 0, 0))
-            draw.text(xy=((i_width - u_width) / 2,
-                          int(((current_h / 640) * i_width)) - 2),
-
-                      text=u_text,
-                      font=m_font,
-                      fill=(0,
-                            0,
-                            0))
-
-            draw.text(xy=(((i_width - u_width) / 2),
-                          int(((current_h / 640) * i_width)) + 2),
-
-                      text=u_text,
-                      font=m_font,
-                      fill=(0,
-                            0,
-                            0))
-
-
-
-            draw.text(xy=((i_width - u_width) / 2, int((current_h / 640)
-
-                                                       * i_width)), text=u_text, font=m_font, fill=(255, 255, 255))
+            draw.text(
+                xy=((i_width - u_width) / 2, int((current_h / 640) * i_width)),
+                text=u_text,
+                font=m_font,
+                fill=(255, 255, 255),
+            )
 
             current_h += u_height + pad
 
@@ -900,8 +923,7 @@ async def drawText(image_path, text):
     img.save(webp_file, "webp")
     return webp_file
 
-            
-        
+
 __help__ = """
 
 • /stickerid*:* reply to a sticker to me to tell you its file ID.
@@ -914,18 +936,20 @@ __help__ = """
 • /getvideo*:* reply to a gif to get video easily !
 
 """
-__mod_name__ = "Stickers" 
+__mod_name__ = "Stickers"
 
 STICKERID_HANDLER = DisableAbleCommandHandler("stickerid", stickerid, run_async=True)
 GETSTICKER_HANDLER = DisableAbleCommandHandler("getsticker", getsticker, run_async=True)
-GETVIDSTICKER_HANDLER = DisableAbleCommandHandler("getvidsticker", getvidsticker, run_async=True)
+GETVIDSTICKER_HANDLER = DisableAbleCommandHandler(
+    "getvidsticker", getvidsticker, run_async=True
+)
 KANG_HANDLER = DisableAbleCommandHandler("kang", kang, pass_args=True, run_async=True)
 DEL_HANDLER = DisableAbleCommandHandler("delsticker", delsticker, run_async=True)
 STICKERS_HANDLER = DisableAbleCommandHandler("stickers", cb_sticker, run_async=True)
-VIDEO_HANDLER = DisableAbleCommandHandler ("getvideo", video, run_async=True)
-CBSCALLBACK_HANDLER = CallbackQueryHandler(cbs_callback, pattern='cbs_', run_async=True)
+VIDEO_HANDLER = DisableAbleCommandHandler("getvideo", video, run_async=True)
+CBSCALLBACK_HANDLER = CallbackQueryHandler(cbs_callback, pattern="cbs_", run_async=True)
 
-dispatcher.add_handler(VIDEO_HANDLER) 
+dispatcher.add_handler(VIDEO_HANDLER)
 dispatcher.add_handler(CBSCALLBACK_HANDLER)
 dispatcher.add_handler(STICKERS_HANDLER)
 dispatcher.add_handler(STICKERID_HANDLER)

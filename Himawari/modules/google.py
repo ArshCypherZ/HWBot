@@ -27,16 +27,14 @@ import re
 import urllib
 import urllib.request
 
-from search_engine_parser.core.engines.google import Search as GoogleSearch
-from bs4 import BeautifulSoup
 from bing_image_downloader import downloader
-from urllib.parse import urlencode
+from bs4 import BeautifulSoup
 from telethon import *
 from telethon.tl.types import *
 
-
 from Himawari import telethn
 from Himawari.events import register
+
 
 @register(pattern="^/img (.*)")
 async def img_sampler(event):
@@ -92,7 +90,6 @@ async def ParseSauce(googleurl):
 
 
 async def scam(results, lim):
-
     single = opener.open(results["similar_images"]).read()
     decoded = single.decode("utf-8")
 
@@ -114,7 +111,6 @@ async def scam(results, lim):
 
 async def is_register_admin(chat, user):
     if isinstance(chat, (types.InputPeerChannel, types.InputChannel)):
-
         return isinstance(
             (
                 await telethn(functions.channels.GetParticipantRequest(chat, user))
@@ -122,7 +118,6 @@ async def is_register_admin(chat, user):
             (types.ChannelParticipantAdmin, types.ChannelParticipantCreator),
         )
     if isinstance(chat, types.InputPeerChat):
-
         ui = await telethn.get_peer_id(user)
         ps = (
             await telethn(functions.messages.GetFullChatRequest(chat.chat_id))
@@ -141,9 +136,8 @@ __help__ = """
 
 • /reverse :- reply to a sticker, or an image to search it!
   Do you know that you can search an image with a link too? /reverse picturelink <amount>.
-  
+
 • /github <github username> :- Get info of any github profile
 
 • /webss <website url> :- get screen shot of any website you want.
 """
-

@@ -31,13 +31,11 @@ from pykeyboard import InlineKeyboard
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton
 
-from Himawari import pgram, aiohttpsession
+from Himawari import aiohttpsession, pgram
 from Himawari.utils.errors import capture_err
 from Himawari.utils.pastebin import paste
 
-pattern = re.compile(
-    r"^text/|json$|yaml$|xml$|toml$|x-sh$|x-shellscript$"
-)
+pattern = re.compile(r"^text/|json$|yaml$|xml$|toml$|x-sh$|x-shellscript$")
 
 
 async def isPreviewUp(preview: str) -> bool:
@@ -59,18 +57,14 @@ async def isPreviewUp(preview: str) -> bool:
 @capture_err
 async def paste_func(_, message):
     if not message.reply_to_message:
-        return await message.reply_text(
-            "Reply To A Message With /paste"
-        )
+        return await message.reply_text("Reply To A Message With /paste")
     m = await message.reply_text("Pasting...")
     if message.reply_to_message.text:
         content = str(message.reply_to_message.text)
     elif message.reply_to_message.document:
         document = message.reply_to_message.document
         if document.file_size > 1048576:
-            return await m.edit(
-                "You can only paste files smaller than 1MB."
-            )
+            return await m.edit("You can only paste files smaller than 1MB.")
         if not pattern.search(document.mime_type):
             return await m.edit("Only text files can be pasted.")
         doc = await message.reply_to_message.download()
@@ -84,14 +78,11 @@ async def paste_func(_, message):
 
     if await isPreviewUp(preview):
         try:
-            await message.reply_photo(
-                photo=preview, quote=False, reply_markup=button
-            )
+            await message.reply_photo(photo=preview, quote=False, reply_markup=button)
             return await m.delete()
         except Exception:
             pass
     return await m.edit(link)
-
 
 
 __mod_name__ = "Paste"

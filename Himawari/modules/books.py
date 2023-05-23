@@ -24,12 +24,12 @@ SOFTWARE.
 
 import os
 import re
-import requests
 
+import requests
 from bs4 import BeautifulSoup
 from telethon import events
 
-from Himawari import telethn, SUPPORT_CHAT, BOT_USERNAME
+from Himawari import BOT_USERNAME, SUPPORT_CHAT, telethn
 
 
 @telethn.on(events.NewMessage(pattern="^/book (.*)"))
@@ -54,7 +54,6 @@ async def _(event):
     if nbx == "0":
         await event.reply("No Books Found with that name.")
     else:
-
         lool = 0
         for tr in soup.find_all("td"):
             for td in tr.find_all("h3"):

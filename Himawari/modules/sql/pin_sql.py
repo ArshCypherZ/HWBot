@@ -24,9 +24,9 @@ SOFTWARE.
 
 import threading
 
-from sqlalchemy import BigInteger, Column, String, func, distinct, Boolean
+from sqlalchemy import BigInteger, Boolean, Column, String
 
-from Himawari.modules.sql import SESSION, BASE
+from Himawari.modules.sql import BASE, SESSION
 
 
 class SPinSettings(BASE):
@@ -40,7 +40,6 @@ class SPinSettings(BASE):
     def __init__(self, chat_id, message_id):
         self.chat_id = str(chat_id)
         self.message_id = message_id
-
 
     def __repr__(self):
         return f"<Pin Settings for {self.chat_id} in {self.message_id}>"
@@ -94,4 +93,3 @@ def add_ldp_m(chat_id, setting):
 def get_current_settings(chat_id):
     with PIN_INSERTION_LOCK:
         return SESSION.query(SPinSettings).get(str(chat_id))
-

@@ -22,9 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from Himawari import DEV_USERS, SUDO_USERS, SUPPORT_USERS
 from telegram import Message
 from telegram.ext import MessageFilter
+
+from Himawari import DEV_USERS, SUDO_USERS, SUPPORT_USERS
 
 
 class CustomFilters:

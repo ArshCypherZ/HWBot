@@ -24,7 +24,10 @@ SOFTWARE.
 
 import html
 
-from Himawari import CustomCommandHandler, dispatcher, BOT_NAME
+from telegram import ParseMode, Update
+from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler
+
+from Himawari import BOT_NAME, CustomCommandHandler, dispatcher
 from Himawari.modules.disable import DisableAbleCommandHandler
 from Himawari.modules.helper_funcs.chat_status import (
     bot_can_delete,
@@ -33,13 +36,6 @@ from Himawari.modules.helper_funcs.chat_status import (
     user_admin,
 )
 from Himawari.modules.sql import cleaner_sql as sql
-from telegram import ParseMode, Update
-from telegram.ext import (
-    CallbackContext,
-    CommandHandler,
-    Filters,
-    MessageHandler,
-)
 
 CMD_STARTERS = ("/", "!")
 BLUE_TEXT_CLEAN_GROUP = 13
@@ -76,7 +72,6 @@ def clean_blue_text_must_click(update: Update, context: CallbackContext):
         if len(fst_word) > 1 and any(
             fst_word.startswith(start) for start in CMD_STARTERS
         ):
-
             command = fst_word[1:].split("@")
             chat = update.effective_chat
 
@@ -145,7 +140,9 @@ def remove_bluetext_ignore(update: Update, context: CallbackContext):
     if len(args) >= 1:
         val = args[0].lower()
         if removed := sql.chat_unignore_command(chat.id, val):
-            reply = f"<b>{args[0]}</b> has been removed from bluetext cleaner ignore list."
+            reply = (
+                f"<b>{args[0]}</b> has been removed from bluetext cleaner ignore list."
+            )
         else:
             reply = "Command isn't ignored currently."
         message.reply_text(reply, parse_mode=ParseMode.HTML)
@@ -193,7 +190,6 @@ def remove_bluetext_ignore_global(update: Update, context: CallbackContext):
 
 @dev_plus
 def bluetext_ignore_list(update: Update, context: CallbackContext):
-
     message = update.effective_message
     chat = update.effective_chat
 
@@ -275,9 +271,9 @@ Blue text cleaner removed any made up commands that people send in your chat.
 • /ignoreblue <word>*:* prevent auto cleaning of the command
 • /unignoreblue <word>*:* remove prevent auto cleaning of the command
 • /listblue*:* list currently whitelisted commands
- 
+
 *Following are* [Disasters](https://t.me/himawariupdates/19) *only commands, admins cannot use these:*
- 
+
 • /gignoreblue <word>*:* globally ignorea bluetext cleaning of saved word across {BOT_NAME}.
 • /ungignoreblue <word>*:* remove said command from global cleaning list
 """

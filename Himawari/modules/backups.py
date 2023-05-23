@@ -23,28 +23,24 @@ SOFTWARE.
 """
 
 import json
-import time
 import os
+import time
 from io import BytesIO
 
-from telegram import ParseMode, Message
+from telegram import ParseMode
 from telegram.error import BadRequest
-from telegram.ext import CommandHandler, run_async
-
-import Himawari.modules.sql.notes_sql as sql
-from Himawari import dispatcher, LOGGER, OWNER_ID, SUPPORT_CHAT, EVENT_LOGS
-from Himawari.__main__ import DATA_IMPORT
-from Himawari.modules.helper_funcs.chat_status import user_admin
-from Himawari.modules.helper_funcs.alternate import typing_action
-
-import Himawari.modules.sql.rules_sql as rulessql
+from telegram.ext import CommandHandler
 
 import Himawari.modules.sql.blacklist_sql as blacklistsql
-from Himawari.modules.sql import disable_sql as disabledsql
-
 import Himawari.modules.sql.locks_sql as locksql
+import Himawari.modules.sql.notes_sql as sql
+import Himawari.modules.sql.rules_sql as rulessql
+from Himawari import EVENT_LOGS, LOGGER, OWNER_ID, SUPPORT_CHAT, dispatcher
+from Himawari.__main__ import DATA_IMPORT
 from Himawari.modules.connection import connected
-
+from Himawari.modules.helper_funcs.alternate import typing_action
+from Himawari.modules.helper_funcs.chat_status import user_admin
+from Himawari.modules.sql import disable_sql as disabledsql
 
 
 @user_admin
@@ -132,12 +128,10 @@ def import_data(update, context):
         # TODO: some of that link logic
         # NOTE: consider default permissions stuff?
         if conn:
-
             text = f"Backup fully restored on *{chat_name}*."
         else:
             text = "Backup fully restored"
         msg.reply_text(text, parse_mode="markdown")
-
 
 
 @user_admin
@@ -159,14 +153,15 @@ def export_data(update, context):
             return ""
         chat = update.effective_chat
         chat_id = update.effective_chat.id
-        chat_name = update.effective_message.chat.title
+        update.effective_message.chat.title
 
     jam = time.time()
     new_jam = jam + 10800
     checkchat = get_chat(chat_id, chat_data)
     if checkchat.get("status") and jam <= int(checkchat.get("value")):
         timeformatt = time.strftime(
-            "%H:%M:%S %d/%m/%Y", time.localtime(checkchat.get("value")),
+            "%H:%M:%S %d/%m/%Y",
+            time.localtime(checkchat.get("value")),
         )
         update.effective_message.reply_text(
             "You can only backup once a day!\nYou can backup again in about `{}`".format(
@@ -179,7 +174,6 @@ def export_data(update, context):
         put_chat(chat_id, new_jam, chat_data)
     note_list = sql.get_all_chat_notes(chat_id)
     backup = {}
-    button = ""
     buttonlist = []
     namacat = ""
     isicat = ""
@@ -189,11 +183,10 @@ def export_data(update, context):
     # Notes
     for note in note_list:
         count += 1
-        getnote = sql.get_note(chat_id, note.name)
+        sql.get_note(chat_id, note.name)
         namacat += "{}<###splitter###>".format(note.name)
         if note.msgtype == 1:
             tombol = sql.get_buttons(chat_id, note.name)
-            keyb = []
             for btn in tombol:
                 countbtn += 1
                 if btn.same_line:
@@ -205,34 +198,41 @@ def export_data(update, context):
                         ("{}".format(btn.name), "{}".format(btn.url), False),
                     )
             isicat += "###button###: {}<###button###>{}<###splitter###>".format(
-                note.value, str(buttonlist),
+                note.value,
+                str(buttonlist),
             )
             buttonlist.clear()
         elif note.msgtype == 2:
             isicat += "###sticker###:{}<###splitter###>".format(note.file)
         elif note.msgtype == 3:
             isicat += "###file###:{}<###TYPESPLIT###>{}<###splitter###>".format(
-                note.file, note.value,
+                note.file,
+                note.value,
             )
         elif note.msgtype == 4:
             isicat += "###photo###:{}<###TYPESPLIT###>{}<###splitter###>".format(
-                note.file, note.value,
+                note.file,
+                note.value,
             )
         elif note.msgtype == 5:
             isicat += "###audio###:{}<###TYPESPLIT###>{}<###splitter###>".format(
-                note.file, note.value,
+                note.file,
+                note.value,
             )
         elif note.msgtype == 6:
             isicat += "###voice###:{}<###TYPESPLIT###>{}<###splitter###>".format(
-                note.file, note.value,
+                note.file,
+                note.value,
             )
         elif note.msgtype == 7:
             isicat += "###video###:{}<###TYPESPLIT###>{}<###splitter###>".format(
-                note.file, note.value,
+                note.file,
+                note.value,
             )
         elif note.msgtype == 8:
             isicat += "###video_note###:{}<###TYPESPLIT###>{}<###splitter###>".format(
-                note.file, note.value,
+                note.file,
+                note.value,
             )
         else:
             isicat += "{}<###splitter###>".format(note.value)
@@ -278,11 +278,11 @@ def export_data(update, context):
     		print(content)
     		export_filters[filters] = content
     #print(export_filters)
-              
+
     """
 
     # Welcome (TODO)
-    #welc = welcsql.get_welc_pref(chat_id)
+    # welc = welcsql.get_welc_pref(chat_id)
     # Locked
     curr_locks = locksql.get_locks(chat_id)
     curr_restr = locksql.get_restr(chat_id)
@@ -336,7 +336,7 @@ def export_data(update, context):
             "extra": notes,
             "blacklist": bl,
             "disabled": disabledcmd,
-            "locks": locks,            
+            "locks": locks,
         },
     }
     baccinfo = json.dumps(backup, indent=4)
@@ -348,7 +348,9 @@ def export_data(update, context):
         context.bot.sendMessage(
             EVENT_LOGS,
             "*Successfully imported backup:*\nChat: `{}`\nChat ID: `{}`\nOn: `{}`".format(
-                chat.title, chat_id, tgl,
+                chat.title,
+                chat_id,
+                tgl,
             ),
             parse_mode=ParseMode.MARKDOWN,
         )
@@ -358,7 +360,9 @@ def export_data(update, context):
         current_chat_id,
         document=open("HimawariRobot{}Backup".format(chat_id), "rb"),
         caption="*Successfully Exported backup:*\nChat: `{}`\nChat ID: `{}`\nOn: `{}`\n\nNote: This `HimawariRobot-Backup` was specially made for notes.".format(
-            chat.title, chat_id, tgl,
+            chat.title,
+            chat_id,
+            tgl,
         ),
         timeout=360,
         reply_to_message_id=msg.message_id,
@@ -394,7 +398,9 @@ __help__ = """
 """
 
 IMPORT_HANDLER = CommandHandler("import", import_data, run_async=True)
-EXPORT_HANDLER = CommandHandler("export", export_data, pass_chat_data=True, run_async=True)
+EXPORT_HANDLER = CommandHandler(
+    "export", export_data, pass_chat_data=True, run_async=True
+)
 
 dispatcher.add_handler(IMPORT_HANDLER)
 dispatcher.add_handler(EXPORT_HANDLER)

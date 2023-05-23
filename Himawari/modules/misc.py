@@ -22,38 +22,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from Himawari.modules.disable import DisableAbleCommandHandler
 import contextlib
+import datetime
 import html
+import platform
 import time
 from io import BytesIO
-from telegram import Chat, Update, MessageEntity, ParseMode, User
-from telegram.error import BadRequest
-from telegram.ext import Filters, CallbackContext
-from telegram.utils.helpers import mention_html, escape_markdown
-from subprocess import Popen, PIPE
-from Himawari import SUDO_USERS as SUDO_USERS
-from Himawari import SUPPORT_USERS
-from Himawari import WHITELIST_USERS  
-from Himawari import (
-    dispatcher,
-    OWNER_ID,
-    DEV_USERS,
-    INFOPIC,
-    sw,
-    StartTime
-)
-from Himawari.__main__ import STATS, USER_INFO
-from Himawari.modules.helper_funcs.chat_status import user_admin, sudo_plus
-from Himawari.modules.helper_funcs.extraction import extract_user
-import Himawari.modules.sql.users_sql as sql
-from Himawari.modules.users import __user_info__ as chat_count
-from telegram import __version__ as ptbver
-from psutil import cpu_percent, virtual_memory, disk_usage, boot_time
-import datetime
-import platform
 from platform import python_version
+from subprocess import PIPE, Popen
+
+from psutil import boot_time, cpu_percent, disk_usage, virtual_memory
+from telegram import Chat, MessageEntity, ParseMode, Update, User
+from telegram import __version__ as ptbver
+from telegram.error import BadRequest
+from telegram.ext import CallbackContext, Filters
+from telegram.utils.helpers import escape_markdown, mention_html
+
+import Himawari.modules.sql.users_sql as sql
+from Himawari import DEV_USERS, INFOPIC, OWNER_ID
+from Himawari import SUDO_USERS as SUDO_USERS
+from Himawari import SUPPORT_USERS, WHITELIST_USERS, StartTime, dispatcher, sw
+from Himawari.__main__ import STATS, USER_INFO
+from Himawari.modules.disable import DisableAbleCommandHandler
+from Himawari.modules.helper_funcs.chat_status import sudo_plus, user_admin
 from Himawari.modules.helper_funcs.decorators import Himawaricmd
+from Himawari.modules.helper_funcs.extraction import extract_user
+from Himawari.modules.users import __user_info__ as chat_count
 
 MARKDOWN_HELP = f"""
 Markdown is a very powerful formatting tool supported by telegram. {dispatcher.bot.first_name} has some enhancements, to make sure that \
@@ -80,7 +74,7 @@ Keep in mind that your message <b>MUST</b> contain some text other than just a b
 """
 
 
-@Himawaricmd(command='gifid')
+@Himawaricmd(command="gifid")
 def gifid(update: Update, _):
     msg = update.effective_message
     if msg.reply_to_message and msg.reply_to_message.animation:
@@ -91,7 +85,8 @@ def gifid(update: Update, _):
     else:
         update.effective_message.reply_text("Please reply to a gif to get its ID.")
 
-@Himawaricmd(command='info', pass_args=True)
+
+@Himawaricmd(command="info", pass_args=True)
 def info(update: Update, context: CallbackContext):  # sourcery no-metrics
     bot = context.bot
     args = context.args
@@ -122,7 +117,7 @@ def info(update: Update, context: CallbackContext):  # sourcery no-metrics
     else:
         return
 
-    if hasattr(user, 'type') and user.type != "private":
+    if hasattr(user, "type") and user.type != "private":
         text = get_chat_info(user)
         is_chat = True
     else:
@@ -136,16 +131,16 @@ def info(update: Update, context: CallbackContext):  # sourcery no-metrics
                 pfp = bot.get_file(pic).download(out=BytesIO())
                 pfp.seek(0)
                 message.reply_document(
-                        document=pfp,
-                        filename=f'{user.id}.jpg',
-                        caption=text,
-                        parse_mode=ParseMode.HTML,
+                    document=pfp,
+                    filename=f"{user.id}.jpg",
+                    caption=text,
+                    parse_mode=ParseMode.HTML,
                 )
             except AttributeError:  # AttributeError means no chat pic so just send text
                 message.reply_text(
-                        text,
-                        parse_mode=ParseMode.HTML,
-                        disable_web_page_preview=True,
+                    text,
+                    parse_mode=ParseMode.HTML,
+                    disable_web_page_preview=True,
                 )
         else:
             try:
@@ -156,15 +151,15 @@ def info(update: Update, context: CallbackContext):  # sourcery no-metrics
                 _file.seek(0)
 
                 message.reply_document(
-                        document=_file,
-                        caption=(text),
-                        parse_mode=ParseMode.HTML,
+                    document=_file,
+                    caption=(text),
+                    parse_mode=ParseMode.HTML,
                 )
 
             # Incase user don't have profile pic, send normal text
             except IndexError:
                 message.reply_text(
-                        text, parse_mode=ParseMode.HTML, disable_web_page_preview=True
+                    text, parse_mode=ParseMode.HTML, disable_web_page_preview=True
                 )
 
     else:
@@ -201,8 +196,10 @@ def get_user_info(chat: Chat, user: User) -> str:
         if user_member.status == "administrator":
             result = bot.get_chat_member(chat.id, user.id)
             if result.custom_title:
-                text += f"\n\nThis user holds the title <b>{result.custom_title}</b> here."
-    if user.id == OWNER_ID:        
+                text += (
+                    f"\n\nThis user holds the title <b>{result.custom_title}</b> here."
+                )
+    if user.id == OWNER_ID:
         text += "\n\n<code>Our Cute Neko</code> :3"
         disaster_level_present = True
     elif user.id in DEV_USERS:
@@ -234,10 +231,7 @@ def get_user_info(chat: Chat, user: User) -> str:
 
 
 def get_chat_info(user):
-    text = (
-        f"<b>Chat Information:</b>\n"
-        f"<b>Chat Title:</b> {user.title}"
-    )
+    text = f"<b>Chat Information:</b>\n" f"<b>Chat Title:</b> {user.title}"
     if user.username:
         text += f"\n<b>Username:</b> @{html.escape(user.username)}"
     text += f"\n<b>Chat ID:</b> <code>{user.id}</code>"
@@ -252,9 +246,10 @@ def shell(command):
     stdout, stderr = process.communicate()
     return (stdout, stderr)
 
-@Himawaricmd(command='markdownhelp', filters=Filters.chat_type.private)
+
+@Himawaricmd(command="markdownhelp", filters=Filters.chat_type.private)
 def markdown_help(update: Update, _):
-    chat = update.effective_chat
+    update.effective_chat
     update.effective_message.reply_text(f"{MARKDOWN_HELP}", parse_mode=ParseMode.HTML)
     update.effective_message.reply_text(
         "Try forwarding the following message to me, and you'll see!"
@@ -264,6 +259,7 @@ def markdown_help(update: Update, _):
         "[URL](example.com) [button](buttonurl:github.com) "
         "[button2](buttonurl://google.com:same)"
     )
+
 
 def get_readable_time(seconds: int) -> str:
     count = 0
@@ -282,16 +278,19 @@ def get_readable_time(seconds: int) -> str:
     for x in range(len(time_list)):
         time_list[x] = str(time_list[x]) + time_suffix_list[x]
     if len(time_list) == 4:
-        ping_time += f'{time_list.pop()}, '
+        ping_time += f"{time_list.pop()}, "
 
     time_list.reverse()
     ping_time += ":".join(time_list)
 
     return ping_time
 
-stats_str = '''
-'''
-@Himawaricmd(command='stats', can_disable=False)
+
+stats_str = """
+"""
+
+
+@Himawaricmd(command="stats", can_disable=False)
 @sudo_plus
 def stats(update, context):
     uptime = datetime.datetime.fromtimestamp(boot_time()).strftime("%Y-%m-%d %H:%M:%S")
@@ -315,12 +314,15 @@ def stats(update, context):
     status += f"*• Uptime:* {str(botuptime)}" + "\n"
 
     try:
-        update.effective_message.reply_text(status +
-            "\n*Bot statistics*:\n"
-            + "\n".join([mod.__stats__() for mod in STATS]) +
-            "\n\n[⍙ GitHub](https://github.com/ArshCypherZ/HWBot) | [Telegram](https://t.me/Himawari_robot)\n\n" +
-            "╘══「 by [Bakufu Government](t.me/BakufuGovt) 」\n",
-        parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+        update.effective_message.reply_text(
+            status
+            + "\n*Bot statistics*:\n"
+            + "\n".join([mod.__stats__() for mod in STATS])
+            + "\n\n[⍙ GitHub](https://github.com/ArshCypherZ/HWBot) | [Telegram](https://t.me/Himawari_robot)\n\n"
+            + "╘══「 by [Bakufu Government](t.me/BakufuGovt) 」\n",
+            parse_mode=ParseMode.MARKDOWN,
+            disable_web_page_preview=True,
+        )
     except BaseException:
         update.effective_message.reply_text(
             (
@@ -333,11 +335,9 @@ def stats(update, context):
                 )
                 + "╘══「 by [Bakufu Government](t.me/BakufuGovt) 」\n"
             ),
-            parse_mode=ParseMode.MARKDOWN,         
+            parse_mode=ParseMode.MARKDOWN,
             disable_web_page_preview=True,
         )
-
-
 
 
 @user_admin
@@ -347,13 +347,18 @@ def echo(update: Update, context: CallbackContext):
 
     if message.reply_to_message:
         message.reply_to_message.reply_text(
-            args[1], parse_mode="MARKDOWN", disable_web_page_preview=True,
+            args[1],
+            parse_mode="MARKDOWN",
+            disable_web_page_preview=True,
         )
     else:
         message.reply_text(
-            args[1], quote=False, parse_mode="MARKDOWN", disable_web_page_preview=True,
+            args[1],
+            quote=False,
+            parse_mode="MARKDOWN",
+            disable_web_page_preview=True,
         )
-    message.delete()    
+    message.delete()
 
 
 __help__ = """
@@ -386,12 +391,12 @@ Books:
 
 """
 
-ECHO_HANDLER = DisableAbleCommandHandler("echo", echo, filters=Filters.chat_type.groups, run_async=True)
+ECHO_HANDLER = DisableAbleCommandHandler(
+    "echo", echo, filters=Filters.chat_type.groups, run_async=True
+)
 
 dispatcher.add_handler(ECHO_HANDLER)
 
 __mod_name__ = "Extras"
 __command_list__ = ["id", "echo"]
-__handlers__ = [
-    ECHO_HANDLER
-]
+__handlers__ = [ECHO_HANDLER]
