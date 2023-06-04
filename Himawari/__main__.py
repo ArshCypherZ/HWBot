@@ -35,15 +35,6 @@ from telegram.ext.dispatcher import DispatcherHandlerStop
 from telegram.utils.helpers import escape_markdown
 
 import Himawari.modules.sql.users_sql as sql
-
-
-# needed to dynamically load modules
-# NOTE: Module order is not guaranteed, specify that in the config file!
-from Himawari.modules import ALL_MODULES
-from Himawari.modules.disable import DisableAbleCommandHandler
-from Himawari.modules.helper_funcs.alternate import typing_action
-from Himawari.modules.helper_funcs.chat_status import is_user_admin
-from Himawari.modules.helper_funcs.misc import paginate_modules
 from Himawari import (
     BOT_NAME,
     BOT_USERNAME,
@@ -56,6 +47,15 @@ from Himawari import (
     telethn,
     updater,
 )
+
+# needed to dynamically load modules
+# NOTE: Module order is not guaranteed, specify that in the config file!
+from Himawari.modules import ALL_MODULES
+from Himawari.modules.disable import DisableAbleCommandHandler
+from Himawari.modules.helper_funcs.alternate import typing_action
+from Himawari.modules.helper_funcs.chat_status import is_user_admin
+from Himawari.modules.helper_funcs.misc import paginate_modules
+
 
 def get_readable_time(seconds: int) -> str:
     count = 0
