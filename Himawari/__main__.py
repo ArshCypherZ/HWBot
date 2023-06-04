@@ -47,7 +47,6 @@ from Himawari.modules.helper_funcs.misc import paginate_modules
 from Himawari import (
     BOT_NAME,
     BOT_USERNAME,
-    LOGGER,
     SUPPORT_CHAT,
     TOKEN,
     UPDATES_CHANNEL,
@@ -519,7 +518,7 @@ def settings_button(update: Update, context: CallbackContext):
             "Query_id_invalid",
             "Message can't be deleted",
         ]:
-            LOGGER.exception("Exception in settings buttons. %s", str(query.data))
+            print("Exception in settings buttons. %s", str(query.data))
 
 
 def get_settings(update: Update, context: CallbackContext):
@@ -588,11 +587,11 @@ def migrate_chats(update: Update, context: CallbackContext):
     else:
         return
 
-    LOGGER.info("Migrating from %s, to %s", str(old_chat), str(new_chat))
+    print("Migrating from %s, to %s", str(old_chat), str(new_chat))
     for mod in MIGRATEABLE:
         mod.__migrate__(old_chat, new_chat)
 
-    LOGGER.info("Successfully migrated!")
+    print("Successfully migrated!")
     raise DispatcherHandlerStop
 
 
@@ -628,7 +627,7 @@ def main():
 
     dispatcher.add_error_handler(error_callback)
 
-    LOGGER.info("Himawari started, Using long polling.")
+    print("Himawari started, Using long polling.")
     updater.start_polling(
         timeout=15,
         read_latency=4,
@@ -643,7 +642,7 @@ def main():
 
 
 if __name__ == "__main__":
-    LOGGER.info(f"[Himawari] Successfully loaded modules: {str(ALL_MODULES)}")
+    print(f"[Himawari] Successfully loaded modules: {str(ALL_MODULES)}")
     telethn.start(bot_token=TOKEN)
     pgram.start()
     main()
