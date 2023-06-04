@@ -68,56 +68,114 @@ if sys.version_info[0] < 3 or sys.version_info[1] < 6:
     )
     sys.exit(1)
 
+ENV = bool(os.environ.get("ENV", None))  # set to true if using heroku
 
-TOKEN = os.environ.get("TOKEN", None)
+if ENV:
+    TOKEN = os.environ.get("TOKEN", None)
 
-try:
-    OWNER_ID = int(os.environ.get("OWNER_ID", None))
-except ValueError:
-    raise Exception("Your OWNER_ID env variable is not a valid integer.")
+    try:
+        OWNER_ID = int(os.environ.get("OWNER_ID", None))
+    except ValueError:
+        raise Exception("Your OWNER_ID env variable is not a valid integer.")
 
-try:
-    SUDO_USERS = {int(x) for x in os.environ.get("SUDO_USERS", "").split()}
-    DEV_USERS = {int(x) for x in os.environ.get("DEV_USERS", "").split()}
-except ValueError:
-    raise Exception("Your sudo or dev users list does not contain valid integers.")
+    try:
+        SUDO_USERS = {int(x) for x in os.environ.get("SUDO_USERS", "").split()}
+        DEV_USERS = {int(x) for x in os.environ.get("DEV_USERS", "").split()}
+    except ValueError:
+        raise Exception("Your sudo or dev users list does not contain valid integers.")
 
-try:
-    SUPPORT_USERS = {int(x) for x in os.environ.get("SUPPORT_USERS", "").split()}
-except ValueError:
-    raise Exception("Your support users list does not contain valid integers.")
+    try:
+        SUPPORT_USERS = {int(x) for x in os.environ.get("SUPPORT_USERS", "").split()}
+    except ValueError:
+        raise Exception("Your support users list does not contain valid integers.")
 
-try:
-    WHITELIST_USERS = {int(x) for x in os.environ.get("WHITELIST_USERS", "").split()}
-except ValueError:
-    raise Exception("Your whitelisted users list does not contain valid integers.")
+    try:
+        WHITELIST_USERS = {
+            int(x) for x in os.environ.get("WHITELIST_USERS", "").split()
+        }
+    except ValueError:
+        raise Exception("Your whitelisted users list does not contain valid integers.")
 
-INFOPIC = bool(os.environ.get("INFOPIC", False))
-EVENT_LOGS = os.environ.get("EVENT_LOGS", None)
-ERROR_LOGS = os.environ.get("ERROR_LOGS", None)
-ARQ_API_URL = os.environ.get("ARQ_API_URL", None)
-ARQ_API_KEY = os.environ.get("ARQ_API_KEY", None)
-URL = os.environ.get("URL", None)
-API_ID = os.environ.get("API_ID", None)
-API_HASH = os.environ.get("API_HASH", None)
-DB_URL = os.environ.get("DATABASE_URL")
-DEL_CMDS = bool(os.environ.get("DEL_CMDS", False))
-STRICT_GBAN = bool(os.environ.get("STRICT_GBAN", None))
-TEMP_DOWNLOAD_DIRECTORY = os.environ.get(
-    "TEMP_DOWNLOAD_DIRECTORY", "./"
-)  # Don't Change
-REM_BG_API_KEY = os.environ.get("REM_BG_API_KEY", None)
-MONGO_DB_URL = os.environ.get("MONGO_DB_URL", None)
-REDIS_URL = os.environ.get("REDIS_URL", None)
-SUPPORT_CHAT = os.environ.get("SUPPORT_CHAT", None)
-UPDATES_CHANNEL = os.environ.get("UPDATES_CHANNEL", None)
-SPAMWATCH_API = os.environ.get("SPAMWATCH_API", None)
-BOT_USERNAME = os.environ.get("BOT_USERNAME", "")
-HEROKU_APP_NAME = os.environ.get("HEROKU_APP_NAME", True)
-HEROKU_API_KEY = os.environ.get("HEROKU_API_KEY", True)
-BOT_NAME = os.environ.get("BOT_NAME", "")
-BOT_API_URL = os.environ.get("BOT_API_URL", "https://api.telegram.org/bot")
-MONGO_DB = "Himawari"
+    INFOPIC = bool(os.environ.get("INFOPIC", False))
+    EVENT_LOGS = os.environ.get("EVENT_LOGS", None)
+    ERROR_LOGS = os.environ.get("ERROR_LOGS", None)
+    ARQ_API_URL = os.environ.get("ARQ_API_URL", None)
+    ARQ_API_KEY = os.environ.get("ARQ_API_KEY", None)
+    URL = os.environ.get("URL", None)
+    API_ID = os.environ.get("API_ID", None)
+    API_HASH = os.environ.get("API_HASH", None)
+    DB_URL = os.environ.get("DATABASE_URL")
+    LOAD = os.environ.get("LOAD", "").split()
+    NO_LOAD = os.environ.get("NO_LOAD", "").split()
+    DEL_CMDS = bool(os.environ.get("DEL_CMDS", False))
+    STRICT_GBAN = bool(os.environ.get("STRICT_GBAN", None))
+    TEMP_DOWNLOAD_DIRECTORY = os.environ.get(
+        "TEMP_DOWNLOAD_DIRECTORY", "./"
+    )  # Don't Change
+    REM_BG_API_KEY = os.environ.get("REM_BG_API_KEY", None)
+    MONGO_DB_URL = os.environ.get("MONGO_DB_URL", None)
+    REDIS_URL = os.environ.get("REDIS_URL", None)
+    SUPPORT_CHAT = os.environ.get("SUPPORT_CHAT", None)
+    UPDATES_CHANNEL = os.environ.get("UPDATES_CHANNEL", None)
+    SPAMWATCH_API = os.environ.get("SPAMWATCH_API", None)
+    BOT_USERNAME = os.environ.get("BOT_USERNAME", "")
+    HEROKU_APP_NAME = os.environ.get("HEROKU_APP_NAME", True)
+    HEROKU_API_KEY = os.environ.get("HEROKU_API_KEY", True)
+    BOT_NAME = os.environ.get("BOT_NAME", "")
+    BOT_API_URL = os.environ.get("BOT_API_URL", "https://api.telegram.org/bot")
+    MONGO_DB = "Himawari"
+
+else:
+    from Himawari.config import Development as Config
+
+    TOKEN = Config.TOKEN
+
+    try:
+        OWNER_ID = int(Config.OWNER_ID)
+    except ValueError:
+        raise Exception("Your OWNER_ID variable is not a valid integer.")
+
+    try:
+        SUDO_USERS = {int(x) for x in Config.SUDO_USERS or []}
+        DEV_USERS = {int(x) for x in Config.DEV_USERS or []}
+    except ValueError:
+        raise Exception("Your sudo or dev users list does not contain valid integers.")
+
+    try:
+        SUPPORT_USERS = {int(x) for x in Config.SUPPORT_USERS or []}
+    except ValueError:
+        raise Exception("Your support users list does not contain valid integers.")
+
+    try:
+        WHITELIST_USERS = {int(x) for x in Config.WHITELIST_USERS or []}
+    except ValueError:
+        raise Exception("Your whitelisted users list does not contain valid integers.")
+
+    INFOPIC = Config.INFOPIC
+    URL = "https://meow.herokuapp.com"
+    EVENT_LOGS = Config.EVENT_LOGS
+    ERROR_LOGS = Config.ERROR_LOGS
+    API_ID = Config.API_ID
+    API_HASH = Config.API_HASH
+    BOT_API_URL = Config.BOT_API_URL
+    ARQ_API_URL = Config.ARQ_API_URL
+    ARQ_API_KEY = Config.ARQ_API_KEY
+    DB_URL = Config.DB_URL
+    STRICT_GBAN = Config.STRICT_GBAN
+    TEMP_DOWNLOAD_DIRECTORY = Config.TEMP_DOWNLOAD_DIRECTORY
+    LOAD = Config.LOAD
+    NO_LOAD = Config.NO_LOAD
+    MONGO_DB_URL = Config.MONGO_DB_URL
+    MONGO_DB = Config.MONGO_DB
+    REDIS_URL = Config.REDIS_URL
+    SUPPORT_CHAT = Config.SUPPORT_CHAT
+    UPDATES_CHANNEL = Config.UPDATES_CHANNEL
+    SPAMWATCH_API = Config.SPAMWATCH_API
+    REM_BG_API_KEY = Config.REM_BG_API_KEY
+    BOT_USERNAME = Config.BOT_USERNAME
+    BOT_NAME = Config.BOT_NAME
+    DEL_CMDS = Config.DEL_CMDS
+
 
 SUDO_USERS.add(OWNER_ID)
 DEV_USERS.add(OWNER_ID)
