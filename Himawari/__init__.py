@@ -88,9 +88,7 @@ except ValueError:
     raise Exception("Your support users list does not contain valid integers.")
 
 try:
-    WHITELIST_USERS = {
-        int(x) for x in os.environ.get("WHITELIST_USERS", "").split()
-    }
+    WHITELIST_USERS = {int(x) for x in os.environ.get("WHITELIST_USERS", "").split()}
 except ValueError:
     raise Exception("Your whitelisted users list does not contain valid integers.")
 
@@ -107,7 +105,9 @@ LOAD = os.environ.get("LOAD", "").split()
 NO_LOAD = os.environ.get("NO_LOAD", "").split()
 DEL_CMDS = bool(os.environ.get("DEL_CMDS", False))
 STRICT_GBAN = bool(os.environ.get("STRICT_GBAN", None))
-TEMP_DOWNLOAD_DIRECTORY = os.environ.get("TEMP_DOWNLOAD_DIRECTORY", "./")  # Don't Change
+TEMP_DOWNLOAD_DIRECTORY = os.environ.get(
+    "TEMP_DOWNLOAD_DIRECTORY", "./"
+)  # Don't Change
 REM_BG_API_KEY = os.environ.get("REM_BG_API_KEY", None)
 MONGO_DB_URL = os.environ.get("MONGO_DB_URL", None)
 REDIS_URL = os.environ.get("REDIS_URL", None)
