@@ -7,8 +7,6 @@ services:
     container_name: hima
     network_mode: host
     pull_policy: never
-    env_file:
-    - .env
 
 networks:
   default: 
