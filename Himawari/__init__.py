@@ -104,9 +104,7 @@ if ENV:
     URL = os.environ.get("URL", None)
     API_ID = os.environ.get("API_ID", None)
     API_HASH = os.environ.get("API_HASH", None)
-    DB_URL = os.environ.get("DATABASE_URL")
-    LOAD = os.environ.get("LOAD", "").split()
-    NO_LOAD = os.environ.get("NO_LOAD", "").split()
+    DB_URL = os.environ.get("DB_URL")
     DEL_CMDS = bool(os.environ.get("DEL_CMDS", False))
     STRICT_GBAN = bool(os.environ.get("STRICT_GBAN", None))
     TEMP_DOWNLOAD_DIRECTORY = os.environ.get(
