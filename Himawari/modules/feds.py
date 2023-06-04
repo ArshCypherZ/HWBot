@@ -1195,10 +1195,12 @@ def set_frules(update: Update, context: CallbackContext):
     if len(args) >= 1:
         msg = update.effective_message
         raw_text = msg.text
-        args = raw_text.split(None, 1)  # use python's maxsplit to separate cmd and args
+        # use python's maxsplit to separate cmd and args
+        args = raw_text.split(None, 1)
         if len(args) == 2:
             txt = args[1]
-            offset = len(txt) - len(raw_text)  # set correct offset relative to command
+            # set correct offset relative to command
+            offset = len(txt) - len(raw_text)
             markdown_rules = markdown_parser(
                 txt, entities=msg.parse_entities(), offset=offset
             )
@@ -1272,9 +1274,11 @@ def fed_broadcast(update: Update, context: CallbackContext):
             return
         # Parsing md
         raw_text = msg.text
-        args = raw_text.split(None, 1)  # use python's maxsplit to separate cmd and args
+        # use python's maxsplit to separate cmd and args
+        args = raw_text.split(None, 1)
         txt = args[1]
-        offset = len(txt) - len(raw_text)  # set correct offset relative to command
+        # set correct offset relative to command
+        offset = len(txt) - len(raw_text)
         text_parser = markdown_parser(txt, entities=msg.parse_entities(), offset=offset)
         text = text_parser
         try:
