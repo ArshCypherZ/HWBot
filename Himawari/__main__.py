@@ -22,24 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import html
 import importlib
-import json
 import re
 import time
-import traceback
 from sys import argv
 
 from pyrogram import idle
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode, Update
-from telegram.error import (
-    BadRequest,
-    ChatMigrated,
-    NetworkError,
-    TelegramError,
-    TimedOut,
-    Unauthorized,
-)
+from telegram.error import BadRequest, Unauthorized
 from telegram.ext import CallbackContext, CallbackQueryHandler, Filters, MessageHandler
 from telegram.ext.dispatcher import DispatcherHandlerStop
 from telegram.utils.helpers import escape_markdown
@@ -48,7 +38,7 @@ import Himawari.modules.sql.users_sql as sql
 from Himawari import (
     BOT_NAME,
     BOT_USERNAME,
-    OWNER_ID,
+    LOGGER,
     SUPPORT_CHAT,
     TOKEN,
     UPDATES_CHANNEL,
@@ -57,7 +47,6 @@ from Himawari import (
     pgram,
     telethn,
     updater,
-    LOGGER,
 )
 
 # needed to dynamically load modules
@@ -281,7 +270,6 @@ def start(update: Update, context: CallbackContext):
                 ]
             ),
         )
-
 
 
 def help_button(update, context):
