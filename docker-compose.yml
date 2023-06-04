@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  hima:
+    build: .
+    image: hima:${TAG} # set {TAG} as latest on first try, then use {TAG} again to generate random tags on each pull
+    container_name: hima
+    network_mode: host
+    pull_policy: never
+    env_file:
+    - ./Himawari/config.py
+
+networks:
+  default: 
+    external: true
+    name: host
