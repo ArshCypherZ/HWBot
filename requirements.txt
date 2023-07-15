@@ -86,7 +86,6 @@ safoneapi==1.0.20
 search_engine_parser
 secureme
 selenium
-spamwatch
 speedtest-cli
 spongemock
 sqlalchemy==1.3.20
@@ -104,3 +103,4 @@ youtube_search
 youtube_search_python
 yt-dlp
 zalgo-text
+vanitas-antispam

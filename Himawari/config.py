@@ -68,8 +68,6 @@ class Config(object):
     UPDATES_CHANNEL = "Igsd"  # Updates/News Channel username without @
     BOT_USERNAME = "Himawari_Robot"  # bot username without @
     REM_BG_API_KEY = "K2dsdsYma6cZx"  # not necessary
-    # spamwatch api token from @SpamWatchBot
-    SPAMWATCH_API = "J968E_20LgxrKjsdN24cqYtD~gNRTbU"
 
 
 class Production(Config):

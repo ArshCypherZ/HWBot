@@ -41,7 +41,7 @@ from telegram.utils.helpers import escape_markdown, mention_html
 import Himawari.modules.sql.users_sql as sql
 from Himawari import DEV_USERS, INFOPIC, OWNER_ID
 from Himawari import SUDO_USERS as SUDO_USERS
-from Himawari import SUPPORT_USERS, WHITELIST_USERS, StartTime, dispatcher, sw
+from Himawari import SUPPORT_USERS, WHITELIST_USERS, StartTime, dispatcher
 from Himawari.__main__ import STATS, USER_INFO
 from Himawari.modules.disable import DisableAbleCommandHandler
 from Himawari.modules.helper_funcs.chat_status import sudo_plus, user_admin
@@ -168,6 +168,17 @@ def info(update: Update, context: CallbackContext):  # sourcery no-metrics
         )
 
 
+from vanitaspy import User
+# user check
+def banned(user):
+    us = User()
+    chk = us.get_info(user)
+    if chk["blacklisted"]:
+        return True
+    if not chk["blacklisted"]:
+        return False
+
+
 def get_user_info(chat: Chat, user: User) -> str:
     bot = dispatcher.bot
     text = (
@@ -181,13 +192,15 @@ def get_user_info(chat: Chat, user: User) -> str:
         text += f"\n⫸ Username: @{html.escape(user.username)}"
     text += f"\n⫸ User link: {mention_html(user.id, 'link')}"
     with contextlib.suppress(Exception):
-        if spamwtc := sw.get_ban(int(user.id)):
-            text += "<b>\n\nSpamWatch:\n</b>"
-            text += "<b>This person is banned in Spamwatch!</b>"
-            text += f"\nReason: <pre>{spamwtc.reason}</pre>"
-            text += "\nAppeal at @SpamWatchSupport"
+        if spamwtc := banned(int(user.id)):
+            us = User()
+            chec = us.get_info(event.user_id)
+            text += "<b>\n\nVanitas:\n</b>"
+            text += "<b>This person is banned in @SpamWatchingBot!</b>"
+            text += f"\nReason: <pre>{chec['reason']}</pre>"
+            text += "\nAppeal at @VanitasSupport"
         else:
-            text += "<b>\n\nSpamWatch:</b> Not banned"
+            text += "<b>\n\n@SpamWatchingBot:</b> Not banned"
     disaster_level_present = False
     num_chats = sql.get_user_num_chats(user.id)
     text += f"\n\n<b>Chat count</b>: <code>{num_chats}</code>"

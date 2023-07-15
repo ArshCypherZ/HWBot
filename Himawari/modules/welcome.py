@@ -58,8 +58,7 @@ from Himawari import (
     SUPPORT_CHAT,
     SUPPORT_USERS,
     WHITELIST_USERS,
-    dispatcher,
-    sw,
+    dispatcher
 )
 from Himawari.modules.helper_funcs.anonymous import AdminPerms, user_admin
 from Himawari.modules.helper_funcs.chat_status import is_user_ban_protected
@@ -223,11 +222,6 @@ def new_member(update: Update, context: CallbackContext):  # sourcery no-metrics
             except BadRequest:
                 pass
             return
-
-        if sw is not None:
-            sw_ban = sw.get_ban(new_mem.id)
-            if sw_ban:
-                return
 
         reply = update.message.message_id
         cleanserv = sql.clean_service(chat.id)
@@ -663,11 +657,6 @@ def left_member(update: Update, context: CallbackContext):  # sourcery no-metric
     if should_goodbye:
         left_mem = update.effective_message.left_chat_member
         if left_mem:
-            # Thingy for spamwatched users
-            if sw:
-                sw_ban = sw.get_ban(left_mem.id)
-                if sw_ban:
-                    return
 
             # Dont say goodbyes to gbanned users
             if is_user_gbanned(left_mem.id):

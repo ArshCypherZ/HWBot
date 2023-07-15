@@ -29,7 +29,6 @@ import time
 
 import httpx
 import pymongo
-import spamwatch
 import telegram.ext as tg
 from aiohttp import ClientSession
 from motor import motor_asyncio
@@ -115,7 +114,6 @@ if ENV:
     REDIS_URL = os.environ.get("REDIS_URL", None)
     SUPPORT_CHAT = os.environ.get("SUPPORT_CHAT", None)
     UPDATES_CHANNEL = os.environ.get("UPDATES_CHANNEL", None)
-    SPAMWATCH_API = os.environ.get("SPAMWATCH_API", None)
     BOT_USERNAME = os.environ.get("BOT_USERNAME", "")
     HEROKU_APP_NAME = os.environ.get("HEROKU_APP_NAME", True)
     HEROKU_API_KEY = os.environ.get("HEROKU_API_KEY", True)
@@ -168,7 +166,6 @@ else:
     REDIS_URL = Config.REDIS_URL
     SUPPORT_CHAT = Config.SUPPORT_CHAT
     UPDATES_CHANNEL = Config.UPDATES_CHANNEL
-    SPAMWATCH_API = Config.SPAMWATCH_API
     REM_BG_API_KEY = Config.REM_BG_API_KEY
     BOT_USERNAME = Config.BOT_USERNAME
     BOT_NAME = Config.BOT_NAME
@@ -191,17 +188,6 @@ except BaseException:
 finally:
     REDIS.ping()
     LOGGER.info("Your redis server is now alive!")
-
-
-if not SPAMWATCH_API:
-    sw = None
-    LOGGER.warning("[ERROR]: SpamWatch API key Is Missing! Recheck Your Config.")
-else:
-    try:
-        sw = spamwatch.Client(SPAMWATCH_API)
-    except BaseException:
-        sw = None
-        LOGGER.warning("[ERROR]: Can't connect to SpamWatch!")
 
 
 # Credits Logger

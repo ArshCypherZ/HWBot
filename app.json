@@ -95,11 +95,6 @@
          "required": false,
          "value": "5132406765"
       },
-      "SPAMWATCH_API": {
-         "description": "Spamwatch API Token, Get one from @SpamWatchBot.",
-         "required": false,
-         "value": ""
-      }, 
       "SUDO_USERS": {
          "description": "A space separated list of user IDs who you want to assign as sudo users.",
          "required": false,

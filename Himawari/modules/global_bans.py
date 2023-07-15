@@ -42,8 +42,7 @@ from Himawari import (
     SUPPORT_CHAT,
     SUPPORT_USERS,
     WHITELIST_USERS,
-    dispatcher,
-    sw,
+    dispatcher
 )
 from Himawari.modules.helper_funcs.chat_status import (
     is_user_admin,
@@ -415,25 +414,37 @@ def gbanlist(update: Update, context: CallbackContext):
             caption="Here is the list of currently gbanned users.",
         )
 
+from vanitaspy import User
+
+# user check
+def banned(user):
+    us = User()
+    chk = us.get_info(user)
+    if chk["blacklisted"]:
+        return True
+    if not chk["blacklisted"]:
+        return False
 
 def check_and_ban(update, user_id, should_message=True):
     if user_id in WHITELIST_USERS:
         sw_ban = None
     else:
         try:
-            sw_ban = sw.get_ban(int(user_id))
+            sw_ban = banned(int(user_id))
         except BaseException:
             sw_ban = None
 
     if sw_ban:
         update.effective_chat.ban_member(user_id)
+        us = User()
+        chec = us.get_info(int(user_id))
         if should_message:
             update.effective_message.reply_text(
-                f"<b>Alert</b>: this user has been globally banned by @SpamWatch\n"
+                f"<b>Alert</b>: this user has been globally banned by @SpamWatchingBot\n"
                 f"<code>*bans them from here*</code>.\n"
-                f"<b>Appeal for unban</b>: @SpamWatchSupport\n"
-                f"<b>User ID</b>: <code>{sw_ban.id}</code>\n"
-                f"<b>Ban Reason</b>: <code>{html.escape(sw_ban.reason)}</code>",
+                f"<b>Appeal for unban</b>: @VanitasSupport\n"
+                f"<b>User ID</b>: <code>{user_id}</code>\n"
+                f"<b>Ban Reason</b>: <code>{html.escape(chec['reason'])}</code>",
                 parse_mode=ParseMode.HTML,
             )
         return
@@ -495,7 +506,7 @@ def gbanstat(update: Update, context: CallbackContext):
         elif args[0].lower() in ["off", "no"]:
             sql.disable_gbans(update.effective_chat.id)
             update.effective_message.reply_text(
-                "Antispan is now disabled ❌ " "Spamwatch is now disabled ❌",
+                "Antispam is now disabled ❌ " "@SpamwatchingBot is now disabled ❌",
             )
     else:
         update.effective_message.reply_text(
@@ -543,11 +554,11 @@ Anti-Spam, used by bot devs to ban spammers across all groups. This helps protec
 you and your groups by removing spam flooders as quickly as possible.
 *Note:* Users can appeal gbans or report spammers at @{SUPPORT_CHAT}
 
-This also integrates @Spamwatch API to remove Spammers as much as possible from your chatroom!
-*What is SpamWatch?*
-SpamWatch maintains a large constantly updated ban-list of spambots, trolls, bitcoin spammers and unsavoury characters[.](https://telegra.ph/file/f584b643c6f4be0b1de53.jpg)
+This also integrates @SpamwatchingBot API to remove Spammers as much as possible from your chatroom!
+*What is @SpamWatchingBot?*
+@SpamWatchingBot maintains a large constantly updated ban-list of spambots, trolls, bitcoin spammers and unsavoury characters[.](https://telegra.ph/file/f584b643c6f4be0b1de53.jpg)
 Constantly help banning spammers off from your group automatically So, you wont have to worry about spammers storming your group.
-*Note:* Users can appeal spamwatch bans at @SpamwatchSupport
+*Note:* Users can appeal spamwatchingbot bans at @VanitasSupport
 """
 
 GBAN_HANDLER = CommandHandler("gban", gban, run_async=True)
