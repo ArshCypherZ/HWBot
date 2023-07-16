@@ -32,7 +32,6 @@ import pymongo
 import telegram.ext as tg
 from aiohttp import ClientSession
 from motor import motor_asyncio
-from odmantic import AIOEngine
 from pymongo import MongoClient
 from pyrogram import Client
 from pyrogram.errors.exceptions.bad_request_400 import ChannelInvalid, PeerIdInvalid
@@ -222,7 +221,6 @@ print("[Hima]: Connecting To Spiral HQ")
 mongodb = MongoClient(MONGO_DB_URL, 27017)[MONGO_DB]
 motor = motor_asyncio.AsyncIOMotorClient(MONGO_DB_URL)
 db = motor[MONGO_DB]
-engine = AIOEngine(motor, MONGO_DB)
 print("[INFO]: INITIALZING AIOHTTP SESSION")
 aiohttpsession = ClientSession()
 # ARQ Client
