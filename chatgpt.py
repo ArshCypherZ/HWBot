@@ -12,7 +12,7 @@ from pyrogram.enums import ParseMode
 @app.on_message(filters.command("askgpt"), group=765)
 async def gpt(_: app, message: Message):
     text = "".join(message.text.split(" ")[1:])
-    if len(text) == 0:
+    if not text:
         return await message.reply_text(
             "Cannot reply to empty message.", parse_mode=ParseMode.MARKDOWN
         )
@@ -28,7 +28,7 @@ async def gpt(_: app, message: Message):
          response = requests.post(url, json=payloads, headers=headers)
          results = response.json()
          res = results["message"]
-         
+
          await m.edit_text(f"{res}")
     except Exception as e:
          await m.edit_text(f"Error :-\n{e}" )
