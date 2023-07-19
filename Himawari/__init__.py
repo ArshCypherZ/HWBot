@@ -42,12 +42,6 @@ from telegraph import Telegraph
 from telethon import TelegramClient
 from telethon.sessions import MemorySession
 
-from Himawari.modules.helper_funcs.handlers import (
-    CustomCommandHandler,
-    CustomMessageHandler,
-    CustomRegexHandler,
-)
-
 StartTime = time.time()
 
 # enable logging
@@ -265,6 +259,11 @@ WHITELIST_USERS = list(WHITELIST_USERS)
 SUPPORT_USERS = list(SUPPORT_USERS)
 
 # Load at end to ensure all prev variables have been set
+from Himawari.modules.helper_funcs.handlers import (
+    CustomCommandHandler,
+    CustomMessageHandler,
+    CustomRegexHandler,
+)
 
 # make sure the regex handler can take extra kwargs
 tg.RegexHandler = CustomRegexHandler
